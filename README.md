@@ -1,2 +1,3 @@
-# Workflow-Generator
-Super Smart Workflow Generator
+# WXT + React
+
+This template should help get you started developing with React in WXT.
