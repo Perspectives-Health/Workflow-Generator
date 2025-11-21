@@ -1,3 +1,3 @@
-# WXT + React
+# Perspectives Health Internal Workflow Generator
 
-This template should help get you started developing with React in WXT.
+Super Smart Workflow Generator
