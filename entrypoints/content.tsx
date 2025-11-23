@@ -6,6 +6,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/modules/shared/infrastructure/query-client';
 import { AuthProvider } from '@/modules/auth/ui/auth-provider';
 import { createRoot } from 'react-dom/client';
+import { WorkflowGenerator } from '@/content-script-ui/WorkflowGenerator';
 
 
 export default defineContentScript({
@@ -14,7 +15,7 @@ export default defineContentScript({
 	async main(ctx) {
 		// 3. Define your UI
 		const ui = await createShadowRootUi(ctx, {
-			name: 'example-ui',
+			name: 'perspectives-workflow-generator',
 			position: 'inline',
 			anchor: 'body',
 			onMount(container) {
@@ -27,7 +28,7 @@ export default defineContentScript({
 						<QueryClientProvider client={queryClient}>
 							<EntrypointProvider ctx={Entrypoint.CONTENT_SCRIPT}>
 								<AuthProvider>
-									<div>Hello World</div>
+									<WorkflowGenerator />
 								</AuthProvider>
 							</EntrypointProvider>
 						</QueryClientProvider>

@@ -28,4 +28,8 @@ export interface MessagingFunctions {
     onOpenStreamChannel: OnOpenStreamChannelFn;
 }
 
-export type GetCentersResponse = { center_id: string, center_name: string }[];
+export type Center = { center_id: string, center_name: string, created_at: string }
+
+export type GetCentersResponse = Center[];
+
+export type MenuItem = "view-centers" | "view-workflows" 

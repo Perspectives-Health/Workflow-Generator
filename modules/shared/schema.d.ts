@@ -3583,6 +3583,8 @@ export interface components {
             center_id: string;
             /** Center Name */
             center_name: string;
+            /** Created At */
+            created_at: string;
         };
         /** UserResponse */
         app__models__iam_models__UserResponse: {
