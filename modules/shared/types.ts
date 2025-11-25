@@ -32,4 +32,10 @@ export type Center = { center_id: string, center_name: string, created_at: strin
 
 export type GetCentersResponse = Center[];
 
-export type MenuItem = "view-centers" | "view-workflows" 
+export type MenuItem = "view-centers" | "view-workflows" | "create-workflow";
+
+export type WorkflowSummary = components["schemas"]["WorkflowSummary"];
+
+export type CategoryType = components["schemas"]["CategoryType"];
+
+export type ProgressNoteType = components["schemas"]["ProgressNoteType"];

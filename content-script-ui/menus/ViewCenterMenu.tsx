@@ -19,13 +19,13 @@ export function ViewCenterMenu() {
     }
 
     return (
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2 p-2">
             {centers && <CentersCombobox centers={centers} />}
             <div className="flex flex-row justify-end w-full">
                 <Button variant="default"
-                size="default"
+                size="sm"
                  onClick={handleNext}
-                 className="px-3 py-2 text-sm bg-primary text-white hover:bg-primary/90"
+                 className="px-3 py-2 text-xs bg-primary text-white hover:bg-primary/90"
                  >
                     Next
                 </Button>

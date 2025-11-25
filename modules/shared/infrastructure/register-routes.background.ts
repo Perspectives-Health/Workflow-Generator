@@ -1,15 +1,16 @@
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { ApiResponse, GetCentersResponse } from "@/modules/shared/types";
+import type { ApiResponse, GetCentersResponse, WorkflowSummary } from "@/modules/shared/types";
 import { onMessage } from "webext-bridge/background";
 import { sendResponse, sendError } from "@/modules/shared/infrastructure/api-utils.background";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { getCenters, login } from "@/modules/shared/infrastructure/api.background";
+import { getCenters, getWorkflows, login } from "@/modules/shared/infrastructure/api.background";
 
 
 declare module "webext-bridge" {
     export interface ProtocolMap {
         "login": ProtocolWithReturn<{ email: string; password: string }, ApiResponse<AuthSession>>;
         "get-centers": ProtocolWithReturn<void, ApiResponse<GetCentersResponse>>;
+        "get-workflows": ProtocolWithReturn<{ centerId: string }, ApiResponse<WorkflowSummary[]>>;
     }
 }
 
@@ -27,6 +28,15 @@ export function registerBackgroundRoutes() {
         try {
             const result = await getCenters();
             return sendResponse(result);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+
+    onMessage("get-workflows", async ({ data }) => {
+        try {
+            const result = await getWorkflows(data.centerId);
+            return sendResponse(result.workflows);
         } catch (error) {
             return sendError(error as Error);
         }

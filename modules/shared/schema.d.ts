@@ -824,6 +824,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workflows/center/{center_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Workflows By Center
+         * @description Get all workflows for a specific center with id, name, and created_at.
+         */
+        get: operations["get_workflows_by_center_workflows_center__center_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/workflows/{workflow_id}": {
         parameters: {
             query?: never;
@@ -3417,6 +3437,14 @@ export interface components {
             workflow_category_type: components["schemas"]["CategoryType"];
         };
         /**
+         * WorkflowListResponse
+         * @description Response model for listing workflows.
+         */
+        WorkflowListResponse: {
+            /** Workflows */
+            workflows: components["schemas"]["WorkflowSummary"][];
+        };
+        /**
          * WorkflowPopulateStatus
          * @description Enumeration of all possible workflow instance states and their transitions.
          *
@@ -3557,6 +3585,21 @@ export interface components {
             workflow_id: string;
             status: components["schemas"]["WorkflowPopulateStatus"];
             recording_status: components["schemas"]["WorkflowRecordingStatus"];
+        };
+        /**
+         * WorkflowSummary
+         * @description Summary information for a workflow.
+         */
+        WorkflowSummary: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Created At */
+            created_at: string;
+            category_type?: components["schemas"]["CategoryType"] | null;
+            progress_note_type?: components["schemas"]["ProgressNoteType"] | null;
+            mapping_status?: components["schemas"]["MappingStatus"] | null;
         };
         /** XPathUpdate */
         XPathUpdate: {
@@ -5057,6 +5100,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QueuedMappingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_workflows_by_center_workflows_center__center_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowListResponse"];
                 };
             };
             /** @description Validation Error */

@@ -5,6 +5,9 @@ openapi.json:
     - '#/openapi'
   info-license:
     - '#/info'
+  no-ambiguous-paths:
+    - '#/paths/~1workflows~1{workflow_id}~1form-data'
+    - '#/paths/~1workflows~1{workflow_id}~1xpaths'
   operation-4xx-response:
     - '#/paths/~1logout/post/responses'
     - '#/paths/~1current-user/get/responses'

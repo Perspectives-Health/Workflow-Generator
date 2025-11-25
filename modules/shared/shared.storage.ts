@@ -19,6 +19,12 @@ export const sharedStorage = {
 			fallback: [],
 		}
 	),
+	visibility: storage.defineItem<boolean>(
+		'local:shared::visibility',
+		{
+			fallback: true,
+		}
+	),
 	selectedCenter: storage.defineItem<Center | null>(
 		'local:shared::selectedCenter',
 		{

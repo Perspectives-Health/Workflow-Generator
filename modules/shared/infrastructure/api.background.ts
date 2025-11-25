@@ -38,3 +38,22 @@ export const getCenters = async () => {
         throw error;
     }
 }
+
+export const getWorkflows = async (centerId: string) => {
+    try {
+        const { data, error } = await fastapi.GET(`/workflows/center/{center_id}`, {
+            params: {
+                path: {
+                    center_id: centerId,
+                }
+            }
+        });
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error('Get workflows error details:', error);
+        throw error;
+    }
+}

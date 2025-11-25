@@ -10,6 +10,7 @@ export default defineConfig({
       'https://slr11291.kipuworks.com/',
       'https://fresh.bestnotes.com/auth/lockout'
     ],
+    chromiumArgs: ['--user-data-dir=./.wxt/chrome-data'],
   },
   manifest: {
     permissions: [
@@ -18,6 +19,15 @@ export default defineConfig({
       'scripting',
       'tabs',
       'webRequest',
+    ],
+    action: {
+      default_title: 'Toggle Workflow Generator',
+    },
+    web_accessible_resources: [
+      {
+        resources: ['wxt.svg'],
+        matches: ['<all_urls>'],
+      },
     ],
   },
 });
