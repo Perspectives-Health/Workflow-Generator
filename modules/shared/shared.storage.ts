@@ -37,7 +37,7 @@ export const sharedStorage = {
 			fallback: null,
 		}
 	),
-	manageWorkflowMenuScrollPositions: storage.defineItem<Record<string, number>>(
+	manageWorkflowMenuScrollPositions: storage.defineItem<Record<string, { scrollPosition: number; timestamp: number }>>(
 		'local:shared::manageWorkflowMenuScrollPositions',
 		{
 			fallback: {},

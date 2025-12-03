@@ -2,6 +2,10 @@ import { sharedStorage } from "./shared.storage";
 import { MenuItem } from "./types";
 import { useStorageValue } from "./ui/hooks/use-storage-value";
 
+
+const MAX_SCROLL_POSITIONS = 15;
+
+
 export const navigate = async (menuItem: MenuItem) => {
     const currentMenuItem = await sharedStorage.currMenuItem.getValue();
     const backStack = await sharedStorage.backStack.getValue();
@@ -65,4 +69,33 @@ export const displayDate = (
         console.error("Error formatting date:", error);
         return "Invalid date";
     }
+}
+
+export const saveScrollPosition = async (workflowId: string, scrollPosition: number) => {
+    const currentPositions = await sharedStorage.manageWorkflowMenuScrollPositions.getValue() || {};
+
+    // If we exceed MAX_SCROLL_POSITIONS, remove the item with the lowest timestamp
+    if (Object.keys(currentPositions).length >= MAX_SCROLL_POSITIONS) {
+        let oldestKey: string | null = null;
+        let oldestTimestamp = Infinity;
+
+        for (const [key, value] of Object.entries(currentPositions)) {
+            if (value.timestamp < oldestTimestamp) {
+                oldestTimestamp = value.timestamp;
+                oldestKey = key;
+            }
+        }
+
+        if (oldestKey) {
+            delete currentPositions[oldestKey];
+        }
+    }
+
+    // Set the new item with scrollPosition and current timestamp
+    currentPositions[workflowId] = {
+        scrollPosition,
+        timestamp: Date.now(),
+    };
+
+    await sharedStorage.manageWorkflowMenuScrollPositions.setValue(currentPositions);
 }

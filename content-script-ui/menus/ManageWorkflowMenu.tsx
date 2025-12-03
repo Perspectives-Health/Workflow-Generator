@@ -7,6 +7,7 @@ import { useDebouncedCallback } from "@/modules/shared/ui/hooks/use-debounce";
 import { usePathLogger } from "@/modules/mapping/domain/path-logger";
 import { Check, Pencil, XIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/modules/shared/ui/components/tooltip";
+import { saveScrollPosition } from "@/modules/shared/shared.utils";
 
 
 export function ManageWorkflowMenu() {
@@ -29,7 +30,7 @@ export function ManageWorkflowMenu() {
         [workflowDetails?.mapping_metadata]
     );
 
-    const scrollPosition = selectedWorkflowId && savedScrollPositions ? savedScrollPositions[selectedWorkflowId] : undefined;
+    const scrollPosition = selectedWorkflowId && savedScrollPositions ? savedScrollPositions[selectedWorkflowId]?.scrollPosition : undefined;
 
     useEffect(() => {
         setIsRestoringScroll(true);
@@ -49,11 +50,7 @@ export function ManageWorkflowMenu() {
     const handleScroll = useDebouncedCallback(async () => {
         if (manageWorkflowListRef.current && selectedWorkflowId) {
             const currentScrollTop = manageWorkflowListRef.current.scrollTop;
-            const currentPositions = await sharedStorage.manageWorkflowMenuScrollPositions.getValue() || {};
-            await sharedStorage.manageWorkflowMenuScrollPositions.setValue({
-                ...currentPositions,
-                [selectedWorkflowId]: currentScrollTop,
-            });
+            await saveScrollPosition(selectedWorkflowId, currentScrollTop);
         }
     }, 150, [selectedWorkflowId]);
 
