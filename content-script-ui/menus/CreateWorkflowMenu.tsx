@@ -1,15 +1,14 @@
-import { MappingStage } from "@/modules/mapping/mapping.types";
+import { MappingStage } from "@/modules/shared/types";
 import { CheckCircle, Loader } from "lucide-react";
+
 
 interface CreateWorkflowMenuProps {
     currStage: MappingStage;
     endDelete: () => void;
-    endGrouping: () => void;
 }
 
-export function CreateWorkflowMenu({ currStage, endDelete, endGrouping }: CreateWorkflowMenuProps) {
 
-
+export function CreateWorkflowMenu({ currStage, endDelete }: CreateWorkflowMenuProps) {
     return (
         <div className="w-full flex flex-col gap-2 p-2">
             <span className="text-xs text-muted-foreground">Create New Workflow</span>
@@ -67,16 +66,11 @@ export function CreateWorkflowMenu({ currStage, endDelete, endGrouping }: Create
                 )}
                 <div className="w-full flex flex-row justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                        5. Grouping Input Elements
+                        5. Capturing Screenshot
                     </span>
-                    {currStage === MappingStage.GROUP_INPUTS ? (
-                        <button 
-                        className="text-sm text-blue-500 hover:text-blue-600"
-                        onClick={endGrouping}
-                    >
-                        Next
-                    </button>
-                    ) : currStage > MappingStage.GROUP_INPUTS && (
+                    {currStage === MappingStage.CAPTURING_SCREENSHOT ? (
+                        <Loader className="w-4 h-4" />
+                    ) : currStage > MappingStage.CAPTURING_SCREENSHOT && (
                         <CheckCircle className="w-4 h-4 text-green-500" />
                     )}
                 </div>

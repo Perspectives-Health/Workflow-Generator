@@ -1,4 +1,4 @@
-import { EhrPlatform } from "../mapping.types";
+import { EhrPlatform } from "@/modules/shared/types";
 
 
 export const queryFormElement = async (mode: EhrPlatform | null) => {

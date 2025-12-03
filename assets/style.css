@@ -112,6 +112,47 @@
     /* width: 2px */
 }
 
+/* Ensure toaster is positioned at top center of viewport with spacing */
+[data-sonner-toaster] {
+  position: fixed !important;
+  top: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 2147483647 !important;
+}
+
+/* Fade in and out animations */
+@keyframes toast-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+[data-sonner-toast] {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  animation: toast-fade-in 0.3s ease-out !important;
+}
+
+[data-sonner-toast][data-removed="true"] {
+  animation: toast-fade-out 0.2s ease-in forwards !important;
+}
+
 
 
 @layer base {

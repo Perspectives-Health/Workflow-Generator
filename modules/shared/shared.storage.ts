@@ -31,4 +31,16 @@ export const sharedStorage = {
 			fallback: null,
 		}
 	),
+	selectedWorkflowId: storage.defineItem<string | null>(
+		'local:shared::selectedWorkflowId',
+		{
+			fallback: null,
+		}
+	),
+	manageWorkflowMenuScrollPositions: storage.defineItem<Record<string, number>>(
+		'local:shared::manageWorkflowMenuScrollPositions',
+		{
+			fallback: {},
+		}
+	),
 }

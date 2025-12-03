@@ -1,4 +1,5 @@
-import { EhrPlatform } from "../mapping.types";
+import { EhrPlatform } from "@/modules/shared/types";
+
 
 export const getElementType = (element: Element): string => {
     let elementType = element.tagName.toLowerCase();
@@ -12,6 +13,17 @@ export const getElementType = (element: Element): string => {
     if (element.getAttribute('role') === 'combobox') {
         elementType = 'combobox';
     }
+
+    return elementType;
+}
+
+
+export const getElementSimplifiedType = (elementType: string): string => {
+    if (['contenteditable', 'textarea', 'text'].includes(elementType)) {
+        return 'free_response';
+    }
+
+    else if (elementType === 'combobox') return 'select';
 
     return elementType;
 }

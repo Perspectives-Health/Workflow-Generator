@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/modules/shared/ui/components/button";
 import { CentersCombobox } from "@/modules/centers/ui/components/CentersCombobox";
 import { useCentersQueries } from "@/modules/centers/ui/use-centers-queries";
 import { sharedStorage } from "@/modules/shared/shared.storage";

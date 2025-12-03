@@ -1,10 +1,48 @@
-import { EhrPlatform } from "../mapping.types";
+import { EhrPlatform } from "@/modules/shared/types";
+import html2canvas from 'html2canvas-pro';
+import { isInputElement } from "../mapping.utils";
+import { getElementAbsoluteXPath, getElementPrimaryPath } from "./get-path";
+
+
+const MAX_HTML2CANVAS_ATTEMPTS = 5;
+const HTML2CANVAS_TIMEOUT_MS = 60 * 1000;
+const JPEG_QUALITY = 0.7;
 
 const CLONED_FORM_ELEMENT_CLASS = 'sire-mapping-form';
 export const VISUAL_MARKER_CLASS = 'visual-marker';
+export const CANVAS_CLASS = 'screenshot-canvas';
+const CLONED_FORM_ELEMENT_WRAPPER_CLASS = 'sire-mapping-form-wrapper';
+export const PRIMARY_PATH_ATTRIBUTE = 'data-primary-path';
+export const ABSOLUTE_XPATH_ATTRIBUTE = 'data-absolute-xpath';
 
 
-export function cloneHtmlElementWithStyles(element: HTMLElement): HTMLElement {
+export function appendCloneToBody(clone: HTMLElement) {
+    const wrapper = document.createElement("div");
+
+    // Full viewport takeover - fixed position ignores parent overflow:hidden
+    wrapper.style.position = "fixed";
+    wrapper.style.top = "0";
+    wrapper.style.left = "0";
+    wrapper.style.width = "100vw";
+    wrapper.style.height = "100vh";
+    wrapper.style.overflow = "auto";
+    wrapper.style.zIndex = "99999";
+    wrapper.style.backgroundColor = "white";
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+    wrapper.classList.add(CLONED_FORM_ELEMENT_WRAPPER_CLASS);
+
+    return wrapper;
+}
+
+export function cleanupClonedElements() {
+    document.querySelector(`.${CLONED_FORM_ELEMENT_WRAPPER_CLASS}`)?.remove();
+    document.querySelector(`.${CANVAS_CLASS}`)?.remove();
+}
+
+
+export function cloneHtmlElementWithStyles(element: HTMLElement, mode: EhrPlatform | null): HTMLElement {
     function copyComputedStyle(source: HTMLElement, target: HTMLElement) {
         const computedStyle = getComputedStyle(source);
         for (const key of computedStyle) {
@@ -28,6 +66,17 @@ export function cloneHtmlElementWithStyles(element: HTMLElement): HTMLElement {
 
             // Copy styles
             copyComputedStyle(sourceEl, clonedEl);
+
+            if (isInputElement(sourceEl)) {
+                const primaryPath = getElementPrimaryPath(sourceEl, mode);
+                if (primaryPath) {
+                    clonedEl.setAttribute(PRIMARY_PATH_ATTRIBUTE, primaryPath);
+                }
+                const absoluteXPath = getElementAbsoluteXPath(sourceEl);
+                if (absoluteXPath) {
+                    clonedEl.setAttribute(ABSOLUTE_XPATH_ATTRIBUTE, absoluteXPath);
+                }
+            }
 
             for (const child of Array.from(sourceEl.childNodes)) {
                 const clonedChild = deepCloneWithStyles(child);
@@ -110,8 +159,14 @@ export function openInNewWindow(element: HTMLElement) {
         }
     });
 
+    // Ensure body is scrollable (applied after stylesheets to avoid being overwritten)
+    const overflowStyle = newWindow.document.createElement('style');
+    overflowStyle.textContent = 'body { overflow: auto !important; }';
+    newWindow.document.head.appendChild(overflowStyle);
+
     // Append the cloned element to the new window's body
     newWindow.document.body.appendChild(element);
+    
 }
 
 
@@ -180,4 +235,51 @@ export const highlightVisualMarker = (marker: HTMLElement) => {
 
 export const unhighlightVisualMarker = (marker: HTMLElement) => {
     marker.style.backgroundColor = 'rgba(255, 165, 0, 0.8)';
+}
+
+const html2canvasWithTimeout = (element: HTMLElement, timeoutMs: number): Promise<HTMLCanvasElement> => {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            reject(new Error('html2canvas timed out'));
+        }, timeoutMs);
+
+        html2canvas(element, { ignoreElements: () => false })
+            .then(canvas => {
+                clearTimeout(timer);
+                resolve(canvas);
+            })
+            .catch(error => {
+                clearTimeout(timer);
+                reject(error);
+            });
+    });
+};
+
+const retryHtml2Canvas = async (
+    element: HTMLElement
+): Promise<HTMLCanvasElement> => {
+    for (let i = 0; i < MAX_HTML2CANVAS_ATTEMPTS; i++) {
+        try {
+            return await html2canvasWithTimeout(element, HTML2CANVAS_TIMEOUT_MS);
+        } catch (error) {
+            console.warn(`html2canvas attempt ${i + 1}/${MAX_HTML2CANVAS_ATTEMPTS} failed:`, error);
+            await new Promise(res => setTimeout(res, 300));
+        }
+    }
+    throw new Error(`Canvas creation failed after ${MAX_HTML2CANVAS_ATTEMPTS} attempts.`);
+};
+
+export const captureScreenshot = async (formElement: HTMLElement): Promise<string> => {
+    try {
+        const canvas = await retryHtml2Canvas(formElement);
+        canvas.classList.add(CANVAS_CLASS);
+        document.body.appendChild(canvas);
+        const base64Image = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+        return base64Image
+    } catch (error) {
+        throw new Error('Failed to get screenshot and element info');
+    } finally {
+        // document.querySelector(`.${CLONED_FORM_ELEMENT_CLASS}`)?.remove();
+        // document.querySelector(`.${CANVAS_CLASS}`)?.remove();
+    }
 }

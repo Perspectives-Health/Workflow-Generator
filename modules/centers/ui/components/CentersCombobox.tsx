@@ -5,6 +5,7 @@ import { Center, GetCentersResponse } from "@/modules/shared/types"
 import { displayDate } from "@/modules/shared/shared.utils"
 import { sharedStorage } from "@/modules/shared/shared.storage"
 import { useStorageValue } from "@/modules/shared/ui/hooks/use-storage-value"
+import { TextInput } from "@/modules/shared/ui/components/text-input"
 
 
 export function CentersCombobox({ centers }: { centers: GetCentersResponse }) {
@@ -72,7 +73,7 @@ export function CentersCombobox({ centers }: { centers: GetCentersResponse }) {
         <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg" ref={dropdownRef}>
           {/* Search Input */}
           <div className="p-2 border-b border-gray-200">
-            <input
+            <TextInput
               type="text"
               placeholder="Search center..."
               value={searchQuery}

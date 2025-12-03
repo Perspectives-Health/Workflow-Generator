@@ -28,14 +28,79 @@ export interface MessagingFunctions {
     onOpenStreamChannel: OnOpenStreamChannelFn;
 }
 
-export type Center = { center_id: string, center_name: string, created_at: string }
+export type Center = components["schemas"]["CenterDisplayInfo"];
 
 export type GetCentersResponse = Center[];
 
-export type MenuItem = "view-centers" | "view-workflows" | "create-workflow";
+export type MenuItem = "view-centers" | "view-workflows" | "create-workflow" | "manage-workflow";
 
-export type WorkflowSummary = components["schemas"]["WorkflowSummary"];
+export type WorkflowSummary = components["schemas"]["WorkflowResponse"];
 
 export type CategoryType = components["schemas"]["CategoryType"];
 
 export type ProgressNoteType = components["schemas"]["ProgressNoteType"];
+
+export type MappingMetadata = {
+    index: number;
+    label: string;
+    placeholder: string;
+    type: string;
+    xpath: string;
+    question_text: string;
+    processed_question_text: string;
+    click_before_xpaths?: string[] | null;
+};
+
+export type PreMappingMetadata = components["schemas"]["Metadata"];
+
+// export type CreateWorkflowRequest = components["schemas"]["MappingCreate"];
+
+export type WorkflowDetails = components["schemas"]["Mapping"];
+
+export type CreateWorkflowRequest = components["schemas"]["WorkflowCreate"];
+
+// export type MappingMetadata = {
+//     label: string;
+//     placeholder: string;
+//     type: string;
+//     xpath: string;
+//     click_before_xpaths: string[];
+
+// }
+
+export type UpdateWorkflowRequest = components["schemas"]["UpdateWorkflowRequest"];
+
+export enum EhrPlatform {
+    KIPU = 'kipu',
+    RELIATRAX = 'reliatrax',
+    SIMPLEPRACTICE = 'simplepractice',
+    BESTNOTES = 'bestnotes',
+    EMED = 'emed',
+    ALLEVA = 'alleva',
+    ECW = 'ecw',
+    ENSORA = 'ensora',
+}
+
+export type ElementInfo = {
+    [key: number]: {
+        elementType: string;
+        elementPrimaryPath: string;
+        elementAbsoluteXPath: string;
+        elementLabel: string;
+        elementPlaceholder: string;
+        elementOptions: string[];
+    };
+};
+
+export enum MappingStage {
+    ERROR = -1,
+    IDLE = 0,
+    GETTING_FORM = 1,
+    CLONING_FORM = 2,
+    FINDING_INPUTS = 3,
+    EXTRACTING_ELEMENT_INFO = 4,
+    DELETE_INPUTS = 5,
+    CAPTURING_SCREENSHOT = 6,
+    SENDING = 7,
+    COMPLETED = 8,
+}

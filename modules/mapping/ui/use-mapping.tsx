@@ -1,27 +1,33 @@
 import { useCallback, useRef, useState } from "react";
-import { EhrPlatform, MappingStage, ElementInfo } from "../mapping.types";
+import { EhrPlatform, MappingStage, ElementInfo, CategoryType, ProgressNoteType } from "@/modules/shared/types";
 import { hasZeroDimensions, isIgnoredInputElement, queryAllInputElements, queryFormElement } from "../domain/query-elements";
-import { getElementLabel, getElementType, getElementOptions, getElementPlaceholder } from "../domain/get-attr";
+import { getElementLabel, getElementType, getElementOptions, getElementPlaceholder, getElementSimplifiedType } from "../domain/get-attr";
 import { getElementAbsoluteXPath, getElementPrimaryPath } from "../domain/get-path";
-import { addVisualMarker, highlightVisualMarker, unhighlightVisualMarker, updateVisualMarkerIdx } from "../domain/capture-dom";
+import { ABSOLUTE_XPATH_ATTRIBUTE, addVisualMarker, appendCloneToBody, captureScreenshot, cleanupClonedElements, cloneHtmlElementWithStyles, highlightVisualMarker, openInNewWindow, PRIMARY_PATH_ATTRIBUTE, unhighlightVisualMarker, updateVisualMarkerIdx } from "../domain/capture-dom";
 import { removeElement } from "../domain/edit-element-info";
+import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflows-queries";
+import { goBack, navigate } from "@/modules/shared/shared.utils";
 
-
-
-
+export interface WorkflowFormData {
+    workflowName: string;
+    workflowCategory: CategoryType | null;
+    workflowProgressNoteType: ProgressNoteType | null;
+    centerId: string;
+}
 
 export const useMapping = (currMode: EhrPlatform | null) => {
     const [currStage, setCurrStage] = useState<MappingStage>(MappingStage.IDLE);
+    const { useCreateWorkflow } = useWorkflowsQueries();
+    const { mutateAsync: createWorkflow } = useCreateWorkflow();
+
     const deleteResolverRef = useRef<(() => void) | null>(null);
-    const groupingResolverRef = useRef<(() => void) | null>(null);
-    
-    // Use refs instead of state since these don't need to trigger re-renders
+    const screenshotRef = useRef<string>('');
     const elementInfoRef = useRef<ElementInfo>({});
     const visualMarkersRef = useRef<Map<number, HTMLElement>>(new Map());
+    const formDataRef = useRef<WorkflowFormData | null>(null);
     
     const endDelete = useCallback(() => {
         if (deleteResolverRef.current) {
-            // Disable click handlers before proceeding
             visualMarkersRef.current.forEach((marker) => {
                 marker.style.pointerEvents = 'none';
                 marker.style.cursor = 'default';
@@ -35,17 +41,12 @@ export const useMapping = (currMode: EhrPlatform | null) => {
         }
     }, []);
 
-    const endGrouping = useCallback(() => {
-        if (groupingResolverRef.current) {
-            groupingResolverRef.current();
-            groupingResolverRef.current = null;
-        }
-    }, []);
-
-    const startMapping = useCallback(async () => {
+    const startMapping = useCallback(async (formData: WorkflowFormData) => {
         if (!currMode) return;
-        
         if (currStage !== MappingStage.IDLE) return;
+
+        // Store form data at the start when values are current
+        formDataRef.current = formData;
 
         setCurrStage(MappingStage.GETTING_FORM);
 
@@ -54,11 +55,13 @@ export const useMapping = (currMode: EhrPlatform | null) => {
             if (!formEl) {
                 throw new Error('Form element not found');
             }
-
-            formEl.style.position = 'relative';
+                
+            setCurrStage(MappingStage.CLONING_FORM);
+            const clonedFormEl = cloneHtmlElementWithStyles(formEl, currMode);
+            appendCloneToBody(clonedFormEl);
             
             setCurrStage(MappingStage.FINDING_INPUTS);
-            const allInputElements = queryAllInputElements(formEl);
+            const allInputElements = queryAllInputElements(clonedFormEl);
             const inputElements = allInputElements.filter((el) => {
                 return !isIgnoredInputElement(el) && !hasZeroDimensions(el, currMode) && getElementType(el) !== '';
             });
@@ -74,17 +77,17 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 if (!elementType) return;
 
                 currIdx++;
-                const elementPrimaryPath = getElementPrimaryPath(el, currMode);
-                const elementAbsoluteXPath = getElementAbsoluteXPath(el);
+                const elementPrimaryPath = el.getAttribute(PRIMARY_PATH_ATTRIBUTE) || '';
+                const elementAbsoluteXPath = el.getAttribute(ABSOLUTE_XPATH_ATTRIBUTE) || '';
                 const elementLabel = getElementLabel(el);
                 const elementPlaceholder = getElementPlaceholder(el);
                 const elementOptions = getElementOptions(el, currMode);
                 
-                const marker = addVisualMarker(el, currIdx, elementType, elementPrimaryPath, currMode, formEl);
+                const marker = addVisualMarker(el, currIdx, elementType, elementPrimaryPath || elementAbsoluteXPath, currMode, clonedFormEl);
                 newVisualMarkers.set(currIdx, marker);
                 
                 newElementInfo[currIdx] = { 
-                    elementType, 
+                    elementType: getElementSimplifiedType(elementType), 
                     elementPrimaryPath, 
                     elementAbsoluteXPath, 
                     elementLabel, 
@@ -98,7 +101,6 @@ export const useMapping = (currMode: EhrPlatform | null) => {
             
             setCurrStage(MappingStage.DELETE_INPUTS);
             
-            // Function to recreate click handlers with current indices
             const setupMarkerHandlers = () => {
                 visualMarkersRef.current.forEach((marker, idx) => {
                     marker.style.pointerEvents = 'auto';
@@ -108,25 +110,20 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                         if (newElementInfo) {
                             elementInfoRef.current = newElementInfo;
                             
-                            // Update visual markers and their indices
                             const updatedMarkers = new Map<number, HTMLElement>();
                             visualMarkersRef.current.forEach((m, oldIdx) => {
                                 if (oldIdx === idx) {
-                                    // Skip the removed marker (already removed by removeElement)
                                     return;
                                 } else if (oldIdx > idx) {
-                                    // Reindex markers that come after the removed one
                                     const newIdx = oldIdx - 1;
                                     updateVisualMarkerIdx(m, newIdx);
                                     updatedMarkers.set(newIdx, m);
                                 } else {
-                                    // Keep markers that come before unchanged
                                     updatedMarkers.set(oldIdx, m);
                                 }
                             });
                             
                             visualMarkersRef.current = updatedMarkers;
-                            // Recreate all handlers with updated indices
                             setupMarkerHandlers();
                         }
                     };
@@ -135,26 +132,51 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 });
             };
             
-            // Initial setup
             setupMarkerHandlers();
 
-            // Wait for user to click "Next" button
             await new Promise<void>((resolve) => {
                 deleteResolverRef.current = resolve;
             });
 
-            setCurrStage(MappingStage.GROUP_INPUTS);
+            setCurrStage(MappingStage.CAPTURING_SCREENSHOT);
+            const base64Image = await captureScreenshot(clonedFormEl);
+            screenshotRef.current = base64Image;
 
-            await new Promise<void>((resolve) => {
-                groupingResolverRef.current = resolve;
+            setCurrStage(MappingStage.SENDING);
+            const metadataArray = Object.entries(elementInfoRef.current).map(([key, value]) => ({
+                index: parseInt(key),
+                xpath: value.elementPrimaryPath || value.elementAbsoluteXPath,
+                type: value.elementType,
+                label: value.elementLabel,
+                placeholder: value.elementPlaceholder,
+            }));
+            
+            const { workflowName, workflowCategory, workflowProgressNoteType, centerId } = formDataRef.current!;
+            
+            console.log(metadataArray);
+            console.log(base64Image)
+            const response = await createWorkflow({
+                workflowName,
+                metadata: metadataArray,
+                centerId,
+                screenshot: base64Image,
+                categoryInstructions: {
+                    selected_category: workflowCategory,
+                    progress_note_type: workflowProgressNoteType,
+                }
             });
+            console.log('response', response);
 
             setCurrStage(MappingStage.COMPLETED);
-            return elementInfoRef.current;
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            goBack();
+            // return elementInfoRef.current;/
         } catch (error) {
             console.error('Error mapping', error);
             setCurrStage(MappingStage.ERROR);
             return null;
+        } finally {
+            cleanupClonedElements();
         }
 
     }, [currMode]);
@@ -164,6 +186,5 @@ export const useMapping = (currMode: EhrPlatform | null) => {
         elementInfo: elementInfoRef.current,
         startMapping,
         endDelete,
-        endGrouping,
     }
 }

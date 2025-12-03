@@ -7,6 +7,7 @@ import { queryClient } from '@/modules/shared/infrastructure/query-client';
 import { AuthProvider } from '@/modules/auth/ui/auth-provider';
 import { createRoot } from 'react-dom/client';
 import { WorkflowGenerator } from '@/content-script-ui/WorkflowGenerator';
+import { Toaster } from '@/modules/shared/ui/components/sonner';
 
 
 export default defineContentScript({
@@ -24,15 +25,16 @@ export default defineContentScript({
 				container.append(wrapper);
 				const root = createRoot(wrapper);
 				root.render(
-					<StrictMode>
+					// <StrictMode>
 						<QueryClientProvider client={queryClient}>
 							<EntrypointProvider ctx={Entrypoint.CONTENT_SCRIPT}>
 								<AuthProvider>
 									<WorkflowGenerator />
+									<Toaster offset={14} richColors position="top-center" />
 								</AuthProvider>
 							</EntrypointProvider>
 						</QueryClientProvider>
-					</StrictMode>
+					// </StrictMode>
 				);
 				return { root, wrapper };
 			},

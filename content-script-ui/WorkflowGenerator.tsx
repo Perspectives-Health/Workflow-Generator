@@ -9,6 +9,7 @@ import { ViewWorkflowsMenu } from "./menus/ViewWorkflowsMenu";
 import { CreateWorkflowMenu } from "./menus/CreateWorkflowMenu";
 import { useMapping } from "@/modules/mapping/ui/use-mapping";
 import { getMode } from "@/modules/mapping/mapping.utils";
+import { ManageWorkflowMenu } from "./menus/ManageWorkflowMenu";
 
 
 export function WorkflowGenerator() {
@@ -17,12 +18,13 @@ export function WorkflowGenerator() {
     const { value: visibility } = useStorageValue(sharedStorage.visibility);
     const { value: position } = useStorageValue(sharedStorage.position);
     const { value: currMenuItem } = useStorageValue(sharedStorage.currMenuItem);
-    const { currStage, startMapping, endDelete, endGrouping } = useMapping(currMode);
+    const { currStage, startMapping, endDelete } = useMapping(currMode);
     
     const menuComponents = {
         "view-centers": <ViewCenterMenu />,
         "view-workflows": <ViewWorkflowsMenu startMapping={startMapping} />,
-        "create-workflow": <CreateWorkflowMenu currStage={currStage} endDelete={endDelete} endGrouping={endGrouping} />,
+        "create-workflow": <CreateWorkflowMenu currStage={currStage} endDelete={endDelete} />,
+        "manage-workflow": <ManageWorkflowMenu />,
     };
     
     const currMenuComponent = currMenuItem ? menuComponents[currMenuItem] : null;

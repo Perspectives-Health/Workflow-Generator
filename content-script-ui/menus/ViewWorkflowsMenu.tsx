@@ -1,25 +1,94 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useMemo } from "react";
+import { Button } from "@/modules/shared/ui/components/button";
 import { sharedStorage } from "@/modules/shared/shared.storage";
 import { displayDate, navigate } from "@/modules/shared/shared.utils";
 import { CategoryType, ProgressNoteType } from "@/modules/shared/types";
 import { useStorageValue } from "@/modules/shared/ui/hooks/use-storage-value";
 import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflows-queries";
+import { OverflowMenu } from "@/modules/shared/ui/components/overflow-menu";
+import { DropdownMenuItem } from "@/modules/shared/ui/components/dropdown-menu";
+import { TextInput } from "@/modules/shared/ui/components/text-input";
+import { WorkflowFormData } from "@/modules/mapping/ui/use-mapping";
+import { Loader } from "lucide-react";
 
-export function ViewWorkflowsMenu( { startMapping }: { startMapping: () => Promise<any> }) {
+
+interface ViewWorkflowsMenuProps {
+    startMapping: (formData: WorkflowFormData) => Promise<any>;
+}
+
+
+export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
-    const { useGetWorkflows } = useWorkflowsQueries();
+    const { useGetWorkflows, useDeleteWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
     const { data: workflows, isLoading } = useGetWorkflows(selectedCenter?.center_id ?? '');
-    const [newWorkflowName, setNewWorkflowName] = useState('');
-    const [newWorkflowType, setNewWorkflowType] = useState<CategoryType | null>(null);
-    const [newWorkflowProgressNoteType, setNewWorkflowProgressNoteType] = useState<ProgressNoteType | null>(null);
+    const { mutateAsync: deleteWorkflow, isPending: isDeletingWorkflow } = useDeleteWorkflow();
+    const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
+    const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null);
+    const [newWorkflowName, setNewWorkflowName] = useState<string>('');
+
+    // Form state managed locally
+    const [workflowName, setWorkflowName] = useState('');
+    const [workflowCategory, setWorkflowCategory] = useState<CategoryType | null>(null);
+    const [workflowProgressNoteType, setWorkflowProgressNoteType] = useState<ProgressNoteType | null>(null);
+
+    // Sort workflows with in_progress first
+    const sortedWorkflows = useMemo(() => {
+        if (!workflows) return [];
+        return [...workflows].sort((a, b) => {
+            if (a.mapping_status === 'in_progress' && b.mapping_status !== 'in_progress') return -1;
+            if (a.mapping_status !== 'in_progress' && b.mapping_status === 'in_progress') return 1;
+            return 0;
+        });
+    }, [workflows]);
 
     const handleCreateNewWorkflow = async () => {
-        if (!newWorkflowName || !newWorkflowType || (newWorkflowType === 'progress_notes' && !newWorkflowProgressNoteType)) {
+        if (!workflowName || !workflowCategory || (workflowCategory === 'progress_notes' && !workflowProgressNoteType)) {
             return;
         }
-        startMapping();
+        startMapping({
+            workflowName,
+            workflowCategory,
+            workflowProgressNoteType,
+            centerId: selectedCenter?.center_id ?? '',
+        });
         navigate("create-workflow");
+    }
+
+    const handleSelectWorkflow = async (workflowId: string) => {
+        await sharedStorage.selectedWorkflowId.setValue(workflowId);
+        navigate("manage-workflow");
+    }
+
+    useEffect(() => {
+        if (editingWorkflowId) {
+            setNewWorkflowName(workflows?.find((workflow) => workflow.workflow_id === editingWorkflowId)?.workflow_name ?? '');
+        }
+    }, [editingWorkflowId]);
+
+    const handleEdit = async (e: Event, workflowId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setEditingWorkflowId(workflowId);
+    }
+
+    const handleDelete = async (e: Event, workflowId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!selectedCenter || isDeletingWorkflow) {
+            return;
+        }
+        await deleteWorkflow({ centerId: selectedCenter.center_id, workflowId });
+    }
+
+    const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, workflowId: string) => {
+        
+        if (e.key === 'Enter') {
+            await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter?.center_id ?? '' });
+            setEditingWorkflowId(null);
+        }
+        else if (e.key === 'Escape') {
+            setEditingWorkflowId(null);
+        }
     }
 
     return (
@@ -30,11 +99,46 @@ export function ViewWorkflowsMenu( { startMapping }: { startMapping: () => Promi
             ) : (!workflows || workflows.length === 0 ? (
                 <div className="w-full h-40 flex items-center justify-center text-muted-foreground text-sm">No workflows found</div>
             ) : (
-                <div className="w-full max-h-52 overflow-y-auto overflow-x-hidden flex flex-col gap-2 bg-white rounded-md p-2 shadow-md">
-                    {workflows.map((workflow) => (
-                        <div key={workflow.id} className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0">
-                            <span className="text-sm font-medium">{workflow.name}</span>
-                            <span className="text-xs text-muted-foreground">{displayDate(workflow.created_at)}</span>
+                <div className="w-full max-h-52 overflow-y-auto overflow-x-hidden flex flex-col bg-white rounded-md shadow-md">
+                    {sortedWorkflows.map((workflow) => (
+                        <div key={workflow.workflow_id} className={`w-full flex flex-row justify-between items-center border-b border-gray-200 
+                        last:border-b-0 cursor-pointer hover:bg-gray-100 duration-300 ease-in-out py-2 px-3 ${workflow.mapping_status === 'in_progress' ? 'pointer-events-none' : ''} relative`}
+                            onClick={() => handleSelectWorkflow(workflow.workflow_id)}>
+                            {workflow.mapping_status === 'in_progress' && (
+                                <div className="absolute top-0 left-0 w-full h-full bg-gray-100/50 flex items-center justify-center">
+                                    <Loader className="w-4 h-4 animate-spin" />
+                                </div>
+                            )}
+                            <div className="flex flex-col justify-center items-start flex-1">
+                                {editingWorkflowId === workflow.workflow_id ? (
+                                    <TextInput
+                                        type="text"
+                                        value={newWorkflowName}
+                                        onChange={(e) => setNewWorkflowName(e.target.value)}
+                                        className="w-full px-2 py-1 border border-gray-200 rounded-md text-sm"
+                                        onClick={(e) => e.stopPropagation()}
+                                        onKeyDown={(e) => handleKeyDown(e, workflow.workflow_id)}
+                                    />
+                                ) : (
+                                    <span className="text-sm font-medium">{workflow.workflow_name}</span>
+                                )}
+                                <span className="text-xs text-muted-foreground">{displayDate(workflow.created_at ?? '')}</span>
+                            </div>
+                            <div onClick={(e) => e.stopPropagation()} >
+                                <OverflowMenu
+                                    contentProps={{ sideOffset: 5, align: 'end' }}
+                                    triggerProps={{ 'aria-label': `Actions for ${workflow.workflow_name}`, className: "[&_svg]:w-5 [&_svg]:h-5" }}
+                                >
+                                    <DropdownMenuItem
+                                        onSelect={(e) => handleEdit(e, workflow.workflow_id)}
+                                    >
+                                        Edit Workflow Name
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={(e) => handleDelete(e, workflow.workflow_id)} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                        Delete Workflow
+                                    </DropdownMenuItem>
+                                </OverflowMenu>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -43,17 +147,17 @@ export function ViewWorkflowsMenu( { startMapping }: { startMapping: () => Promi
                 <span className="text-xs font-medium text-muted-foreground w-full text-left" >
                     Create New Workflow
                 </span>
-                <input
+                <TextInput
                     type="text"
                     placeholder="Enter workflow name"
-                    value={newWorkflowName}
-                    onChange={(e) => setNewWorkflowName(e.target.value)}
+                    value={workflowName}
+                    onChange={(e) => setWorkflowName(e.target.value)}
                     className="w-full p-2 border border-gray-200 rounded-md text-sm"
                 />
                 <div className="flex flex-row justify-between items-center gap-2 w-full">
                     <select
-                        value={newWorkflowType ?? ''}
-                        onChange={(e) => setNewWorkflowType(e.target.value as CategoryType)}
+                        value={workflowCategory ?? ''}
+                        onChange={(e) => setWorkflowCategory(e.target.value as CategoryType)}
                         className="flex-1 p-2 border border-gray-200 rounded-md text-xs"
                     >
                         <option value="">Select Category</option>
@@ -63,10 +167,10 @@ export function ViewWorkflowsMenu( { startMapping }: { startMapping: () => Promi
                         <option value="other">Other</option>
                     </select>
                     <select
-                        value={newWorkflowProgressNoteType ?? ''}
-                        onChange={(e) => setNewWorkflowProgressNoteType(e.target.value as ProgressNoteType)}
+                        value={workflowProgressNoteType ?? ''}
+                        onChange={(e) => setWorkflowProgressNoteType(e.target.value as ProgressNoteType)}
                         className="w-36 p-2 border border-gray-200 rounded-md text-xs"
-                        disabled={newWorkflowType !== 'progress_notes'}
+                        disabled={workflowCategory !== 'progress_notes'}
                     >
                         <option value="">Select Progress Note Type</option>
                         <option value="soap">SOAP</option>
@@ -77,11 +181,11 @@ export function ViewWorkflowsMenu( { startMapping }: { startMapping: () => Promi
             </div>
             <div className="flex flex-row justify-end w-full">
                 <Button variant="default"
-                size="sm"
-                 onClick={handleCreateNewWorkflow}
-                 className="px-3 py-2 text-xs bg-primary text-white hover:bg-primary/90"
-                 disabled={!newWorkflowName || !newWorkflowType || (newWorkflowType === 'progress_notes' && !newWorkflowProgressNoteType)}
-                 >
+                    size="sm"
+                    onClick={handleCreateNewWorkflow}
+                    className="px-3 py-2 text-xs bg-primary text-white hover:bg-primary/90"
+                    disabled={!workflowName || !workflowCategory || (workflowCategory === 'progress_notes' && !workflowProgressNoteType)}
+                >
                     Next
                 </Button>
             </div>

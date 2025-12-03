@@ -1,4 +1,4 @@
-import { EhrPlatform } from "./mapping.types";
+import { EhrPlatform } from "@/modules/shared/types";
 
 
 export const getMode = (): EhrPlatform | null => {
@@ -10,4 +10,13 @@ export const getMode = (): EhrPlatform | null => {
                         window.location.href.includes('alleva') ? EhrPlatform.ALLEVA :
                             window.location.href.includes('ecwcloud') ? EhrPlatform.ECW :
                                 window.location.href.includes('theranest') ? EhrPlatform.ENSORA : null;
+}
+
+
+export const isInputElement = (element: Element): boolean => {
+    const tagName = element.tagName.toLowerCase();
+    return tagName === 'input' || 
+           tagName === 'textarea' || 
+           tagName === 'select' || 
+           element.getAttribute('contenteditable') === 'true';
 }

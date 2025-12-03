@@ -1,4 +1,4 @@
-import { EhrPlatform } from "../mapping.types";
+import { EhrPlatform } from "@/modules/shared/types";
 
 
 /**
@@ -26,15 +26,18 @@ const getEmrSpecificIdAttr = (mode: EhrPlatform): string | null => {
  * @returns True if the path is injective, false otherwise
  */
 export const isPathInjective = (path: string): boolean => {
-    const elements = document.querySelectorAll(path);
-    return elements.length === 1;
+    try {
+        const elements = document.querySelectorAll(path);
+        return elements.length === 1;
+    } catch (error) {
+        return false;
+    }
 }
 
 
 const buildRelativePath = (
     from: Element,
-    to: Element,
-    useAttributes: boolean = true
+    to: Element
 ): string => {
     let path = '';
     let current: Element | null = to;
@@ -49,19 +52,6 @@ const buildRelativePath = (
         const index = siblings.length > 1 ? `[${siblings.indexOf(current) + 1}]` : '';
 
         let attrFilter = '';
-        if (useAttributes) {
-            const parts: string[] = [];
-
-            const type = current.getAttribute('type');
-            if (type) parts.push(`@type="${escapeAttr(type)}"`);
-
-            const name = current.getAttribute('name');
-            if (name) parts.push(`@name="${escapeAttr(name)}"`);
-
-            if (parts.length > 0) {
-                attrFilter = `[${parts.join(' and ')}]`;
-            }
-        }
 
         path = `/${current.tagName.toLowerCase()}${index}${attrFilter}${path}`;
         current = parent;
@@ -72,40 +62,77 @@ const buildRelativePath = (
 
 
 const getUniqueElementId = (element: Element): string | null => {
-    const elementId = element.id;
-    if (elementId && isPathInjective(`#${elementId}`)) {
-        return `//*[@id="${elementId}"]`;
+    const id = element.getAttribute('id');
+    if (!id) return null;
+
+    // Check if there are multiple elements with the same id (invalid HTML but happens in some EMRs)
+    const elementsWithSameId = document.querySelectorAll(`[id="${id}"]`);
+
+    if (elementsWithSameId.length > 1) {
+        // Find the index of the current element among elements with the same id
+        const index = Array.from(elementsWithSameId).indexOf(element) + 1;
+        return `//*[@id="${id}"][${index}]`;
     }
-    return null;
+
+    return `//*[@id="${id}"]`;
 }
 
 
 const getUniqueElementName = (element: Element): string | null => {
-    const elementName = element.getAttribute('name');
-    if (elementName && isPathInjective(`[name="${elementName}"]`)) {
-        return `//*[@name="${elementName}"]`;
+    if (!element) return null;
+
+    const name = element.getAttribute('name');
+    if (!name) return null;
+
+    // Check if there are multiple elements with the same name
+    const elementsWithSameName = document.querySelectorAll(`[name="${name}"]`);
+
+    if (elementsWithSameName.length > 1) {
+        // Find the index of the current element among elements with the same name
+        const index = Array.from(elementsWithSameName).indexOf(element) + 1;
+        return `//*[@name="${name}"][${index}]`;
     }
-    return null;
+
+    return `//*[@name="${name}"]`;
 }
 
 
-const getEmrSpecificUniqueElementId = (element: Element, mode: EhrPlatform): string | null => {
+export const getEmrSpecificPath = (element: Element, mode: EhrPlatform | null): string | null => {
+    if (!element || !mode) return null;
     const emrSpecificIdAttr = getEmrSpecificIdAttr(mode);
-    if (emrSpecificIdAttr) {
-        const emrSpecificId = element.getAttribute(emrSpecificIdAttr);
-        if (emrSpecificId && isPathInjective(`[${emrSpecificIdAttr}="${emrSpecificId}"]`)) {
-            return `//*[@${emrSpecificIdAttr}="${emrSpecificId}"]`;
+    if (!emrSpecificIdAttr) return null;
+
+    // Traverse up to find the nearest unique data-linkid anchor
+    let anchor: Element | null = element;
+    while (anchor && anchor !== document.body) {
+        if (anchor.hasAttribute(emrSpecificIdAttr)) {
+            const emrSpecificId = anchor.getAttribute(emrSpecificIdAttr);
+            // console.log('dataLinkId', dataLinkId);
+            // console.log('document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`)', document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`));
+            if (
+                emrSpecificId &&
+                document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`).length === 1
+            ) {
+                const anchorXPath = `//*[@${emrSpecificIdAttr}="${emrSpecificId}"]`;
+                // console.log('anchorXPath', anchorXPath);
+                const relativePath = buildRelativePath(anchor, element);
+                console.log('anchorXPath', anchorXPath);
+                console.log('relativePath', relativePath);
+                return anchorXPath + relativePath;
+            }
         }
+        anchor = anchor.parentElement;
     }
+
     return null;
-}
+};
 
 
 export const getElementPrimaryPath = (element: Element, mode: EhrPlatform | null): string => {
     // 1. Check if element has an emr specific ID attribute. Skip if mode is null.
-    const emrSpecificUniqueElementId = mode ? getEmrSpecificUniqueElementId(element, mode) : null;
-    if (emrSpecificUniqueElementId) {
-        return emrSpecificUniqueElementId;
+    const emrSpecificPath = mode ? getEmrSpecificPath(element, mode) : null;
+    if (emrSpecificPath) {
+        return emrSpecificPath;
     }
 
     // 2. Check if element's ID is unique
@@ -120,26 +147,13 @@ export const getElementPrimaryPath = (element: Element, mode: EhrPlatform | null
         return elementName;
     }
 
-    // 4. Traverse up to find ancestor with unique EMR specific ID
-    // Skip if mode is null.
-    if (mode) {
-        let currNode: Element | null = element.parentElement;
-        while (currNode) {
-            const uniqueEmrSpecificElementId = getEmrSpecificUniqueElementId(currNode, mode);
-            if (uniqueEmrSpecificElementId) {
-                const relativePath = buildRelativePath(currNode, element, true);
-                return `${uniqueEmrSpecificElementId}${relativePath}`;
-            }
-            currNode = currNode.parentElement;
-        }
-    }
 
     // 5. Traverse up to find ancestor with unique ID
     let current: Element | null = element.parentElement;
     while (current) {
         const uniqueElementId = getUniqueElementId(current);
         if (uniqueElementId) {
-            const relativePath = buildRelativePath(current, element, true);
+            const relativePath = buildRelativePath(current, element);
             return `${uniqueElementId}${relativePath}`;
         }
         current = current.parentElement;
@@ -150,14 +164,14 @@ export const getElementPrimaryPath = (element: Element, mode: EhrPlatform | null
     while (current) {
         const uniqueElementName = getUniqueElementName(current);
         if (uniqueElementName) {
-            const relativePath = buildRelativePath(current, element, true);
+            const relativePath = buildRelativePath(current, element);
             return `${uniqueElementName}${relativePath}`;
         }
         current = current.parentElement;
     }
 
     // 5. Fallback: build path from document root
-    return buildRelativePath(document.documentElement, element, true);
+    return buildRelativePath(document.documentElement, element);
 }
 
 
@@ -186,4 +200,48 @@ export const getElementAbsoluteXPath = (element: Element): string => {
     }
     return `/html/body${xpath}`;
 };
+
+// const getEmrSpecificPath = (element) => {
+//     if (!element) return null;
+//     const emrSpecificIdAttr = 'data-linkid';
+
+//     // Traverse up to find the nearest unique data-linkid anchor
+//     let anchor = element;
+//     while (anchor && anchor !== document.body) {
+//         if (anchor.hasAttribute(emrSpecificIdAttr)) {
+//             const emrSpecificId = anchor.getAttribute(emrSpecificIdAttr);
+//             if (
+//                 emrSpecificId &&
+//                 document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`).length === 1
+//             ) {
+//                 const anchorXPath = `//*[@${emrSpecificIdAttr}="${emrSpecificId}"]`;
+//                 const relativePath = buildRelativePath(anchor, element);
+//                 return anchorXPath + relativePath;
+//             }
+//         }
+//         anchor = anchor.parentElement;
+//     }
+
+//     return null;
+// };
+
+// const buildRelativePath = (from, to) => {
+//     let path = '';
+//     let current = to;
+
+//     while (current && current !== from) {
+//         const parent = current.parentElement;
+//         if (!parent) break;
+
+//         const siblings = Array.from(parent.children).filter(
+//             (child) => child.tagName === current.tagName
+//         );
+//         const index = siblings.length > 1 ? `[${siblings.indexOf(current) + 1}]` : '';
+
+//         path = `/${current.tagName.toLowerCase()}${index}${path}`;
+//         current = parent;
+//     }
+
+//     return path;
+// };
 

@@ -25,26 +25,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Logout
-         * @description Remove user session and clear cookie.
-         */
-        post: operations["logout_logout_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/signup": {
         parameters: {
             query?: never;
@@ -80,175 +60,6 @@ export interface paths {
          * @description Onboard new center and sign up admin user for that center.
          */
         post: operations["signup_admin_signup_admin_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/user/info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update User Info */
-        put: operations["update_user_info_user_info_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/create-center": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Center */
-        post: operations["create_center_create_center_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/clinicians/bulk": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Bulk Create Clinicians
-         * @description Bulk create clinician users and send onboarding emails.
-         */
-        post: operations["bulk_create_clinicians_users_clinicians_bulk_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Single User
-         * @description Create a single user and automatically update billing quantity. Handles both new users and recreating deleted users.
-         */
-        post: operations["create_single_user_users_create_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/current-user": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Current User
-         * @description Get current logged in user information.
-         */
-        get: operations["get_current_user_current_user_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/centers/{center_id}/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Users By Center Id
-         * @description Get all users associated with a specific center.
-         *     Only admins or users from the same center can access this endpoint.
-         */
-        get: operations["get_users_by_center_id_centers__center_id__users_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/unprotected-route": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Protected Route */
-        get: operations["protected_route_unprotected_route_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/populate-settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Populate Settings */
-        get: operations["populate_settings_populate_settings_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/update-populate-settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Update User Populate Settings
-         * @description Update user populate settings.
-         */
-        post: operations["update_user_populate_settings_update_populate_settings_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -315,6 +126,127 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout
+         * @description Update user's last activity timestamp. Client handles token deletion.
+         */
+        post: operations["logout_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/user/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update User Info
+         * @description Update current user's personal information.
+         */
+        put: operations["update_user_info_user_info_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/current-user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Current User
+         * @description Get current logged in user information.
+         */
+        get: operations["get_current_user_current_user_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/centers/{center_id}/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Users By Center Id
+         * @description Get all users associated with a specific center.
+         *     Only admins or users from the same center can access this endpoint.
+         */
+        get: operations["get_users_by_center_id_centers__center_id__users_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/clinicians/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bulk Create Clinicians
+         * @description Bulk create clinician users and send onboarding emails.
+         */
+        post: operations["bulk_create_clinicians_users_clinicians_bulk_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Single User
+         * @description Create a single user. Handles both new users and recreating deleted users.
+         */
+        post: operations["create_single_user_users_create_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/{user_id}": {
         parameters: {
             query?: never;
@@ -327,9 +259,75 @@ export interface paths {
         post?: never;
         /**
          * Delete User
-         * @description Delete a user by ID and automatically update billing quantity.
+         * @description Delete a user by ID.
          */
         delete: operations["delete_user_users__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unprotected-route": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Protected Route
+         * @description Test endpoint.
+         */
+        get: operations["protected_route_unprotected_route_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/centers/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Centers
+         * @description Get all centers.
+         *
+         *     Returns:
+         *         List of centers
+         */
+        get: operations["get_centers_centers__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/centers/{center_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Center
+         * @description Get center details by ID.
+         *
+         *     Returns:
+         *         Center object with all details
+         */
+        get: operations["get_center_centers__center_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -343,26 +341,386 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        /** Update Display Consent */
-        post: operations["update_display_consent_centers__center_id__display_consent_post"];
+        /**
+         * Update Display Consent
+         * @description Update consent form display setting.
+         *
+         *     Args:
+         *         center_id: Center UUID
+         *         data: Display consent setting
+         *
+         *     Returns:
+         *         Success message
+         */
+        put: operations["update_display_consent_centers__center_id__display_consent_put"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/centers": {
+    "/centers/{center_id}/emr": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Centers */
-        get: operations["get_centers_centers_get"];
+        get?: never;
+        /**
+         * Update Emr
+         * @description Update EMR system for a center.
+         *
+         *     Args:
+         *         center_id: Center UUID
+         *         data: EMR system name
+         *
+         *     Returns:
+         *         Updated center object
+         */
+        put: operations["update_emr_centers__center_id__emr_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/centers/{center_id}/timezone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Timezone
+         * @description Update timezone for a center.
+         *
+         *     Args:
+         *         center_id: Center UUID
+         *         data: Timezone string
+         *
+         *     Returns:
+         *         Updated center object
+         */
+        put: operations["update_timezone_centers__center_id__timezone_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/centers/{center_id}/prompt-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Prompt Config
+         * @description Get AI prompt configuration for a center.
+         *
+         *     Args:
+         *         center_id: Center UUID
+         *
+         *     Returns:
+         *         Prompt configuration dictionary
+         */
+        get: operations["get_prompt_config_centers__center_id__prompt_config_get"];
+        /**
+         * Update Prompt Config
+         * @description Update AI prompt configuration for a center.
+         *
+         *     Args:
+         *         center_id: Center UUID
+         *         config: Prompt configuration dictionary
+         *
+         *     Returns:
+         *         Success message
+         */
+        put: operations["update_prompt_config_centers__center_id__prompt_config_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/create-checkout-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Checkout Session
+         * @description Create a Stripe checkout session for initial subscription.
+         *     Returns a URL to redirect user to Stripe's hosted checkout page.
+         */
+        post: operations["create_checkout_session_billing_create_checkout_session_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Subscription Info
+         * @description Get current subscription information for the authenticated user's center
+         */
+        get: operations["get_subscription_info_billing_subscription_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/create-setup-intent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Setup Intent
+         * @description Create a Stripe SetupIntent for adding payment method.
+         *     Returns client_secret for Stripe Elements.
+         */
+        post: operations["create_setup_intent_billing_create_setup_intent_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/attach-payment-method": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach Payment Method
+         * @description Attach a new payment method to the customer
+         */
+        post: operations["attach_payment_method_billing_attach_payment_method_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Invoices
+         * @description Get billing history (past invoices) for the authenticated user's center
+         */
+        get: operations["get_invoices_billing_invoices_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/cancel-subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel Subscription
+         * @description Cancel the subscription.
+         *     By default, cancels at end of billing period. Set immediate=true to cancel immediately.
+         */
+        post: operations["cancel_subscription_billing_cancel_subscription_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/internal/toggle-trial": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Toggle Trial
+         * @description Toggle trial mode for a specific center (internal use only).
+         *
+         *     TODO: Add authentication check for internal admin users
+         */
+        post: operations["toggle_trial_billing_internal_toggle_trial_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/internal/activate-subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Activate Subscription
+         * @description Manually activate a subscription for a center (internal use only).
+         */
+        post: operations["activate_subscription_billing_internal_activate_subscription_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/internal/set-pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Center Pricing
+         * @description Set custom per-seat pricing for a specific center (internal use only).
+         *
+         *     TODO: Add authentication check for internal admin users
+         */
+        put: operations["set_center_pricing_billing_internal_set_pricing_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/internal/force-sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Force Sync Subscription
+         * @description Force sync subscription status from Stripe (internal use only).
+         *     Useful for debugging or manual corrections.
+         *
+         *     TODO: Add authentication check for internal admin users
+         */
+        post: operations["force_sync_subscription_billing_internal_force_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/internal/centers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Centers With Billing
+         * @description List all centers with their billing status (internal use only).
+         *
+         *     TODO: Add authentication check for internal admin users
+         */
+        get: operations["list_centers_with_billing_billing_internal_centers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/internal/center-overview/{center_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Center Billing Overview
+         * @description Get complete billing overview for a specific center (internal dashboard).
+         *
+         *     Returns all billing-related information including status, subscription,
+         *     pricing, and payment details.
+         */
+        get: operations["get_center_billing_overview_billing_internal_center_overview__center_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webhooks/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Handle Stripe Webhook
+         * @description Handle incoming Stripe webhook events.
+         *     Verifies signature and processes relevant subscription events.
+         */
+        post: operations["handle_stripe_webhook_webhooks_stripe_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -599,26 +957,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/populate/prompt-preview": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Get Prompt Preview
-         * @description Get prompt preview for a specific workflow
-         */
-        post: operations["get_prompt_preview_populate_prompt_preview_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/clinical-sessions": {
         parameters: {
             query?: never;
@@ -644,26 +982,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/clinical-sessions/workflows": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Workflows
-         * @description Get all available workflows for the current user's center.
-         */
-        get: operations["get_workflows_clinical_sessions_workflows_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/clinical-sessions/{session_id}": {
         parameters: {
             query?: never;
@@ -673,17 +991,24 @@ export interface paths {
         };
         /** Get Clinical Session */
         get: operations["get_clinical_session_clinical_sessions__session_id__get"];
-        /**
-         * Update Clinical Session
-         * @description Update clinical session details (e.g., display_name).
-         */
-        put: operations["update_clinical_session_clinical_sessions__session_id__put"];
+        put?: never;
         post?: never;
         /** Delete Clinical Session */
         delete: operations["delete_clinical_session_clinical_sessions__session_id__delete"];
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Clinical Session
+         * @description Update clinical session fields (partial update).
+         *
+         *     Consolidated endpoint - supports updating:
+         *     - patient_id: UUID of associated patient
+         *     - status: Session status (created, uploading, processing, etc.)
+         *     - display_name: Custom session name (when implemented)
+         *
+         *     For workflow updates, use PUT /{session_id}/workflows instead.
+         */
+        patch: operations["update_clinical_session_clinical_sessions__session_id__patch"];
         trace?: never;
     };
     "/clinical-sessions/{session_id}/all-status": {
@@ -693,26 +1018,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get All Workflow Status */
-        get: operations["get_all_workflow_status_clinical_sessions__session_id__all_status_get"];
+        /**
+         * Get Session Workflow Instance Statuses
+         * @description Get status and full workflow details for all workflow instances in a session.
+         */
+        get: operations["get_session_workflow_instance_statuses_clinical_sessions__session_id__all_status_get"];
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/clinical-sessions/{session_id}/patient/{patient_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update Clinical Session With Patient Id */
-        put: operations["update_clinical_session_with_patient_id_clinical_sessions__session_id__patient__patient_id__put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -790,23 +1101,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/clinical-sessions/{session_id}/session-status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update Clinical Session Status */
-        put: operations["update_clinical_session_status_clinical_sessions__session_id__session_status_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/workflows": {
         parameters: {
             query?: never;
@@ -814,7 +1108,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get Workflows
+         * @description Get all available workflows (form templates) for the current user's center.
+         */
+        get: operations["get_workflows_workflows_get"];
         put?: never;
         /** Create Workflow */
         post: operations["create_workflow_workflows_post"];
@@ -832,10 +1130,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get Workflows By Center
-         * @description Get all workflows for a specific center with id, name, and created_at.
+         * Get Workflows By Center Id
+         * @description Get all workflows for a specific center by center ID.
          */
-        get: operations["get_workflows_by_center_workflows_center__center_id__get"];
+        get: operations["get_workflows_by_center_id_workflows_center__center_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -851,7 +1149,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Get Workflow
+         * @description Get a specific workflow by ID. Useful for polling workflow creation status.
+         */
+        get: operations["get_workflow_workflows__workflow_id__get"];
         /**
          * Update Workflow
          * @description Update workflow properties including name, ignore flags, and processed questions.
@@ -961,44 +1263,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/workflows/debug/thread-pools": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Thread Pool Stats
-         * @description Monitor thread pool health and status.
-         *
-         *     Returns statistics about all thread pools including:
-         *     - Active thread counts
-         *     - Queue sizes (tasks waiting)
-         *     - Max workers per pool
-         *
-         *     Usage:
-         *         curl http://localhost:8000/workflows/debug/thread-pools
-         *
-         *     Returns:
-         *         {
-         *             "active_threads": 245,
-         *             "workflow_queue_size": 0,
-         *             "workflow_max_workers": 300,
-         *             "populate_queue_size": 3,
-         *             "populate_max_workers": 150,
-         *             ...
-         *         }
-         */
-        get: operations["get_thread_pool_stats_workflows_debug_thread_pools_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/workflow-instances": {
         parameters: {
             query?: never;
@@ -1010,227 +1274,6 @@ export interface paths {
         get: operations["get_workflow_instance_list_workflow_instances_get"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/centers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Center */
-        post: operations["create_center_payment_centers_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/centers/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete Center */
-        delete: operations["delete_center_payment_centers__center_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/webhook": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Stripe Webhook */
-        post: operations["stripe_webhook_payment_webhook_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/create-checkout-session/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Checkout Session */
-        post: operations["create_checkout_session_payment_create_checkout_session__center_id__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/subscription-status/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Subscription Status */
-        get: operations["get_subscription_status_payment_subscription_status__center_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/success": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Payment Success */
-        get: operations["payment_success_payment_success_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/cancel": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Payment Cancelled */
-        get: operations["payment_cancelled_payment_cancel_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/update-subscription/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update Subscription */
-        post: operations["update_subscription_payment_update_subscription__center_id__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/billing-info/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Billing Info */
-        get: operations["get_billing_info_payment_billing_info__center_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/update-payment-method/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update Payment Method */
-        post: operations["update_payment_method_payment_update_payment_method__center_id__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/payment-methods/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Payment Methods */
-        get: operations["get_payment_methods_payment_payment_methods__center_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/create-payment-intent/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create Payment Intent */
-        post: operations["create_payment_intent_payment_create_payment_intent__center_id__post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/payment/centers/{center_id}/compliance-metadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update Compliance Metadata */
-        post: operations["update_compliance_metadata_payment_centers__center_id__compliance_metadata_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1588,126 +1631,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/dashboard/last-use": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Last Use
-         * @description Get users who haven't used the system in 36+ hours.
-         */
-        get: operations["get_last_use_dashboard_last_use_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/dashboard/weekly-users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Weekly Users
-         * @description Get weekly user metrics.
-         */
-        get: operations["get_weekly_users_dashboard_weekly_users_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/dashboard/all-users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get All Users
-         * @description Get all users with team member exclusion.
-         */
-        get: operations["get_all_users_dashboard_all_users_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/dashboard/all-sessions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get All Sessions
-         * @description Get all sessions with user exclusions.
-         */
-        get: operations["get_all_sessions_dashboard_all_sessions_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/dashboard/sessions-today": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Sessions Today
-         * @description Get today's sessions with proper date filtering.
-         */
-        get: operations["get_sessions_today_dashboard_sessions_today_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/dashboard/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Dashboard Health
-         * @description Health check for dashboard service and database connectivity.
-         */
-        get: operations["get_dashboard_health_dashboard_health_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/dashboard/test-populate": {
         parameters: {
             query?: never;
@@ -1722,102 +1645,6 @@ export interface paths {
          * @description Test populate with custom questions without saving to database.
          */
         post: operations["test_populate_with_custom_questions_dashboard_test_populate_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-prompt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Test Prompt */
-        post: operations["test_prompt_internal_test_prompt_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-prompt-result/{job_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Test Prompt Result */
-        get: operations["get_test_prompt_result_internal_test_prompt_result__job_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-prompt-clear": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Clear Test Prompt Results */
-        post: operations["clear_test_prompt_results_internal_test_prompt_clear_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/conversations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Conversations
-         * @description DEPRECATED: Get all conversations from the database.
-         *
-         *     This endpoint is deprecated and will be removed in favor of clinical session endpoints.
-         */
-        get: operations["get_conversations_internal_conversations_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/prompt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Prompt
-         * @description Get the current prompt from the prompt.py file with real transcript and mapping.
-         *
-         *     This endpoint fetches the actual transcript from a conversation and the mapping
-         *     from a workflow to build a realistic prompt.
-         */
-        get: operations["get_prompt_internal_prompt_get"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1888,160 +1715,6 @@ export interface paths {
          *     for a single user identified by their user_id.
          */
         post: operations["toggle_user_update_internal_toggle_user_update_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/sync-db": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Sync Database
-         * @description Sync data from production database to test database.
-         *
-         *     This endpoint syncs data between PostgreSQL databases hosted on separate DigitalOcean droplets.
-         *     Supports both full sync (truncate + insert all) and incremental sync (upsert based on timestamps).
-         *
-         *     Args:
-         *         full: If True, perform full sync (truncate test tables then insert all data)
-         *         incremental: If True, perform incremental sync (upsert only records updated in past N days)
-         *         days: For incremental syncs, number of days back to sync (default: 7)
-         *
-         *     Returns:
-         *         Dict with sync results and statistics
-         */
-        get: operations["sync_database_internal_sync_db_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-jobs": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Test Jobs
-         * @description Get all test jobs.
-         */
-        get: operations["get_test_jobs_internal_test_jobs_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-job": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Test Job
-         * @description Create a new test job.
-         */
-        post: operations["create_test_job_internal_test_job_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-jobs/clear-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Clear All Test Jobs
-         * @description Clear all test jobs.
-         */
-        delete: operations["clear_all_test_jobs_internal_test_jobs_clear_all_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-jobs/{job_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Test Job
-         * @description Delete a specific test job.
-         */
-        delete: operations["delete_test_job_internal_test_jobs__job_id__delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-llm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Test Llm
-         * @description Test the LLM with a simple prompt and optional image.
-         *
-         *     This endpoint is for experimentation with different prompts and models.
-         *     Supports both text-only and image+text prompts.
-         */
-        post: operations["test_llm_internal_test_llm_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/internal/test-openai": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Test Openai
-         * @description Test OpenAI specifically with a simple prompt and optional image.
-         */
-        post: operations["test_openai_internal_test_openai_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2194,6 +1867,22 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * ActivateSubscriptionRequest
+         * @description Request to activate a subscription for a center (internal use only)
+         */
+        ActivateSubscriptionRequest: {
+            /**
+             * Center Id
+             * @description Center ID
+             */
+            center_id: string;
+            /**
+             * Billing Email
+             * @description Override billing contact email for invoices
+             */
+            billing_email?: string | null;
+        };
         /** AdminSignupRequest */
         AdminSignupRequest: {
             /**
@@ -2221,6 +1910,32 @@ export interface components {
             /** Center Name */
             center_name: string;
         };
+        /**
+         * AttachPaymentMethodRequest
+         * @description Request to attach a payment method to a customer
+         */
+        AttachPaymentMethodRequest: {
+            /**
+             * Payment Method Id
+             * @description Stripe payment method ID (pm_...)
+             */
+            payment_method_id: string;
+            /**
+             * Billing Email
+             * @description Billing contact email to associate with invoices
+             */
+            billing_email?: string | null;
+        };
+        /** AuthResponse */
+        AuthResponse: {
+            /** Access Token */
+            access_token: string;
+            /** Refresh Token */
+            refresh_token: string;
+            user: components["schemas"]["AuthUser"];
+            /** Auth Type */
+            auth_type: string;
+        };
         /** AuthUser */
         AuthUser: {
             /** Id */
@@ -2232,6 +1947,10 @@ export interface components {
             user_type: components["schemas"]["UserType"];
             /** Last Sign In At */
             last_sign_in_at: string;
+            /** Display Consent Form */
+            display_consent_form: boolean;
+            /** Display New Ui */
+            display_new_ui: boolean;
         };
         /** BackfillGroupingsResponse */
         BackfillGroupingsResponse: {
@@ -2271,37 +1990,6 @@ export interface components {
                 };
             };
         };
-        /** BillingInfoResponse */
-        BillingInfoResponse: {
-            /** Center Id */
-            center_id: string;
-            /** Center Name */
-            center_name: string;
-            /** Subscription Status */
-            subscription_status: string;
-            /** Subscription End Date */
-            subscription_end_date?: string | null;
-            /** Current Period Start */
-            current_period_start?: string | null;
-            /** Current Period End */
-            current_period_end?: string | null;
-            /** Amount Due */
-            amount_due?: number | null;
-            /** Amount Paid */
-            amount_paid?: number | null;
-            /** Currency */
-            currency?: string | null;
-            /** Payment Method */
-            payment_method?: {
-                [key: string]: unknown;
-            } | null;
-            /** Next Payment Date */
-            next_payment_date?: string | null;
-            /** Active Users Count */
-            active_users_count?: number | null;
-            /** Total Users Count */
-            total_users_count?: number | null;
-        };
         /** Body_recover_transcript_internal_recover_transcript_post */
         Body_recover_transcript_internal_recover_transcript_post: {
             /**
@@ -2309,35 +1997,6 @@ export interface components {
              * Format: binary
              */
             audio_file: string;
-        };
-        /** Body_test_llm_internal_test_llm_post */
-        Body_test_llm_internal_test_llm_post: {
-            /** Prompt */
-            prompt: string;
-            /**
-             * Model
-             * @default gemini-2.5-flash
-             */
-            model: string;
-            /**
-             * Company
-             * @default google
-             */
-            company: string;
-            /** Image */
-            image?: string | null;
-        };
-        /** Body_test_openai_internal_test_openai_post */
-        Body_test_openai_internal_test_openai_post: {
-            /** Prompt */
-            prompt: string;
-            /**
-             * Model
-             * @default gpt-4o-mini
-             */
-            model: string;
-            /** Image */
-            image?: string | null;
         };
         /** Body_upload_audio_file_audio_upload_post */
         Body_upload_audio_file_audio_upload_post: {
@@ -2348,6 +2007,26 @@ export interface components {
             audio_file: string;
             /** Session Id */
             session_id: string;
+        };
+        /**
+         * CancelSubscriptionResponse
+         * @description Response after canceling a subscription
+         */
+        CancelSubscriptionResponse: {
+            /** Subscription Id */
+            subscription_id: string;
+            /**
+             * Status
+             * @description canceled or cancel_at_period_end
+             */
+            status: string;
+            /**
+             * Cancel At
+             * @description When the subscription will be canceled
+             */
+            cancel_at?: string | null;
+            /** Message */
+            message: string;
         };
         /**
          * CategoryInstructions
@@ -2363,10 +2042,64 @@ export interface components {
          * @enum {string}
          */
         CategoryType: "intake_assessment" | "progress_notes" | "treatment_plan" | "other";
-        /** CenterCreate */
-        CenterCreate: {
+        /**
+         * CenterBillingOverview
+         * @description Complete billing overview for internal dashboard
+         */
+        CenterBillingOverview: {
+            /** Center Id */
+            center_id: string;
             /** Center Name */
             center_name: string;
+            /**
+             * Subscription Status
+             * @description Current subscription status
+             */
+            subscription_status: string;
+            /** Trial Enabled */
+            trial_enabled: boolean;
+            /** Trial End Date */
+            trial_end_date?: string | null;
+            /** Stripe Subscription Id */
+            stripe_subscription_id?: string | null;
+            /** Stripe Customer Id */
+            stripe_customer_id?: string | null;
+            /** Current Period Start */
+            current_period_start?: string | null;
+            /** Current Period End */
+            current_period_end?: string | null;
+            /** Flat Fee Per User */
+            flat_fee_per_user?: number | null;
+            /** Billable Users Count */
+            billable_users_count: number;
+            /**
+             * Monthly Cost
+             * @description Calculated as flat_fee_per_user * billable_users_count
+             */
+            monthly_cost?: number | null;
+            /** Payment Method Last4 */
+            payment_method_last4?: string | null;
+            /**
+             * Payment Failure Count
+             * @default 0
+             */
+            payment_failure_count: number;
+            /** Last Payment Failure Date */
+            last_payment_failure_date?: string | null;
+            /** Billing Email */
+            billing_email?: string | null;
+        };
+        /** CenterDisplayInfo */
+        CenterDisplayInfo: {
+            /** Center Id */
+            center_id: string;
+            /** Center Name */
+            center_name: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /**
          * CenterInstructions
@@ -2410,13 +2143,21 @@ export interface components {
         CenterPromptConfig: {
             center_instructions?: components["schemas"]["CenterInstructions"];
         };
-        /** CheckoutSessionRequest */
-        CheckoutSessionRequest: {
+        /**
+         * CheckoutSessionResponse
+         * @description Response containing Stripe checkout session URL
+         */
+        CheckoutSessionResponse: {
             /**
-             * Quantity
-             * @default 1
+             * Checkout Url
+             * @description Stripe checkout session URL
              */
-            quantity: number;
+            checkout_url: string;
+            /**
+             * Session Id
+             * @description Stripe session ID
+             */
+            session_id: string;
         };
         /** ClinicalSessionDisplayInfo */
         ClinicalSessionDisplayInfo: {
@@ -2447,7 +2188,7 @@ export interface components {
             id: string;
             patient?: components["schemas"]["Patient"] | null;
             /** Workflows */
-            workflows: components["schemas"]["WorkflowResponseWithStatus"][];
+            workflows: components["schemas"]["WorkflowDisplayInfo"][];
             status: components["schemas"]["ClinicalSessionStatus"];
             /**
              * Created At
@@ -2462,7 +2203,9 @@ export interface components {
         ClinicalSessionStatus: "created" | "uploading" | "uploaded" | "transcribing" | "processing" | "completed" | "abandoned" | "no_show" | "error";
         /**
          * ClinicalSessionStitchedConversationsDiarized
-         * @description Clinical session conversations with diarized transcript segments
+         * @description Clinical session conversations with diarized transcript segments.
+         *
+         *     Note: Transcript data is at the session level (not duplicated per workflow).
          */
         ClinicalSessionStitchedConversationsDiarized: {
             /**
@@ -2470,21 +2213,31 @@ export interface components {
              * Format: uuid
              */
             session_id: string;
-            /**
-             * Patient Id
-             * Format: uuid
-             */
-            patient_id: string;
+            /** Patient Id */
+            patient_id?: string | null;
             /** Created At */
             created_at?: string | null;
             session_status?: components["schemas"]["ClinicalSessionStatus"] | null;
-            /** Workflow Conversations */
-            workflow_conversations: components["schemas"]["WorkflowConversationsDiarized"][] | null;
+            /** Transcript */
+            transcript: components["schemas"]["DiarizedSegment"][];
+            /** S3 Link */
+            s3_link?: string | null;
+            /** Workflows */
+            workflows: components["schemas"]["WorkflowMetadata"][];
         };
-        /** ClinicalSessionUpdate */
+        /**
+         * ClinicalSessionUpdate
+         * @description Model for updating clinical session fields.
+         *
+         *     Use PATCH /{session_id} with any combination of these fields.
+         *     For workflow updates, use PUT /{session_id}/workflows (creates WorkflowInstances).
+         */
         ClinicalSessionUpdate: {
             /** Display Name */
             display_name?: string | null;
+            /** Patient Id */
+            patient_id?: string | null;
+            status?: components["schemas"]["ClinicalSessionStatus"] | null;
         };
         /** ClinicianBulkCreateRequest */
         ClinicianBulkCreateRequest: {
@@ -2493,39 +2246,26 @@ export interface components {
             /** Center Id */
             center_id: string;
         };
-        /** ComplianceMetadataRequest */
-        ComplianceMetadataRequest: {
-            /** Metadata */
-            metadata: {
-                [key: string]: unknown;
-            };
-        };
         /**
          * ContextEnum
          * @enum {string}
          */
         ContextEnum: "content" | "background" | "offscreen" | "popup";
-        /** ConversationResponse */
-        ConversationResponse: {
-            /** Id */
-            id: string;
-            /** Timestamp */
-            timestamp: string;
-            /** Workflow Id */
-            workflow_id: string;
-            /** Workflow Name */
-            workflow_name: string;
-            /** S3 Link */
-            s3_link: string;
-            /** Extracted Info */
-            extracted_info: string;
-            /** Center Name */
-            center_name: string;
+        /**
+         * CreateCheckoutSessionRequest
+         * @description Request to create a Stripe checkout session
+         */
+        CreateCheckoutSessionRequest: {
             /**
-             * Mapping Screenshot S3 Link
-             * @default
+             * Success Url
+             * @description URL to redirect to after successful payment
              */
-            mapping_screenshot_s3_link: string | null;
+            success_url?: string | null;
+            /**
+             * Cancel Url
+             * @description URL to redirect to if user cancels
+             */
+            cancel_url?: string | null;
         };
         /** CreateSessionRequest */
         CreateSessionRequest: {
@@ -2575,6 +2315,17 @@ export interface components {
             /** Content */
             content: string;
         };
+        /**
+         * ForceSyncRequest
+         * @description Request to force sync subscription status from Stripe (internal use only)
+         */
+        ForceSyncRequest: {
+            /**
+             * Center Id
+             * @description Center ID
+             */
+            center_id: string;
+        };
         /** FrontendLog */
         FrontendLog: {
             /** Timestamp */
@@ -2614,27 +2365,70 @@ export interface components {
             /** Avg Sessions Per User Per Weekend */
             avg_sessions_per_user_per_weekend: number;
         };
-        /**
-         * GlobalInstructions
-         * @description Global instructions that are always included and not customizable
-         */
-        GlobalInstructions: Record<string, never>;
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
-         * LastUseResponse
-         * @description Response model for user's last usage timestamp.
+         * InvoiceListResponse
+         * @description List of invoices
          */
-        LastUseResponse: {
-            /** Email */
-            email: string;
-            /** Id */
+        InvoiceListResponse: {
+            /** Invoices */
+            invoices: components["schemas"]["InvoiceResponse"][];
+            /**
+             * Has More
+             * @description Whether there are more invoices available
+             */
+            has_more: boolean;
+        };
+        /**
+         * InvoiceResponse
+         * @description Stripe invoice information
+         */
+        InvoiceResponse: {
+            /**
+             * Id
+             * @description Stripe invoice ID
+             */
             id: string;
-            /** Last Use Pacific */
-            last_use_pacific: string;
+            /**
+             * Amount Paid
+             * @description Amount paid in cents
+             */
+            amount_paid: number;
+            /**
+             * Amount Due
+             * @description Amount due in cents
+             */
+            amount_due: number;
+            /**
+             * Status
+             * @description Invoice status (paid, open, void, etc.)
+             */
+            status: string;
+            /**
+             * Created
+             * Format: date-time
+             * @description Invoice creation timestamp
+             */
+            created: string;
+            /**
+             * Invoice Pdf
+             * @description URL to invoice PDF
+             */
+            invoice_pdf?: string | null;
+            /**
+             * Period Start
+             * Format: date-time
+             */
+            period_start: string;
+            /**
+             * Period End
+             * Format: date-time
+             */
+            period_end: string;
         };
         /** LatestVersionResponse */
         LatestVersionResponse: {
@@ -2684,21 +2478,6 @@ export interface components {
             s3_link?: string | null;
             /** Grouped Questions */
             grouped_questions?: {
-                [key: string]: unknown;
-            } | null;
-        };
-        /** MappingCreate */
-        MappingCreate: {
-            /** Workflow Name */
-            workflow_name: string;
-            /** Metadata */
-            metadata: components["schemas"]["Metadata"][];
-            /** Screenshot */
-            screenshot: string;
-            /** Example Image Url */
-            example_image_url?: string | null;
-            /** Category Instructions */
-            category_instructions?: {
                 [key: string]: unknown;
             } | null;
         };
@@ -2868,39 +2647,29 @@ export interface components {
             message: string;
         };
         /**
+         * PricingUpdateResponse
+         * @description Response after updating center pricing
+         */
+        PricingUpdateResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Flat Fee Per User */
+            flat_fee_per_user: number;
+            /** Message */
+            message: string;
+        };
+        /**
          * ProgressNoteType
          * @enum {string}
          */
         ProgressNoteType: "soap" | "dap" | "dsap";
         /**
-         * PromptConfig
-         * @description Complete prompt configuration combining all layers
-         */
-        PromptConfig: {
-            global_instructions?: components["schemas"]["GlobalInstructions"];
-            center_instructions?: components["schemas"]["CenterInstructions"];
-            category_instructions?: components["schemas"]["CategoryInstructions"];
-        };
-        /** PromptResponse */
-        PromptResponse: {
-            /** Default Prompt */
-            default_prompt: string;
-            /** Data */
-            data: string;
-            /** Mapping */
-            mapping: {
-                [key: string]: unknown;
-            };
-            /** Transcript */
-            transcript: string;
-        };
-        /**
          * QuestionType
          * @enum {string}
          */
         QuestionType: "free_response" | "checkbox" | "radio" | "select" | "trigger" | "other";
-        /** QueuedMappingResponse */
-        QueuedMappingResponse: {
+        /** QueuedWorkflowResponse */
+        QueuedWorkflowResponse: {
             /** Status */
             status: string;
             /** Workflow Id */
@@ -2912,16 +2681,6 @@ export interface components {
         RefreshTokenRequest: {
             /** Refresh Token */
             refresh_token: string;
-        };
-        /** RefreshTokenResponse */
-        RefreshTokenResponse: {
-            /** Access Token */
-            access_token: string;
-            /** Refresh Token */
-            refresh_token: string;
-            user: components["schemas"]["AuthUser"];
-            /** Auth Type */
-            auth_type: string;
         };
         /**
          * RegenerateProcessedQuestionResponse
@@ -3033,22 +2792,6 @@ export interface components {
             audio_link: string | null;
         };
         /**
-         * SessionResponse
-         * @description Response model for individual session data.
-         */
-        SessionResponse: {
-            /** Id */
-            id: string;
-            /** User Id */
-            user_id: string;
-            /** Email */
-            email: string;
-            /** Date */
-            date: string;
-            /** Pacific Time */
-            pacific_time: string;
-        };
-        /**
          * SessionStatsResponse
          * @description Response model for session stats.
          */
@@ -3074,6 +2817,22 @@ export interface components {
             /** Latest Pacific Time */
             latest_pacific_time: string;
         };
+        /**
+         * SetPricingRequest
+         * @description Request to set custom pricing for a center (internal use only)
+         */
+        SetPricingRequest: {
+            /**
+             * Center Id
+             * @description Center ID
+             */
+            center_id: string;
+            /**
+             * Flat Fee Per User
+             * @description Price per user per month
+             */
+            flat_fee_per_user: number;
+        };
         /** SingleUserCreateRequest */
         SingleUserCreateRequest: {
             /** Email */
@@ -3084,57 +2843,88 @@ export interface components {
             user_type: components["schemas"]["UserType"];
         };
         /**
+         * SubscriptionActivationResponse
+         * @description Response after activating a subscription
+         */
+        SubscriptionActivationResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Subscription Id */
+            subscription_id: string;
+            /** Status */
+            status: string;
+            /** Message */
+            message: string;
+        };
+        /**
+         * SubscriptionInfoResponse
+         * @description Current subscription information for a center
+         */
+        SubscriptionInfoResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Subscription Id */
+            subscription_id?: string | null;
+            /** Customer Id */
+            customer_id?: string | null;
+            /**
+             * Status
+             * @description active, inactive, past_due, canceled, trialing
+             */
+            status: string;
+            /**
+             * Billable User Count
+             * @description Number of billable users
+             */
+            billable_user_count: number;
+            /** Flat Fee Per User */
+            flat_fee_per_user?: number | null;
+            /** Total Monthly Cost */
+            total_monthly_cost?: number | null;
+            /** Current Period Start */
+            current_period_start?: string | null;
+            /** Current Period End */
+            current_period_end?: string | null;
+            /**
+             * Trial Enabled
+             * @default false
+             */
+            trial_enabled: boolean;
+            /** Trial End Date */
+            trial_end_date?: string | null;
+            /** Payment Method Last4 */
+            payment_method_last4?: string | null;
+            /**
+             * Payment Failure Count
+             * @default 0
+             */
+            payment_failure_count: number;
+            /** Last Payment Failure Date */
+            last_payment_failure_date?: string | null;
+            /** Billing Email */
+            billing_email?: string | null;
+        };
+        /**
          * SuicidalRisk
          * @enum {string}
          */
         SuicidalRisk: "include" | "exclude";
-        /** TestJobRequest */
-        TestJobRequest: {
-            /** Id */
-            id: string;
-            /** Conversation Id */
-            conversation_id: string;
-            /** Workflow Id */
-            workflow_id: string;
-            /** Center Name */
-            center_name: string;
-            /** Workflow Name */
-            workflow_name: string;
-            /** Prompt */
-            prompt: string;
-            /** Screenshot S3 Link */
-            screenshot_s3_link?: string | null;
-        };
-        /** TestJobResponse */
-        TestJobResponse: {
-            /** Id */
-            id: string;
-            /** Conversation Id */
-            conversation_id: string;
-            /** Workflow Id */
-            workflow_id: string;
-            /** Center Name */
-            center_name: string;
-            /** Workflow Name */
-            workflow_name: string;
-            /** Prompt */
-            prompt: string;
-            /** Status */
-            status: string;
-            /** Timestamp */
-            timestamp: string;
-            /** Result */
-            result?: {
-                [key: string]: unknown;
-            } | null;
-            /** Log Messages */
-            log_messages?: string[] | null;
-            /** Screenshot Url */
-            screenshot_url?: string | null;
-            /** Error */
-            error?: string | null;
-            /** Screenshot S3 Link */
-            screenshot_s3_link?: string | null;
+        /**
+         * SyncResponse
+         * @description Response after forcing a sync with Stripe
+         */
+        SyncResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Subscription Status */
+            subscription_status: string;
+            /**
+             * Synced At
+             * Format: date-time
+             */
+            synced_at: string;
+            /** Message */
+            message: string;
         };
         /**
          * TestPopulateRequest
@@ -3168,25 +2958,41 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
-        /** TestPromptRequest */
-        TestPromptRequest: {
-            /** Conversation Id */
-            conversation_id: string;
-            /** Workflow Id */
-            workflow_id: string;
-            /** Prompt */
-            prompt: string;
+        /**
+         * ToggleTrialRequest
+         * @description Request to toggle trial mode for a center (internal use only)
+         */
+        ToggleTrialRequest: {
             /**
-             * Include Screenshot
-             * @default false
+             * Center Id
+             * @description Center ID
              */
-            include_screenshot: boolean;
-            /** Screenshot S3 Link */
-            screenshot_s3_link?: string | null;
-            /** Custom Mapping */
-            custom_mapping?: {
-                [key: string]: unknown;
-            } | null;
+            center_id: string;
+            /**
+             * Trial Enabled
+             * @description Enable or disable trial
+             */
+            trial_enabled: boolean;
+            /**
+             * Trial Days
+             * @description Number of trial days (if enabling trial)
+             * @default 14
+             */
+            trial_days: number | null;
+        };
+        /**
+         * TrialToggleResponse
+         * @description Response after toggling trial mode
+         */
+        TrialToggleResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Trial Enabled */
+            trial_enabled: boolean;
+            /** Trial End Date */
+            trial_end_date?: string | null;
+            /** Message */
+            message: string;
         };
         /** UpdateAllUsersRequest */
         UpdateAllUsersRequest: {
@@ -3194,20 +3000,29 @@ export interface components {
             new_ext_version: string;
             release_note?: components["schemas"]["ReleaseNote"] | null;
         };
-        /** UpdateDisplayConsentRequest */
+        /**
+         * UpdateDisplayConsentRequest
+         * @description Request to update consent form display setting.
+         */
         UpdateDisplayConsentRequest: {
-            /** Display Consent */
-            display_consent: boolean;
+            /** Display */
+            display: boolean;
         };
-        /** UpdatePaymentMethodRequest */
-        UpdatePaymentMethodRequest: {
-            /** Payment Method Id */
-            payment_method_id: string;
+        /**
+         * UpdateEMRRequest
+         * @description Request to update EMR system.
+         */
+        UpdateEMRRequest: {
+            /** Emr */
+            emr: string;
         };
-        /** UpdateSubscriptionRequest */
-        UpdateSubscriptionRequest: {
-            /** Quantity */
-            quantity: number;
+        /**
+         * UpdateTimezoneRequest
+         * @description Request to update center timezone.
+         */
+        UpdateTimezoneRequest: {
+            /** Timezone */
+            timezone: string;
         };
         /**
          * UpdateWorkflowRequest
@@ -3261,40 +3076,22 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
-        /** UserSettings */
-        UserSettings: {
+        /** UserResponse */
+        UserResponse: {
+            /** Id */
+            id: string;
+            /** Email */
+            email: string;
+            /** Center Id */
+            center_id: string;
+            user_type: components["schemas"]["UserType"];
+            /** Created At */
+            created_at: string;
             /**
-             * Theme
-             * @description User's theme preference
-             * @default light
+             * Needs Password Reset
+             * @default false
              */
-            theme: string;
-            /**
-             * Notifications Enabled
-             * @description Are notifications enabled?
-             * @default true
-             */
-            notifications_enabled: boolean;
-            /**
-             * Quotes
-             * @description Include direct quotes from the client
-             */
-            quotes?: boolean | null;
-            /**
-             * Sentences Maximum
-             * @description Maximum number of sentences
-             */
-            sentences_maximum?: number | null;
-            /**
-             * Sentences Minimum
-             * @description Minimum number of sentences
-             */
-            sentences_minimum?: number | null;
-            /**
-             * Abbreviations
-             * @description List of allowed abbreviations
-             */
-            abbreviations?: string[] | null;
+            needs_password_reset: boolean;
         };
         /** UserStats */
         UserStats: {
@@ -3369,25 +3166,25 @@ export interface components {
          * @enum {string}
          */
         VerbiageType: "pt" | "patient" | "client" | "member";
-        /**
-         * WeeklyUsersResponse
-         * @description Response model for weekly user metrics.
-         */
-        WeeklyUsersResponse: {
-            /** Week Start */
-            week_start: string;
-            /** Unique Users */
-            unique_users: number;
-            /** User Emails */
-            user_emails: string[];
-            /** Unique Sessions */
-            unique_sessions: number;
+        /** WorkflowCreate */
+        WorkflowCreate: {
+            /** Workflow Name */
+            workflow_name: string;
+            /** Metadata */
+            metadata: components["schemas"]["Metadata"][];
+            /** Screenshot */
+            screenshot: string;
+            /** Center Id */
+            center_id?: string | null;
+            /** Example Image Url */
+            example_image_url?: string | null;
+            /** Category Instructions */
+            category_instructions?: {
+                [key: string]: unknown;
+            } | null;
         };
-        /**
-         * WorkflowConversationsDiarized
-         * @description Workflow conversations with diarized transcript segments
-         */
-        WorkflowConversationsDiarized: {
+        /** WorkflowDisplayInfo */
+        WorkflowDisplayInfo: {
             /**
              * Workflow Id
              * Format: uuid
@@ -3395,24 +3192,11 @@ export interface components {
             workflow_id: string;
             /** Workflow Name */
             workflow_name: string;
-            status?: components["schemas"]["WorkflowPopulateStatus"] | null;
-            recording_status?: components["schemas"]["WorkflowRecordingStatus"] | null;
-            /** Mapping Metadata */
-            mapping_metadata?: {
-                [key: string]: unknown;
-            } | null;
-            /** Grouped Questions */
-            grouped_questions?: {
-                [key: string]: unknown;
-            } | null;
-            /** S3 Link */
-            s3_link: string | null;
-            /** Mapping Status */
-            mapping_status?: string | null;
-            /** Transcript */
-            transcript: components["schemas"]["DiarizedSegment"][];
-            /** Timestamp */
-            timestamp: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** WorkflowInstanceResponse */
         WorkflowInstanceResponse: {
@@ -3437,12 +3221,21 @@ export interface components {
             workflow_category_type: components["schemas"]["CategoryType"];
         };
         /**
-         * WorkflowListResponse
-         * @description Response model for listing workflows.
+         * WorkflowMetadata
+         * @description Metadata about a workflow instance in a session (no duplicated transcript data)
          */
-        WorkflowListResponse: {
-            /** Workflows */
-            workflows: components["schemas"]["WorkflowSummary"][];
+        WorkflowMetadata: {
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /** Workflow Name */
+            workflow_name: string;
+            /** Status */
+            status?: string | null;
+            /** Recording Status */
+            recording_status?: string | null;
         };
         /**
          * WorkflowPopulateStatus
@@ -3545,6 +3338,8 @@ export interface components {
             workflow_name: string;
             mapping_status: components["schemas"]["MappingStatus"];
             category_type: components["schemas"]["CategoryType"];
+            /** Created At */
+            created_at?: string | null;
         };
         /**
          * WorkflowResponseWithStatus
@@ -3573,89 +3368,14 @@ export interface components {
             /** Mapping Status */
             mapping_status?: string | null;
         };
-        /**
-         * WorkflowStatusResponse
-         * @description Workflow status response
-         */
-        WorkflowStatusResponse: {
-            /**
-             * Workflow Id
-             * Format: uuid
-             */
-            workflow_id: string;
-            status: components["schemas"]["WorkflowPopulateStatus"];
-            recording_status: components["schemas"]["WorkflowRecordingStatus"];
-        };
-        /**
-         * WorkflowSummary
-         * @description Summary information for a workflow.
-         */
-        WorkflowSummary: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Created At */
-            created_at: string;
-            category_type?: components["schemas"]["CategoryType"] | null;
-            progress_note_type?: components["schemas"]["ProgressNoteType"] | null;
-            mapping_status?: components["schemas"]["MappingStatus"] | null;
-        };
         /** XPathUpdate */
         XPathUpdate: {
             /** Index */
             index: string;
             /** Xpath */
-            xpath: string;
+            xpath?: string | null;
             /** Click Before Xpaths */
             click_before_xpaths?: string[] | null;
-        };
-        /**
-         * UserResponse
-         * @description Response model for basic user information.
-         */
-        app__models__dashboard_models__UserResponse: {
-            /** Email */
-            email: string;
-            /** User Id */
-            user_id: string;
-        };
-        /** CenterResponse */
-        app__models__iam_models__CenterResponse: {
-            /** Center Id */
-            center_id: string;
-            /** Center Name */
-            center_name: string;
-            /** Created At */
-            created_at: string;
-        };
-        /** UserResponse */
-        app__models__iam_models__UserResponse: {
-            /** Id */
-            id: string;
-            /** Email */
-            email: string;
-            /** Center Id */
-            center_id: string;
-            user_type: components["schemas"]["UserType"];
-            /** Created At */
-            created_at: string;
-            /**
-             * Needs Password Reset
-             * @default false
-             */
-            needs_password_reset: boolean;
-        };
-        /** CenterResponse */
-        app__models__payment_model__CenterResponse: {
-            /** Center Id */
-            center_id: string;
-            /** Center Name */
-            center_name: string;
-            /** Subscription Status */
-            subscription_status: string;
-            /** Subscription End Date */
-            subscription_end_date?: string | null;
         };
     };
     responses: never;
@@ -3685,7 +3405,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AuthResponse"];
                 };
             };
             /** @description Validation Error */
@@ -3695,26 +3415,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    logout_logout_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
                 };
             };
         };
@@ -3763,259 +3463,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["AdminSignupRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_user_info_user_info_put: {
-        parameters: {
-            query: {
-                phone_number: string;
-                emr: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_center_create_center_post: {
-        parameters: {
-            query: {
-                center_name: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    bulk_create_clinicians_users_clinicians_bulk_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ClinicianBulkCreateRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_single_user_users_create_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["SingleUserCreateRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_current_user_current_user_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    get_users_by_center_id_centers__center_id__users_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["app__models__iam_models__UserResponse"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    protected_route_unprotected_route_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    populate_settings_populate_settings_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    update_user_populate_settings_update_populate_settings_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UserSettings"];
             };
         };
         responses: {
@@ -4124,7 +3571,176 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RefreshTokenResponse"];
+                    "application/json": components["schemas"]["AuthResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    update_user_info_user_info_put: {
+        parameters: {
+            query: {
+                phone_number: string;
+                emr: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_current_user_current_user_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_users_by_center_id_centers__center_id__users_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bulk_create_clinicians_users_clinicians_bulk_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClinicianBulkCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_single_user_users_create_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SingleUserCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -4169,7 +3785,78 @@ export interface operations {
             };
         };
     };
-    update_display_consent_centers__center_id__display_consent_post: {
+    protected_route_unprotected_route_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_centers_centers__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterDisplayInfo"][];
+                };
+            };
+        };
+    };
+    get_center_centers__center_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_display_consent_centers__center_id__display_consent_put: {
         parameters: {
             query?: never;
             header?: never;
@@ -4204,7 +3891,178 @@ export interface operations {
             };
         };
     };
-    get_centers_centers_get: {
+    update_emr_centers__center_id__emr_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateEMRRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_timezone_centers__center_id__timezone_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTimezoneRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_prompt_config_centers__center_id__prompt_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_prompt_config_centers__center_id__prompt_config_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_checkout_session_billing_create_checkout_session_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCheckoutSessionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutSessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_subscription_info_billing_subscription_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -4219,7 +4077,325 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["app__models__iam_models__CenterResponse"][];
+                    "application/json": components["schemas"]["SubscriptionInfoResponse"];
+                };
+            };
+        };
+    };
+    create_setup_intent_billing_create_setup_intent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    attach_payment_method_billing_attach_payment_method_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttachPaymentMethodRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_invoices_billing_invoices_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_subscription_billing_cancel_subscription_post: {
+        parameters: {
+            query?: {
+                immediate?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CancelSubscriptionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    toggle_trial_billing_internal_toggle_trial_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ToggleTrialRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrialToggleResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    activate_subscription_billing_internal_activate_subscription_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ActivateSubscriptionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionActivationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_center_pricing_billing_internal_set_pricing_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetPricingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PricingUpdateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    force_sync_subscription_billing_internal_force_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForceSyncRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_centers_with_billing_billing_internal_centers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_center_billing_overview_billing_internal_center_overview__center_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterBillingOverview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    handle_stripe_webhook_webhooks_stripe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
@@ -4693,39 +4869,6 @@ export interface operations {
             };
         };
     };
-    get_prompt_preview_populate_prompt_preview_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PromptConfig"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     get_clinical_sessions_list_clinical_sessions_get: {
         parameters: {
             query?: {
@@ -4780,26 +4923,6 @@ export interface operations {
             };
         };
     };
-    get_workflows_clinical_sessions_workflows_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WorkflowResponse"][];
-                };
-            };
-        };
-    };
     get_clinical_session_clinical_sessions__session_id__get: {
         parameters: {
             query?: never;
@@ -4819,39 +4942,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ClinicalSessionResponse"];
                 };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_clinical_session_clinical_sessions__session_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ClinicalSessionUpdate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -4893,7 +4983,40 @@ export interface operations {
             };
         };
     };
-    get_all_workflow_status_clinical_sessions__session_id__all_status_get: {
+    update_clinical_session_clinical_sessions__session_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClinicalSessionUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_session_workflow_instance_statuses_clinical_sessions__session_id__all_status_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -4910,38 +5033,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkflowStatusResponse"][];
+                    "application/json": components["schemas"]["WorkflowResponseWithStatus"][];
                 };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_clinical_session_with_patient_id_clinical_sessions__session_id__patient__patient_id__put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                session_id: string;
-                patient_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -5049,33 +5142,22 @@ export interface operations {
             };
         };
     };
-    update_clinical_session_status_clinical_sessions__session_id__session_status_put: {
+    get_workflows_workflows_get: {
         parameters: {
-            query: {
-                status: components["schemas"]["ClinicalSessionStatus"];
-            };
+            query?: never;
             header?: never;
-            path: {
-                session_id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
             /** @description Successful Response */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Validation Error */
-            422: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["WorkflowResponse"][];
                 };
             };
         };
@@ -5089,7 +5171,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["MappingCreate"];
+                "application/json": components["schemas"]["WorkflowCreate"];
             };
         };
         responses: {
@@ -5099,7 +5181,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["QueuedMappingResponse"];
+                    "application/json": components["schemas"]["QueuedWorkflowResponse"];
                 };
             };
             /** @description Validation Error */
@@ -5113,7 +5195,7 @@ export interface operations {
             };
         };
     };
-    get_workflows_by_center_workflows_center__center_id__get: {
+    get_workflows_by_center_id_workflows_center__center_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -5130,7 +5212,38 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkflowListResponse"];
+                    "application/json": components["schemas"]["WorkflowResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_workflow_workflows__workflow_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workflow_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkflowResponse"];
                 };
             };
             /** @description Validation Error */
@@ -5359,26 +5472,6 @@ export interface operations {
             };
         };
     };
-    get_thread_pool_stats_workflows_debug_thread_pools_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
     get_workflow_instance_list_workflow_instances_get: {
         parameters: {
             query?: {
@@ -5398,416 +5491,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkflowInstanceResponse"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_center_payment_centers_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CenterCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["app__models__payment_model__CenterResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_center_payment_centers__center_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    stripe_webhook_payment_webhook_post: {
-        parameters: {
-            query: {
-                request: unknown;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_checkout_session_payment_create_checkout_session__center_id__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CheckoutSessionRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_subscription_status_payment_subscription_status__center_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["app__models__payment_model__CenterResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    payment_success_payment_success_get: {
-        parameters: {
-            query?: {
-                session_id?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    payment_cancelled_payment_cancel_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    update_subscription_payment_update_subscription__center_id__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateSubscriptionRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_billing_info_payment_billing_info__center_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BillingInfoResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_payment_method_payment_update_payment_method__center_id__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdatePaymentMethodRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_payment_methods_payment_payment_methods__center_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_payment_intent_payment_create_payment_intent__center_id__post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_compliance_metadata_payment_centers__center_id__compliance_metadata_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ComplianceMetadataRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -6335,126 +6018,6 @@ export interface operations {
             };
         };
     };
-    get_last_use_dashboard_last_use_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LastUseResponse"][];
-                };
-            };
-        };
-    };
-    get_weekly_users_dashboard_weekly_users_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WeeklyUsersResponse"][];
-                };
-            };
-        };
-    };
-    get_all_users_dashboard_all_users_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["app__models__dashboard_models__UserResponse"][];
-                };
-            };
-        };
-    };
-    get_all_sessions_dashboard_all_sessions_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SessionResponse"][];
-                };
-            };
-        };
-    };
-    get_sessions_today_dashboard_sessions_today_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SessionResponse"][];
-                };
-            };
-        };
-    };
-    get_dashboard_health_dashboard_health_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
     test_populate_with_custom_questions_dashboard_test_populate_post: {
         parameters: {
             query?: never;
@@ -6475,142 +6038,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TestPopulateResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    test_prompt_internal_test_prompt_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TestPromptRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_test_prompt_result_internal_test_prompt_result__job_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                job_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    clear_test_prompt_results_internal_test_prompt_clear_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    get_conversations_internal_conversations_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ConversationResponse"][];
-                };
-            };
-        };
-    };
-    get_prompt_internal_prompt_get: {
-        parameters: {
-            query: {
-                conversation_id: string;
-                workflow_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PromptResponse"];
                 };
             };
             /** @description Validation Error */
@@ -6687,208 +6114,6 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    sync_database_internal_sync_db_get: {
-        parameters: {
-            query?: {
-                full?: boolean;
-                incremental?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_test_jobs_internal_test_jobs_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TestJobResponse"][];
-                };
-            };
-        };
-    };
-    create_test_job_internal_test_job_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TestJobRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    clear_all_test_jobs_internal_test_jobs_clear_all_delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    delete_test_job_internal_test_jobs__job_id__delete: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                job_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    test_llm_internal_test_llm_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_test_llm_internal_test_llm_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    test_openai_internal_test_openai_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_test_openai_internal_test_openai_post"];
-            };
-        };
         responses: {
             /** @description Successful Response */
             200: {
