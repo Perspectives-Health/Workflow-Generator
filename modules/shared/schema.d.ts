@@ -1232,31 +1232,9 @@ export interface paths {
         put?: never;
         /**
          * Regenerate Processed Question
-         * @description Initiate async regeneration of a single processed question text.
-         *     Returns regeneration_task_id for polling.
+         * @description Regenerate a single processed question text.
          */
         post: operations["regenerate_processed_question_workflows__workflow_id__questions__question_index__regenerate_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflows/regeneration-tasks/batch-status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Get Batch Regeneration Task Status
-         * @description Batch endpoint to get status of multiple regeneration tasks.
-         *     More efficient than individual polling.
-         */
-        post: operations["get_batch_regeneration_task_status_workflows_regeneration_tasks_batch_status_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1631,26 +1609,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/dashboard/test-populate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Test Populate With Custom Questions
-         * @description Test populate with custom questions without saving to database.
-         */
-        post: operations["test_populate_with_custom_questions_dashboard_test_populate_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/internal/recover-transcript": {
         parameters: {
             query?: never;
@@ -1970,26 +1928,6 @@ export interface components {
              */
             status: string;
         };
-        /**
-         * BatchRegenerationTaskStatusRequest
-         * @description Request to check status of multiple regeneration tasks.
-         */
-        BatchRegenerationTaskStatusRequest: {
-            /** Regeneration Task Ids */
-            regeneration_task_ids: string[];
-        };
-        /**
-         * BatchRegenerationTaskStatusResponse
-         * @description Response containing status of multiple regeneration tasks.
-         */
-        BatchRegenerationTaskStatusResponse: {
-            /** Regeneration Tasks */
-            regeneration_tasks: {
-                [key: string]: {
-                    [key: string]: unknown;
-                };
-            };
-        };
         /** Body_recover_transcript_internal_recover_transcript_post */
         Body_recover_transcript_internal_recover_transcript_post: {
             /**
@@ -2030,11 +1968,17 @@ export interface components {
         };
         /**
          * CategoryInstructions
-         * @description Content guidelines for different categories - only one can be selected
+         * @description Category-specific configuration for the user prompt.
+         *
+         *     The category prompt is either:
+         *     1. Stored in the `prompt` field (if previously generated/customized)
+         *     2. Generated on-demand from settings using `generate_prompt()`
          */
         CategoryInstructions: {
             selected_category?: components["schemas"]["CategoryType"] | null;
             progress_note_type?: components["schemas"]["ProgressNoteType"] | null;
+            /** Prompt */
+            prompt?: string | null;
         };
         /**
          * CategoryType
@@ -2103,7 +2047,11 @@ export interface components {
         };
         /**
          * CenterInstructions
-         * @description Center-specific configuration options
+         * @description Center-specific configuration for the system prompt.
+         *
+         *     The system prompt is either:
+         *     1. Stored in the `prompt` field (if previously generated/customized)
+         *     2. Generated on-demand from settings using `generate_prompt()`
          */
         CenterInstructions: {
             /** @default client */
@@ -2118,8 +2066,8 @@ export interface components {
             include_suicidal_risk: components["schemas"]["SuicidalRisk"];
             /** @default exclude */
             disguise_phi: components["schemas"]["PHIDisguise"];
-            /** Custom Instructions */
-            custom_instructions?: string | null;
+            /** Prompt */
+            prompt?: string | null;
         };
         /** CenterMetricsResponse */
         CenterMetricsResponse: {
@@ -2138,7 +2086,9 @@ export interface components {
         };
         /**
          * CenterPromptConfig
-         * @description Center-specific prompt configuration
+         * @description Center-specific prompt configuration (stored in centers.prompt_config).
+         *
+         *     Contains the system prompt settings and the generated/customized prompt.
          */
         CenterPromptConfig: {
             center_instructions?: components["schemas"]["CenterInstructions"];
@@ -2684,15 +2634,13 @@ export interface components {
         };
         /**
          * RegenerateProcessedQuestionResponse
-         * @description Response when initiating processed question regeneration.
+         * @description Response for synchronous processed question regeneration.
          */
         RegenerateProcessedQuestionResponse: {
-            /** Regeneration Task Id */
-            regeneration_task_id: string;
-            /** Status */
-            status: string;
             /** Question Index */
             question_index: string;
+            /** Regenerated Text */
+            regenerated_text?: string | null;
         };
         /** ReleaseNote */
         ReleaseNote: {
@@ -2925,38 +2873,6 @@ export interface components {
             synced_at: string;
             /** Message */
             message: string;
-        };
-        /**
-         * TestPopulateRequest
-         * @description Request model for testing populate with custom questions.
-         */
-        TestPopulateRequest: {
-            /** Session Id */
-            session_id: string;
-            /** Workflow Id */
-            workflow_id: string;
-            /** Custom Processed Questions */
-            custom_processed_questions: {
-                [key: string]: string;
-            };
-            /** User Id */
-            user_id: string;
-        };
-        /**
-         * TestPopulateResponse
-         * @description Response model for test populate results.
-         */
-        TestPopulateResponse: {
-            /** Success */
-            success: boolean;
-            /** Message */
-            message: string;
-            /** Populate Data */
-            populate_data?: unknown | null;
-            /** Processing Info */
-            processing_info?: {
-                [key: string]: unknown;
-            } | null;
         };
         /**
          * ToggleTrialRequest
@@ -3304,7 +3220,9 @@ export interface components {
         WorkflowPopulateStatus: "created" | "ready_for_generation" | "generating_workflow_responses" | "post_processing" | "ready_to_populate" | "regenerating" | "completed" | "error";
         /**
          * WorkflowPromptConfig
-         * @description Workflow-specific prompt configuration
+         * @description Workflow-specific prompt configuration (stored in workflows.prompt_config).
+         *
+         *     Contains the category/user prompt settings and the generated/customized prompt.
          */
         WorkflowPromptConfig: {
             category_instructions?: components["schemas"]["CategoryInstructions"];
@@ -5439,39 +5357,6 @@ export interface operations {
             };
         };
     };
-    get_batch_regeneration_task_status_workflows_regeneration_tasks_batch_status_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BatchRegenerationTaskStatusRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BatchRegenerationTaskStatusResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     get_workflow_instance_list_workflow_instances_get: {
         parameters: {
             query?: {
@@ -6005,39 +5890,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    test_populate_with_custom_questions_dashboard_test_populate_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TestPopulateRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TestPopulateResponse"];
                 };
             };
             /** @description Validation Error */

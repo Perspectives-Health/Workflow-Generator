@@ -157,3 +157,51 @@ export const hasZeroDimensions = (element: Element, mode: EhrPlatform | null): b
     }
     return false;
 }
+
+export const findElementByXPath = (xPath: string, doc?: Document): HTMLElement | null => {
+    doc = doc || document;
+
+    let element = doc.evaluate(
+        xPath,
+        doc,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+    ).singleNodeValue as HTMLElement | null;
+
+    if (!element && xPath.startsWith('//*[@id=')) {
+        const idMatch = xPath.match(/\[@id=(["'])(.*?)\1\]/);
+        if (idMatch && idMatch[2]) {
+            // Check if there's an index in the XPath
+            const indexMatch = xPath.match(/\[@id=(["'])(.*?)\1\]\[(\d+)\]/);
+            if (indexMatch && indexMatch[3]) {
+                // Handle indexed id XPath for duplicate IDs
+                const elements = doc.querySelectorAll(`[id="${idMatch[2]}"]`);
+                const index = parseInt(indexMatch[3]) - 1; // Convert to 0-based index
+                element = elements[index] as HTMLElement | null;
+            } else {
+                // Handle non-indexed id XPath
+                element = doc.getElementById(idMatch[2]) as HTMLElement | null;
+            }
+        }
+    }
+
+    if (!element && xPath.startsWith('//*[@name=')) {
+        const nameMatch = xPath.match(/\[@name=(["'])(.*?)\1\]/);
+        if (nameMatch && nameMatch[2]) {
+            // Check if there's an index in the XPath
+            const indexMatch = xPath.match(/\[@name=(["'])(.*?)\1\]\[(\d+)\]/);
+            if (indexMatch && indexMatch[3]) {
+                // Handle indexed name XPath
+                const elements = doc.querySelectorAll(`[name="${nameMatch[2]}"]`);
+                const index = parseInt(indexMatch[3]) - 1; // Convert to 0-based index
+                element = elements[index] as HTMLElement | null;
+            } else {
+                // Handle non-indexed name XPath
+                element = doc.querySelector(`[name="${nameMatch[2]}"]`) as HTMLElement | null;
+            }
+        }
+    }
+
+    return element;
+}

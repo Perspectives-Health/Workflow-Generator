@@ -156,3 +156,19 @@ export const saveWorkflowPaths = async (workflowId: string, index: string, xpath
         throw error;
     }
 }
+
+
+export const regenerateProcessedQuestion = async (workflowId: string, questionIndex: string) => {
+    const { data, error } = await fastapi.POST(`/workflows/{workflow_id}/questions/{question_index}/regenerate`, {
+        params: {
+            path: {
+                workflow_id: workflowId,
+                question_index: questionIndex
+            }
+        }
+    });
+    if (error) {
+        throw error;
+    }
+    return data;
+};

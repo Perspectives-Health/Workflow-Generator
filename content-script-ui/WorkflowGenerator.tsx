@@ -39,7 +39,7 @@ export function WorkflowGenerator() {
             onDragEnd={handleDragEnd}
             targetClassName=".workflow-generator"
         >
-            <div className="flex flex-col w-[350px] border rounded-lg p-2 bg-gray-100">
+            <div className="flex flex-col w-[500px] border rounded-lg p-2 bg-gray-100">
                 <TopBar />
                 {currMenuComponent}
             </div>

@@ -30,5 +30,10 @@ export const workflowsQueries = (sendMessage: SendMessageFn) => ({
         const result = await sendMessage("save-workflow-paths", { workflowId, index, xpath, clickBeforeXpaths });
         if (!result.success) throw result.error;
         return result.data;
+    },
+    regenerateProcessedQuestion: async (workflowId: string, questionIndex: string) => {
+        const result = await sendMessage("regenerate-processed-question", { workflowId, questionIndex });
+        if (!result.success) throw result.error;
+        return result.data;
     }
 });

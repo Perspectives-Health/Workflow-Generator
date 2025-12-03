@@ -5,9 +5,11 @@ import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflow
 import { MappingMetadata } from "@/modules/shared/types";
 import { useDebouncedCallback } from "@/modules/shared/ui/hooks/use-debounce";
 import { usePathLogger } from "@/modules/mapping/domain/path-logger";
-import { Check, Pencil, XIcon } from "lucide-react";
+import { Check, Pencil, XIcon, RefreshCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/modules/shared/ui/components/tooltip";
 import { saveScrollPosition } from "@/modules/shared/shared.utils";
+import { findElementByXPath, queryFormElement } from "@/modules/mapping/domain/query-elements";
+import { getMode } from "@/modules/mapping/mapping.utils";
 
 
 export function ManageWorkflowMenu() {
@@ -124,15 +126,19 @@ export function ManageWorkflowMenuItem({
     const [isSaved, setIsSaved] = useState(false);
     const [clickBeforePaths, setClickBeforePaths] = useState<string[]>([]);
     const [newClickBeforePath, setNewClickBeforePath] = useState<string | null>(null);
+    const [viewOnPageStatus, setViewOnPageStatus] = useState<'found' | 'not_found' | null>(null);
+    const [regenerateStatus, setRegenerateStatus] = useState<'idle' | 'completed' | 'error'>('idle');
 
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const highlightedElementRef = useRef<HTMLElement | null>(null);
 
     const { start: startPathLogger, stop: stopPathLogger, isLogging: isPathLogging } = usePathLogger((newPath) => {
         setNewClickBeforePath(newPath);
     });
-    const { useSaveWorkflowPaths } = useWorkflowsQueries();
+    const { useSaveWorkflowPaths, useRegenerateProcessedQuestion } = useWorkflowsQueries();
     const { mutateAsync: saveWorkflowPaths, isPending } = useSaveWorkflowPaths();
+    const { mutateAsync: regenerateProcessedQuestion, isPending: isRegeneratingProcessedQuestion } = useRegenerateProcessedQuestion();
 
     // Cleanup timeout on unmount
     useEffect(() => {
@@ -156,6 +162,29 @@ export function ManageWorkflowMenuItem({
             return () => clearTimeout(timer);
         }
     }, [isSaved]);
+
+    useEffect(() => {
+        if (viewOnPageStatus) {
+            const timer = setTimeout(() => {
+                // Remove highlight from element when status resets
+                if (highlightedElementRef.current) {
+                    highlightedElementRef.current.style.outline = '';
+                    highlightedElementRef.current = null;
+                }
+                setViewOnPageStatus(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [viewOnPageStatus]);
+
+    useEffect(() => {
+        if (regenerateStatus !== 'idle') {
+            const timer = setTimeout(() => {
+                setRegenerateStatus('idle');
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [regenerateStatus]);
 
     const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newText = e.target.value;
@@ -234,20 +263,94 @@ export function ManageWorkflowMenuItem({
         }
     }
 
+    const handleViewOnCurrentPage = (path: string) => {
+        // Clear previous highlight if exists
+        if (highlightedElementRef.current) {
+            highlightedElementRef.current.style.outline = '';
+            highlightedElementRef.current = null;
+        }
+
+        if (!path) {
+            setViewOnPageStatus('not_found');
+            return;
+        }
+        const element = findElementByXPath(path, document);
+        if (!element) {
+            setViewOnPageStatus('not_found');
+            return;
+        }
+        
+        // Add green border highlight
+        element.style.outline = '2px solid #22c55e';
+        highlightedElementRef.current = element;
+        
+        // Scroll element into view
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setViewOnPageStatus('found');
+    }
+
+    const handleRegenerateProcessedQuestion = async (index: number) => {
+        if (!selectedWorkflowId) return;
+        try {
+            await regenerateProcessedQuestion({
+                workflowId: selectedWorkflowId,
+                questionIndex: index.toString()
+            });
+            setRegenerateStatus('completed');
+        } catch (error) {
+            console.error("handleRegenerateProcessedQuestion error", error);
+            setRegenerateStatus('error');
+        }
+    }
+
     return (
         <div className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0 py-2 px-3 gap-1">
             <span className="text-sm font-semibold">{metadata.index} - {metadata.question_text}</span>
-            <textarea
-                ref={textareaRef}
-                value={processedQuestionText}
-                onChange={handleTextChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                className={`w-full text-sm text-muted-foreground mt-1 p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:border-transparent transition-all duration-200
-                    ${isSaved ? 'ring-2 ring-green-500' : 'focus:ring-2 focus:ring-blue-500 '}
-                `}
-                rows={2}
-            />
+            <div className="relative w-full">
+                <textarea
+                    ref={textareaRef}
+                    value={processedQuestionText}
+                    onChange={handleTextChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    disabled={isRegeneratingProcessedQuestion}
+                    className={`w-full text-sm text-muted-foreground mt-1 p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:border-transparent transition-all duration-200
+                        ${isSaved ? 'ring-2 ring-green-500' : 'focus:ring-2 focus:ring-blue-500 '}
+                    `}
+                    rows={2}
+                />
+                {isRegeneratingProcessedQuestion && (
+                    <div className="absolute inset-0 mt-1 flex items-center justify-center bg-white/60 rounded-md">
+                        <RefreshCcw className="h-4 w-4 text-muted-foreground animate-spin" />
+                    </div>
+                )}
+            </div>
+            <div className="w-full flex flex-row justify-between items-center">
+                {viewOnPageStatus === 'not_found' ? (
+                    <span className="text-xs text-red-500">
+                        Could not locate element
+                    </span>
+                ) : (
+                    <button className="text-xs text-blue-500 hover:text-blue-600 duration-300 ease-in-out"
+                        onClick={() => handleViewOnCurrentPage(metadata.xpath)}
+                    >
+                        View on Current Page
+                    </button>
+                )}
+                {isRegeneratingProcessedQuestion ? (
+                    <span className="text-xs text-muted-foreground">Regenerating...</span>
+                ) : regenerateStatus === 'completed' ? (
+                    <span className="text-xs text-green-500">Completed</span>
+                ) : regenerateStatus === 'error' ? (
+                    <span className="text-xs text-red-500">Error</span>
+                ) : (
+                    <button className="text-xs text-blue-500 hover:text-blue-600 duration-300 ease-in-out"
+                        onClick={() => handleRegenerateProcessedQuestion(metadata.index)}
+                    >
+                        Regenerate
+                    </button>
+                )}
+            </div>
             <div className="w-full flex flex-row justify-between items-center gap-1">
                 {!!newClickBeforePath ? (
                     <div className="flex flex-row justify-center items-center gap-1">

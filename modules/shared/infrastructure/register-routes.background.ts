@@ -1,9 +1,9 @@
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { ApiResponse, CreateWorkflowRequest, GetCentersResponse, UpdateWorkflowRequest, WorkflowDetails, WorkflowSummary } from "@/modules/shared/types";
+import type { ApiResponse, CreateWorkflowRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateWorkflowRequest, WorkflowDetails, WorkflowSummary } from "@/modules/shared/types";
 import { onMessage } from "webext-bridge/background";
 import { sendResponse, sendError } from "@/modules/shared/infrastructure/api-utils.background";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { getCenters, getWorkflows, getWorkflowDetails, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths } from "@/modules/shared/infrastructure/api.background";
+import { getCenters, getWorkflows, getWorkflowDetails, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths, regenerateProcessedQuestion } from "@/modules/shared/infrastructure/api.background";
 
 
 declare module "webext-bridge" {
@@ -12,11 +12,11 @@ declare module "webext-bridge" {
         "get-centers": ProtocolWithReturn<void, ApiResponse<GetCentersResponse>>;
         "get-workflows": ProtocolWithReturn<{ centerId: string }, ApiResponse<WorkflowSummary[]>>;
         "get-workflow-details": ProtocolWithReturn<{ workflowId: string }, ApiResponse<WorkflowDetails>>;
-        // "create-workflow": ProtocolWithReturn<CreateWorkflowRequest, ApiResponse<string>>;
         "update-workflow": ProtocolWithReturn<UpdateWorkflowRequest, ApiResponse<void>>;
         "delete-workflow": ProtocolWithReturn<{ workflowId: string }, ApiResponse<void>>;
         "create-workflow": ProtocolWithReturn<CreateWorkflowRequest, ApiResponse<void>>;
         "save-workflow-paths": ProtocolWithReturn<{ workflowId: string, index: string, xpath: string | undefined, clickBeforeXpaths: string[] | undefined }, ApiResponse<void>>;
+        "regenerate-processed-question": ProtocolWithReturn<{ workflowId: string, questionIndex: string }, ApiResponse<RegenerateProcessedQuestionResponse>>;
     }
 }
 
@@ -96,6 +96,14 @@ export function registerBackgroundRoutes() {
     onMessage("save-workflow-paths", async ({ data }) => {
         try {
             const result = await saveWorkflowPaths(data.workflowId, data.index, data.xpath, data.clickBeforeXpaths);
+            return sendResponse(result);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+    onMessage("regenerate-processed-question", async ({ data }) => {
+        try {
+            const result = await regenerateProcessedQuestion(data.workflowId, data.questionIndex);
             return sendResponse(result);
         } catch (error) {
             return sendError(error as Error);

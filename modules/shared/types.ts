@@ -104,3 +104,5 @@ export enum MappingStage {
     SENDING = 7,
     COMPLETED = 8,
 }
+
+export type RegenerateProcessedQuestionResponse = components["schemas"]["RegenerateProcessedQuestionResponse"];

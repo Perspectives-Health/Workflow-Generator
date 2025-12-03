@@ -82,5 +82,16 @@ export const useWorkflowsQueries = () => {
                 console.error("saveWorkflowPaths error", error);
             }
         }),
+        useRegenerateProcessedQuestion: () => useMutation({
+            mutationFn: ({ workflowId, questionIndex }: { workflowId: string; questionIndex: string }) => 
+                api.regenerateProcessedQuestion(workflowId, questionIndex),
+            onSuccess: (data, variables) => {
+                console.log("regenerateProcessedQuestion success", data);
+                invalidateQueriesGlobally(["workflow-details", variables.workflowId]);
+            },
+            onError: (error) => {
+                console.error("regenerateProcessedQuestion error", error);
+            }
+        }),
     };
 }
