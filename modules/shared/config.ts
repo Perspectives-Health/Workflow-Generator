@@ -14,7 +14,7 @@ const defaultConfig: AppConfig = {
  * Load configuration based on current environment
  */
 function loadConfig(): AppConfig {
-  const environment = (import.meta.env.VITE_NODE_ENV || process.env.NODE_ENV || 'development') as Environment;
+  const environment = (import.meta.env.MODE || 'development') as Environment;
 
   const config: AppConfig = {
     ...defaultConfig,

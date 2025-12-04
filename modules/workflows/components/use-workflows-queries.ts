@@ -22,30 +22,40 @@ export const useWorkflowsQueries = () => {
                 return hasInProgress ? 3000 : false;
             }
         }),
-        useGetWorkflowDetails: (workflowId: string) => useQuery({
-            queryKey: ['workflow-details', workflowId],
-            queryFn: async () => api.getWorkflowDetails(workflowId),
+        useGetWorkflow: (workflowId: string) => useQuery({
+            queryKey: ['workflow-summary', workflowId],
+            queryFn: async () => api.getWorkflow(workflowId),
+            enabled: !!workflowId
+        }),
+        useGetWorkflowMapping: (workflowId: string) => useQuery({
+            queryKey: ['workflow-mapping', workflowId],
+            queryFn: async () => api.getWorkflowMapping(workflowId),
             enabled: !!workflowId
         }),
         useUpdateWorkflow: () => useMutation({
             mutationFn: async ({ 
                 workflowId, 
+                centerId,
                 name, 
                 ignoreFlags, 
                 processedQuestions,
-                centerId
+                promptConfig,
+                grouping,
             }: { 
                 workflowId: string; 
+                centerId: string;
                 name?: string; 
                 ignoreFlags?: Record<string, boolean>; 
                 processedQuestions?: Record<string, string>;
-                centerId: string;
+                promptConfig?: Record<string, unknown>;
+                grouping?: Record<string, number[]>;
             }) => {
-                return api.updateWorkflow(workflowId, name, ignoreFlags, processedQuestions);
+                return api.updateWorkflow(workflowId, name, ignoreFlags, processedQuestions, promptConfig, grouping);
             },
             onSuccess: (_, variables) => {
-                invalidateQueriesGlobally(['workflow-details', variables.workflowId]);
+                invalidateQueriesGlobally(['workflow-mapping', variables.workflowId]);
                 invalidateQueriesGlobally(['workflows', variables.centerId]);
+                invalidateQueriesGlobally(['workflow-summary', variables.workflowId]);
                 // toast.success('Workflow updated successfully');
             }
         }),
@@ -76,7 +86,7 @@ export const useWorkflowsQueries = () => {
             mutationFn: ({ workflowId, index, xpath, clickBeforeXpaths }: { workflowId: string; index: string; xpath: string | undefined; clickBeforeXpaths: string[] | undefined }) => 
                 api.saveWorkflowPaths(workflowId, index, xpath, clickBeforeXpaths),
             onSuccess: (data, variables) => {
-                invalidateQueriesGlobally(["workflow-details", variables.workflowId]);
+                invalidateQueriesGlobally(["workflow-mapping", variables.workflowId]);
             },
             onError: (error) => {
                 console.error("saveWorkflowPaths error", error);
@@ -86,8 +96,7 @@ export const useWorkflowsQueries = () => {
             mutationFn: ({ workflowId, questionIndex }: { workflowId: string; questionIndex: string }) => 
                 api.regenerateProcessedQuestion(workflowId, questionIndex),
             onSuccess: (data, variables) => {
-                console.log("regenerateProcessedQuestion success", data);
-                invalidateQueriesGlobally(["workflow-details", variables.workflowId]);
+                invalidateQueriesGlobally(["workflow-mapping", variables.workflowId]);
             },
             onError: (error) => {
                 console.error("regenerateProcessedQuestion error", error);

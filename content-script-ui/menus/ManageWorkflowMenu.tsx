@@ -5,11 +5,14 @@ import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflow
 import { MappingMetadata } from "@/modules/shared/types";
 import { useDebouncedCallback } from "@/modules/shared/ui/hooks/use-debounce";
 import { usePathLogger } from "@/modules/mapping/domain/path-logger";
-import { Check, Pencil, XIcon, RefreshCcw } from "lucide-react";
+import { Check, Pencil, XIcon, RefreshCcw, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/modules/shared/ui/components/tooltip";
 import { saveScrollPosition } from "@/modules/shared/shared.utils";
 import { findElementByXPath, queryFormElement } from "@/modules/mapping/domain/query-elements";
 import { getMode } from "@/modules/mapping/mapping.utils";
+import { GroupingEditor } from "@/modules/mapping/ui/components/GroupingEditor";
+import { TextArea } from "@/modules/shared/ui/components/textarea";
+import { WorkflowPrompt } from "@/modules/mapping/ui/components/WorkflowPrompt";
 
 
 export function ManageWorkflowMenu() {
@@ -17,19 +20,21 @@ export function ManageWorkflowMenu() {
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
     const { value: savedScrollPositions, isLoading: isScrollPositionLoading } = useStorageValue(sharedStorage.manageWorkflowMenuScrollPositions);
-    const { useGetWorkflowDetails, useUpdateWorkflow } = useWorkflowsQueries();
-    const { data: workflowDetails, isLoading: isWorkflowLoading } = useGetWorkflowDetails(selectedWorkflowId ?? '');
+    const { useGetWorkflowMapping, useUpdateWorkflow } = useWorkflowsQueries();
+    const { data: workflowMapping, isLoading: isWorkflowMappingLoading } = useGetWorkflowMapping(selectedWorkflowId ?? '');
+
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
     const [isRestoringScroll, setIsRestoringScroll] = useState(true);
+    const [isGroupingEditorOpen, setIsGroupingEditorOpen] = useState(false);
 
     const manageWorkflowListRef = useRef<HTMLDivElement>(null);
 
     const mapping: MappingMetadata[] = useMemo(() =>
-        Object.entries(workflowDetails?.mapping_metadata ?? {}).map(([index, metadata]) => ({
+        Object.entries(workflowMapping?.mapping_metadata ?? {}).map(([index, metadata]) => ({
             index: Number(index),
             ...(metadata as Omit<MappingMetadata, 'index'>)
         })),
-        [workflowDetails?.mapping_metadata]
+        [workflowMapping?.mapping_metadata]
     );
 
     const scrollPosition = selectedWorkflowId && savedScrollPositions ? savedScrollPositions[selectedWorkflowId]?.scrollPosition : undefined;
@@ -40,13 +45,18 @@ export function ManageWorkflowMenu() {
 
 
     const handleUpdateProcessedQuestionText = async (index: number, processedQuestionText: string) => {
-        await updateWorkflow({
-            workflowId: selectedWorkflowId ?? '',
-            processedQuestions: {
-                [index]: processedQuestionText
-            },
-            centerId: selectedCenter?.center_id ?? ''
-        });
+        if (!selectedWorkflowId || !selectedCenter) return;
+        try {
+            await updateWorkflow({
+                workflowId: selectedWorkflowId,
+                processedQuestions: {
+                    [index]: processedQuestionText
+                },
+                centerId: selectedCenter.center_id
+            });
+        } catch (error) {
+            console.error("handleUpdateProcessedQuestionText error", error);
+        }
     }
 
     const handleScroll = useDebouncedCallback(async () => {
@@ -59,7 +69,7 @@ export function ManageWorkflowMenu() {
     // Restore scroll position on mount and when data is loaded
     useLayoutEffect(() => {
         // Wait for both mapping data and scroll positions to load
-        if (!mapping || isWorkflowLoading || isScrollPositionLoading) {
+        if (!mapping || isWorkflowMappingLoading || isScrollPositionLoading) {
             return;
         }
         if (manageWorkflowListRef.current && scrollPosition !== null && scrollPosition !== undefined) {
@@ -75,23 +85,31 @@ export function ManageWorkflowMenu() {
         } else {
             setIsRestoringScroll(false);
         }
-    }, [scrollPosition, mapping, isWorkflowLoading, isScrollPositionLoading]);
+    }, [scrollPosition, mapping, isWorkflowMappingLoading, isScrollPositionLoading]);
 
 
     return (
         <div className="w-full flex flex-col gap-2 p-2">
             <div className="w-full flex flex-col justify-center items-start gap-1" >
-                <span className="text-xs text-muted-foreground">Manage Workflow: {workflowDetails?.workflow_name}</span>
-                <a href={workflowDetails?.s3_link ?? ''} target="_blank" rel="noopener noreferrer"
+                <span className="text-xs text-muted-foreground">Manage Workflow: {workflowMapping?.workflow_name}</span>
+                <WorkflowPrompt />
+            </div>
+            <div className="w-full flex flex-row justify-between items-center">
+                <a href={workflowMapping?.s3_link ?? ''} target="_blank" rel="noopener noreferrer"
                     className="text-xs text-blue-500 hover:text-blue-600 duration-300 ease-in-out">
                     View Screenshot
                 </a>
+                <button onClick={() => setIsGroupingEditorOpen(!isGroupingEditorOpen)}
+                    className="text-xs text-blue-500 hover:text-blue-600 duration-300 ease-in-out flex flex-row justify-center items-center gap-1">
+                    <span>
+                        Open Grouping Editor
+                    </span>
+                    {isGroupingEditorOpen ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+                </button>
             </div>
-            {/* {isWorkflowLoading || isRestoringScroll ? (
-                <div className="w-full h-40 flex items-center justify-center text-muted-foreground text-sm">Loading...</div>
-            ) : (!mapping || mapping.length === 0 ? (
-                <div className="w-full h-40 flex items-center justify-center text-muted-foreground text-sm">Mapping empty</div>
-            ) : ( */}
+            {isGroupingEditorOpen && (
+                <GroupingEditor workflowMapping={workflowMapping} setIsOpen={setIsGroupingEditorOpen} />
+            )}
             <div className="w-full max-h-72 overflow-y-auto overflow-x-hidden flex flex-col bg-white rounded-md shadow-md"
                 ref={manageWorkflowListRef} onScroll={handleScroll} style={{ opacity: isRestoringScroll ? 0 : 1 }}>
                 {mapping.map((metadata, index) => (
@@ -122,7 +140,6 @@ export function ManageWorkflowMenuItem({
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
 
     const [processedQuestionText, setProcessedQuestionText] = useState(metadata.processed_question_text);
-    const [isFocused, setIsFocused] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [clickBeforePaths, setClickBeforePaths] = useState<string[]>([]);
     const [newClickBeforePath, setNewClickBeforePath] = useState<string | null>(null);
@@ -130,7 +147,6 @@ export function ManageWorkflowMenuItem({
     const [regenerateStatus, setRegenerateStatus] = useState<'idle' | 'completed' | 'error'>('idle');
 
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const highlightedElementRef = useRef<HTMLElement | null>(null);
 
     const { start: startPathLogger, stop: stopPathLogger, isLogging: isPathLogging } = usePathLogger((newPath) => {
@@ -190,11 +206,6 @@ export function ManageWorkflowMenuItem({
         const newText = e.target.value;
         setProcessedQuestionText(newText);
 
-        // Auto-resize when focused
-        if (isFocused && textareaRef.current) {
-            autoResize();
-        }
-
         // Clear existing timeout
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
@@ -205,27 +216,6 @@ export function ManageWorkflowMenuItem({
             await onUpdateProcessedQuestion(metadata.index, newText);
             setIsSaved(true);
         }, 600);
-    };
-
-    const autoResize = () => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
-        }
-    };
-
-    const handleFocus = () => {
-        setIsFocused(true);
-        // Auto-resize on focus to show all content
-        setTimeout(() => autoResize(), 0);
-    };
-
-    const handleBlur = () => {
-        setIsFocused(false);
-        // Reset to default height
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-        }
     };
 
     const handleConfirmClickBeforePath = () => {
@@ -279,11 +269,11 @@ export function ManageWorkflowMenuItem({
             setViewOnPageStatus('not_found');
             return;
         }
-        
+
         // Add green border highlight
         element.style.outline = '2px solid #22c55e';
         highlightedElementRef.current = element;
-        
+
         // Scroll element into view
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setViewOnPageStatus('found');
@@ -307,14 +297,12 @@ export function ManageWorkflowMenuItem({
         <div className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0 py-2 px-3 gap-1">
             <span className="text-sm font-semibold">{metadata.index} - {metadata.question_text}</span>
             <div className="relative w-full">
-                <textarea
-                    ref={textareaRef}
+                <TextArea
                     value={processedQuestionText}
                     onChange={handleTextChange}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
                     disabled={isRegeneratingProcessedQuestion}
-                    className={`w-full text-sm text-muted-foreground mt-1 p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:border-transparent transition-all duration-200
+                    maxHeight={200}
+                    className={`w-full text-sm text-muted-foreground mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:border-transparent
                         ${isSaved ? 'ring-2 ring-green-500' : 'focus:ring-2 focus:ring-blue-500 '}
                     `}
                     rows={2}

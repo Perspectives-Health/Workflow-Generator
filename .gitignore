@@ -25,6 +25,8 @@ web-ext.config.ts
 *.sln
 *.sw?
 
+dist
 .env
+.env.testing
 .env.production
 openapi.json

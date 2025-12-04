@@ -9,6 +9,8 @@
     "dev:firefox": "wxt -b firefox",
     "prebuild": "pnpm --filter webext-bridge build",
     "build": "pnpm run schema:generate && pnpm run prebuild && wxt --mode development build",
+    "build:testing": "pnpm run prebuild && wxt --mode testing build",
+    "build:production": "pnpm run prebuild && wxt --mode production build",
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",

@@ -287,7 +287,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/centers/": {
+    "/centers": {
         parameters: {
             query?: never;
             header?: never;
@@ -301,7 +301,7 @@ export interface paths {
          *     Returns:
          *         List of centers
          */
-        get: operations["get_centers_centers__get"];
+        get: operations["get_centers_centers_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -319,131 +319,30 @@ export interface paths {
         };
         /**
          * Get Center
-         * @description Get center details by ID.
+         * @description Get center details by ID including prompt configuration.
          *
          *     Returns:
-         *         Center object with all details
+         *         Center object with all details including:
+         *         - center_id, center_name
+         *         - timezone, emr
+         *         - display_consent_form
+         *         - subscription_status
+         *         - prompt_config
+         *         - compliance_metadata
          */
         get: operations["get_center_centers__center_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/centers/{center_id}/display-consent": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
         /**
-         * Update Display Consent
-         * @description Update consent form display setting.
+         * Update Center
+         * @description Update center properties including display consent, EMR, timezone, and prompt config.
          *
          *     Args:
          *         center_id: Center UUID
-         *         data: Display consent setting
+         *         request: Update request with optional fields
          *
          *     Returns:
-         *         Success message
+         *         UpdateCenterResponse with success status and message
          */
-        put: operations["update_display_consent_centers__center_id__display_consent_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/centers/{center_id}/emr": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update Emr
-         * @description Update EMR system for a center.
-         *
-         *     Args:
-         *         center_id: Center UUID
-         *         data: EMR system name
-         *
-         *     Returns:
-         *         Updated center object
-         */
-        put: operations["update_emr_centers__center_id__emr_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/centers/{center_id}/timezone": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Update Timezone
-         * @description Update timezone for a center.
-         *
-         *     Args:
-         *         center_id: Center UUID
-         *         data: Timezone string
-         *
-         *     Returns:
-         *         Updated center object
-         */
-        put: operations["update_timezone_centers__center_id__timezone_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/centers/{center_id}/prompt-config": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Prompt Config
-         * @description Get AI prompt configuration for a center.
-         *
-         *     Args:
-         *         center_id: Center UUID
-         *
-         *     Returns:
-         *         Prompt configuration dictionary
-         */
-        get: operations["get_prompt_config_centers__center_id__prompt_config_get"];
-        /**
-         * Update Prompt Config
-         * @description Update AI prompt configuration for a center.
-         *
-         *     Args:
-         *         center_id: Center UUID
-         *         config: Prompt configuration dictionary
-         *
-         *     Returns:
-         *         Success message
-         */
-        put: operations["update_prompt_config_centers__center_id__prompt_config_put"];
+        put: operations["update_center_centers__center_id__put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1156,7 +1055,7 @@ export interface paths {
         get: operations["get_workflow_workflows__workflow_id__get"];
         /**
          * Update Workflow
-         * @description Update workflow properties including name, ignore flags, and processed questions.
+         * @description Update workflow properties including name, ignore flags, processed questions, prompt config, and grouping.
          */
         put: operations["update_workflow_workflows__workflow_id__put"];
         post?: never;
@@ -1699,6 +1598,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/backfill-prompts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Backfill Prompts
+         * @description Backfill prompt fields in existing prompt_configs for centers and workflows.
+         *
+         *     Generates prompts from existing settings and stores them in the prompt field.
+         *     Processes centers and workflows in parallel.
+         */
+        post: operations["backfill_prompts_internal_backfill_prompts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/toggle-populate-model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Toggle Populate Model
+         * @description Toggle POPULATE_LLM_MODEL between FLASH and PRO
+         */
+        post: operations["toggle_populate_model_internal_toggle_populate_model_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/extension/update-required": {
         parameters: {
             query?: never;
@@ -2032,6 +1974,32 @@ export interface components {
             last_payment_failure_date?: string | null;
             /** Billing Email */
             billing_email?: string | null;
+        };
+        /**
+         * CenterDetailsResponse
+         * @description Full center details response.
+         */
+        CenterDetailsResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Center Name */
+            center_name: string | null;
+            /** Timezone */
+            timezone: string | null;
+            /** Emr */
+            emr: string | null;
+            /** Display Consent Form */
+            display_consent_form: boolean | null;
+            /** Subscription Status */
+            subscription_status: string;
+            /** Prompt Config */
+            prompt_config: {
+                [key: string]: unknown;
+            } | null;
+            /** Compliance Metadata */
+            compliance_metadata: {
+                [key: string]: unknown;
+            } | null;
         };
         /** CenterDisplayInfo */
         CenterDisplayInfo: {
@@ -2917,28 +2885,30 @@ export interface components {
             release_note?: components["schemas"]["ReleaseNote"] | null;
         };
         /**
-         * UpdateDisplayConsentRequest
-         * @description Request to update consent form display setting.
+         * UpdateCenterRequest
+         * @description Request to update center properties.
          */
-        UpdateDisplayConsentRequest: {
-            /** Display */
-            display: boolean;
-        };
-        /**
-         * UpdateEMRRequest
-         * @description Request to update EMR system.
-         */
-        UpdateEMRRequest: {
+        UpdateCenterRequest: {
+            /** Display Consent Form */
+            display_consent_form?: boolean | null;
             /** Emr */
-            emr: string;
+            emr?: string | null;
+            /** Timezone */
+            timezone?: string | null;
+            /** Prompt Config */
+            prompt_config?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
-         * UpdateTimezoneRequest
-         * @description Request to update center timezone.
+         * UpdateCenterResponse
+         * @description Response for center update operations.
          */
-        UpdateTimezoneRequest: {
-            /** Timezone */
-            timezone: string;
+        UpdateCenterResponse: {
+            /** Success */
+            success: boolean;
+            /** Message */
+            message: string;
         };
         /**
          * UpdateWorkflowRequest
@@ -2956,6 +2926,14 @@ export interface components {
             /** Processed Questions */
             processed_questions?: {
                 [key: string]: string;
+            } | null;
+            /** Prompt Config */
+            prompt_config?: {
+                [key: string]: unknown;
+            } | null;
+            /** Grouping */
+            grouping?: {
+                [key: string]: number[];
             } | null;
         };
         /**
@@ -3256,6 +3234,9 @@ export interface components {
             workflow_name: string;
             mapping_status: components["schemas"]["MappingStatus"];
             category_type: components["schemas"]["CategoryType"];
+            progress_note_type?: components["schemas"]["ProgressNoteType"] | null;
+            /** Prompt */
+            prompt?: string | null;
             /** Created At */
             created_at?: string | null;
         };
@@ -3723,7 +3704,7 @@ export interface operations {
             };
         };
     };
-    get_centers_centers__get: {
+    get_centers_centers_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -3760,7 +3741,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["CenterDetailsResponse"];
                 };
             };
             /** @description Validation Error */
@@ -3774,7 +3755,7 @@ export interface operations {
             };
         };
     };
-    update_display_consent_centers__center_id__display_consent_put: {
+    update_center_centers__center_id__put: {
         parameters: {
             query?: never;
             header?: never;
@@ -3785,7 +3766,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateDisplayConsentRequest"];
+                "application/json": components["schemas"]["UpdateCenterRequest"];
             };
         };
         responses: {
@@ -3795,145 +3776,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_emr_centers__center_id__emr_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateEMRRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_timezone_centers__center_id__timezone_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateTimezoneRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_prompt_config_centers__center_id__prompt_config_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_prompt_config_centers__center_id__prompt_config_put: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    [key: string]: unknown;
-                };
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["UpdateCenterResponse"];
                 };
             };
             /** @description Validation Error */
@@ -5988,6 +5831,46 @@ export interface operations {
         };
     };
     start_backfill_progress_internal_backfill_progress_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    backfill_prompts_internal_backfill_prompts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    toggle_populate_model_internal_toggle_populate_model_post: {
         parameters: {
             query?: never;
             header?: never;

@@ -32,6 +32,8 @@ export type Center = components["schemas"]["CenterDisplayInfo"];
 
 export type GetCentersResponse = Center[];
 
+export type CenterDetails = components["schemas"]["CenterDetailsResponse"];
+
 export type MenuItem = "view-centers" | "view-workflows" | "create-workflow" | "manage-workflow";
 
 export type WorkflowSummary = components["schemas"]["WorkflowResponse"];
@@ -55,18 +57,11 @@ export type PreMappingMetadata = components["schemas"]["Metadata"];
 
 // export type CreateWorkflowRequest = components["schemas"]["MappingCreate"];
 
-export type WorkflowDetails = components["schemas"]["Mapping"];
+export type WorkflowMapping = components["schemas"]["Mapping"];
 
 export type CreateWorkflowRequest = components["schemas"]["WorkflowCreate"];
 
-// export type MappingMetadata = {
-//     label: string;
-//     placeholder: string;
-//     type: string;
-//     xpath: string;
-//     click_before_xpaths: string[];
-
-// }
+export type UpdateCenterRequest = components["schemas"]["UpdateCenterRequest"];
 
 export type UpdateWorkflowRequest = components["schemas"]["UpdateWorkflowRequest"];
 

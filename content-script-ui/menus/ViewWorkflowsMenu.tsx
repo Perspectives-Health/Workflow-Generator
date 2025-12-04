@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/modules/shared/ui/components/button";
 import { sharedStorage } from "@/modules/shared/shared.storage";
 import { displayDate, navigate } from "@/modules/shared/shared.utils";
@@ -10,6 +10,8 @@ import { DropdownMenuItem } from "@/modules/shared/ui/components/dropdown-menu";
 import { TextInput } from "@/modules/shared/ui/components/text-input";
 import { WorkflowFormData } from "@/modules/mapping/ui/use-mapping";
 import { Loader } from "lucide-react";
+import { useCentersQueries } from "@/modules/centers/ui/use-centers-queries";
+import { TextArea } from "@/modules/shared/ui/components/textarea";
 
 
 interface ViewWorkflowsMenuProps {
@@ -19,12 +21,21 @@ interface ViewWorkflowsMenuProps {
 
 export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
+    const { useGetCenterDetails, useUpdateCenterPromptConfig } = useCentersQueries();
     const { useGetWorkflows, useDeleteWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
     const { data: workflows, isLoading } = useGetWorkflows(selectedCenter?.center_id ?? '');
     const { mutateAsync: deleteWorkflow, isPending: isDeletingWorkflow } = useDeleteWorkflow();
     const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
+    const { data: centerDetails, isLoading: isCenterDetailsLoading } = useGetCenterDetails(selectedCenter?.center_id ?? '');
+    const { mutateAsync: updateCenterPrompt } = useUpdateCenterPromptConfig(selectedCenter?.center_id ?? '');
+
     const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null);
     const [newWorkflowName, setNewWorkflowName] = useState<string>('');
+    const [centerPromptState, setCenterPromptState] = useState<string | null>(null);
+    const [centerPromptSaveStatus, setCenterPromptSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+    const resetButtonRef = useRef<HTMLButtonElement>(null);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
 
     // Form state managed locally
     const [workflowName, setWorkflowName] = useState('');
@@ -40,6 +51,25 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
             return 0;
         });
     }, [workflows]);
+
+    const centerPrompt = useMemo(() => {
+        const centerInstructions = centerDetails?.prompt_config?.center_instructions as { prompt?: string } | undefined;
+        return centerInstructions?.prompt;
+    }, [centerDetails]);
+
+    useEffect(() => {
+        setCenterPromptState(centerPrompt || '');
+        console.log('centerPrompt', centerPrompt);
+    }, [centerPrompt]);
+
+    useEffect(() => {
+        if (centerPromptSaveStatus !== 'idle') {
+            const timer = setTimeout(() => {
+                setCenterPromptSaveStatus('idle');
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [centerPromptSaveStatus]);
 
     const handleCreateNewWorkflow = async () => {
         if (!workflowName || !workflowCategory || (workflowCategory === 'progress_notes' && !workflowProgressNoteType)) {
@@ -81,18 +111,77 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     }
 
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, workflowId: string) => {
-        
         if (e.key === 'Enter') {
-            await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter?.center_id ?? '' });
-            setEditingWorkflowId(null);
+            if (!selectedCenter) return;
+            try {
+                await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter.center_id });
+                setEditingWorkflowId(null);
+            } catch (error) {
+                console.error("handleKeyDown error", error);
+            }
         }
         else if (e.key === 'Escape') {
             setEditingWorkflowId(null);
         }
     }
 
+    const handleUpdateCenterPrompt = async () => {
+        if (!selectedCenter) return;
+        try {
+            await updateCenterPrompt({
+                prompt_config: {
+                    center_instructions: {
+                        prompt: centerPromptState
+                    }
+                }
+            });
+            setCenterPromptSaveStatus('success');
+        } catch (error) {
+            console.error("handleUpdateCenterPrompt error", error);
+            setCenterPromptSaveStatus('error');
+        }
+    }
+
+    // Reset save status after 2 seconds
+    useEffect(() => {
+        if (centerPromptSaveStatus !== 'idle') {
+            const timer = setTimeout(() => {
+                setCenterPromptSaveStatus('idle');
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [centerPromptSaveStatus]);
+
     return (
         <div className="w-full flex flex-col gap-2 p-2">
+            <span className="text-xs text-muted-foreground">System Prompt for {selectedCenter?.center_name}</span>
+            <TextArea
+                value={centerPromptState || ''}
+                onChange={(e) => setCenterPromptState(e.target.value)}
+                className="w-full px-2 py-1 border border-gray-200 rounded-md text-sm"
+                maxHeight={400}
+                ignoreBlurRefs={[resetButtonRef, saveButtonRef]}
+            />
+            <div className="flex flex-row justify-end items-center gap-2 w-full">
+                {centerPromptSaveStatus === 'success' ? (
+                    <span className="text-xs text-green-500 font-medium">Saved!</span>
+                ) : centerPromptSaveStatus === 'error' ? (
+                    <span className="text-xs text-red-500 font-medium">Error saving</span>
+                ) : (
+                    <>
+                        <Button ref={resetButtonRef} variant="outline" size="sm" onClick={() => setCenterPromptState(centerPrompt || '')}
+                            className="px-2 py-1 text-xs"
+                        >
+                            Reset
+                        </Button>
+                        <Button ref={saveButtonRef} variant="default" size="sm"
+                            className="px-2 py-1 text-xs bg-primary text-white hover:bg-primary/90"
+                            onClick={handleUpdateCenterPrompt}>
+                            Save
+                        </Button>
+                    </>
+                )}
+            </div>
             <span className="text-xs text-muted-foreground">Workflows for {selectedCenter?.center_name}</span>
             {isLoading ? (
                 <div className="w-full h-40 flex items-center justify-center text-muted-foreground text-sm">Loading...</div>

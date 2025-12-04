@@ -7,13 +7,18 @@ export const workflowsQueries = (sendMessage: SendMessageFn) => ({
         if (!result.success) throw result.error;
         return result.data;
     },
-    getWorkflowDetails: async (workflowId: string) => {
-        const result = await sendMessage("get-workflow-details", { workflowId });
+    getWorkflow: async (workflowId: string) => {
+        const result = await sendMessage("get-workflow", { workflowId });
         if (!result.success) throw result.error;
         return result.data;
     },
-    updateWorkflow: async (workflowId: string, name?: string, ignoreFlags?: Record<string, boolean>, processedQuestions?: Record<string, string>) => {
-        const result = await sendMessage("update-workflow", { workflow_id: workflowId, name, ignore_flags: ignoreFlags, processed_questions: processedQuestions });
+    getWorkflowMapping: async (workflowId: string) => {
+        const result = await sendMessage("get-workflow-mapping", { workflowId });
+        if (!result.success) throw result.error;
+        return result.data;
+    },
+    updateWorkflow: async (workflowId: string, name?: string, ignoreFlags?: Record<string, boolean>, processedQuestions?: Record<string, string>, promptConfig?: Record<string, unknown>, grouping?: Record<string, number[]>) => {
+        const result = await sendMessage("update-workflow", { workflow_id: workflowId, name, ignore_flags: ignoreFlags, processed_questions: processedQuestions, prompt_config: promptConfig, grouping: grouping });
         if (!result.success) throw result.error;
         return result.data;
     },
