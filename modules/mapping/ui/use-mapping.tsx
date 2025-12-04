@@ -147,7 +147,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 index: parseInt(key),
                 xpath: value.elementPrimaryPath || value.elementAbsoluteXPath,
                 type: value.elementType,
-                label: value.elementLabel,
+                label: value.elementType === 'select' ? value.elementOptions : value.elementLabel,
                 placeholder: value.elementPlaceholder,
             }));
             
