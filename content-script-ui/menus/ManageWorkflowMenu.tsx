@@ -28,6 +28,7 @@ export function ManageWorkflowMenu() {
     const [isGroupingEditorOpen, setIsGroupingEditorOpen] = useState(false);
 
     const manageWorkflowListRef = useRef<HTMLDivElement>(null);
+    const highlightedElementRef = useRef<HTMLElement | null>(null);
 
     const mapping: MappingMetadata[] = useMemo(() =>
         Object.entries(workflowMapping?.mapping_metadata ?? {}).map(([index, metadata]) => ({
@@ -108,7 +109,41 @@ export function ManageWorkflowMenu() {
                 </button>
             </div>
             {isGroupingEditorOpen && (
-                <GroupingEditor workflowMapping={workflowMapping} setIsOpen={setIsGroupingEditorOpen} />
+                <GroupingEditor 
+                    workflowMapping={workflowMapping} 
+                    setIsOpen={setIsGroupingEditorOpen}
+                    onScrollToItem={(key) => {
+                        const element = manageWorkflowListRef.current?.querySelector(`[data-mapping-key="${key}"]`);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        
+                        // Also highlight the element on the current page
+                        const metadata = mapping.find(m => m.index === key);
+                        if (metadata?.xpath) {
+                            // Clear previous highlight if exists
+                            if (highlightedElementRef.current) {
+                                highlightedElementRef.current.style.outline = '';
+                                highlightedElementRef.current = null;
+                            }
+                            
+                            const pageElement = findElementByXPath(metadata.xpath, document);
+                            if (pageElement) {
+                                pageElement.style.outline = '2px solid #22c55e';
+                                highlightedElementRef.current = pageElement;
+                                pageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                
+                                // Clear highlight after 3 seconds
+                                setTimeout(() => {
+                                    if (highlightedElementRef.current === pageElement) {
+                                        pageElement.style.outline = '';
+                                        highlightedElementRef.current = null;
+                                    }
+                                }, 3000);
+                            }
+                        }
+                    }}
+                />
             )}
             <div className="w-full max-h-72 overflow-y-auto overflow-x-hidden flex flex-col bg-white rounded-md shadow-md"
                 ref={manageWorkflowListRef} onScroll={handleScroll} style={{ opacity: isRestoringScroll ? 0 : 1 }}>
@@ -294,7 +329,10 @@ export function ManageWorkflowMenuItem({
     }
 
     return (
-        <div className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0 py-2 px-3 gap-1">
+        <div 
+            className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0 py-2 px-3 gap-1"
+            data-mapping-key={metadata.index}
+        >
             <span className="text-sm font-semibold">{metadata.index} - {metadata.question_text}</span>
             <div className="relative w-full">
                 <TextArea

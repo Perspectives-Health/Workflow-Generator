@@ -4,7 +4,7 @@ import { WorkflowMapping } from "@/modules/shared/types";
 import { cn } from "@/lib/utils";
 import { useStorageValue } from "@/modules/shared/ui/hooks/use-storage-value";
 import { sharedStorage } from "@/modules/shared/shared.storage";
-import { XIcon } from "lucide-react";
+import { PlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/modules/shared/ui/components/button";
 
 type GroupingState = {
@@ -30,9 +30,10 @@ function generateRange(start: number, end: number): number[] {
 interface GroupingEditorProps {
     workflowMapping: WorkflowMapping | undefined;
     setIsOpen: (isOpen: boolean) => void;
+    onScrollToItem?: (key: number) => void;
 }
 
-export function GroupingEditor({ workflowMapping, setIsOpen }: GroupingEditorProps) {
+export function GroupingEditor({ workflowMapping, setIsOpen, onScrollToItem }: GroupingEditorProps) {
     const { useUpdateWorkflow } = useWorkflowsQueries();
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
@@ -82,13 +83,12 @@ export function GroupingEditor({ workflowMapping, setIsOpen }: GroupingEditorPro
             return;
         }
 
-        const min = Math.min(...allNumbers);
-        const max = Math.max(...allNumbers);
+        const max = Math.max(Object.keys(workflowMapping?.mapping_metadata ?? {}).length);
         const uniqueNumbers = new Set(allNumbers);
 
         // Find missing indices
         const missing: number[] = [];
-        for (let i = min; i <= max; i++) {
+        for (let i = 1; i <= max; i++) {
             if (!uniqueNumbers.has(i)) {
                 missing.push(i);
             }
@@ -98,7 +98,7 @@ export function GroupingEditor({ workflowMapping, setIsOpen }: GroupingEditorPro
         const seen = new Set<number>();
         const overlapping = new Set<number>();
         for (const num of allNumbers) {
-            if (seen.has(num)) {
+            if (seen.has(num) || num > max) {
                 overlapping.add(num);
             }
             seen.add(num);
@@ -143,6 +143,41 @@ export function GroupingEditor({ workflowMapping, setIsOpen }: GroupingEditorPro
         setIsOpen(false);
     }
 
+    const handleAddGroup = () => {
+        setGroupingState(prev => {
+            const newKey = Object.keys(prev).length + 1;
+            return {
+                ...prev,
+                [newKey]: []
+            };
+        });
+    }
+
+    const handleRemoveGroup = (groupKey: string) => {
+        setGroupingState(prev => {
+            const removedKey = parseInt(groupKey);
+            const newState: GroupingState = {};
+            
+            for (const [key, value] of Object.entries(prev)) {
+                const numKey = parseInt(key);
+                if (numKey < removedKey) {
+                    newState[key] = value;
+                } else if (numKey > removedKey) {
+                    newState[numKey - 1] = value;
+                }
+                // Skip the removed key
+            }
+            
+            return newState;
+        });
+    }
+
+    const handleInputDoubleClick = (value: number) => {
+        if (onScrollToItem) {
+            onScrollToItem(value);
+        }
+    }
+
 
     return (
         <div className="w-full flex flex-col justify-center items-start gap-1">
@@ -163,6 +198,7 @@ export function GroupingEditor({ workflowMapping, setIsOpen }: GroupingEditorPro
                                             value={start}
                                             onChange={(e) => handleRangeChange(key, 'start', parseInt(e.target.value) || 0)}
                                             className="w-12 px-1 py-0.5 text-center text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            onDoubleClick={() => handleInputDoubleClick(start)}
                                         />
                                         <span className="text-muted-foreground">-</span>
                                         <input
@@ -170,11 +206,19 @@ export function GroupingEditor({ workflowMapping, setIsOpen }: GroupingEditorPro
                                             value={end}
                                             onChange={(e) => handleRangeChange(key, 'end', parseInt(e.target.value) || 0)}
                                             className="w-12 px-1 py-0.5 text-center text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            onDoubleClick={() => handleInputDoubleClick(end)}
                                         />
                                     </div>
+                                    <button className="flex flex-row items-center gap-1 text-muted-foreground hover:text-muted-foreground/80 transition-all duration-200 cursor-pointer" onClick={() => handleRemoveGroup(key)}>
+                                        <XIcon className="h-4 w-4" />
+                                    </button>
                                 </div>
                             );
                         })}
+                        <button className="flex flex-row items-center gap-1 text-muted-foreground hover:text-muted-foreground/80 transition-all duration-200 cursor-pointer" onClick={handleAddGroup}>
+                            <PlusIcon className="h-4 w-4" />
+                            <span className="text-xs">Add Group</span>
+                        </button>
                     </div>
                     <div className="w-full flex flex-row justify-between items-center gap-2 px-3 py-2 border-t border-gray-200 bg-gray-50 rounded-b-md">
                         <span className={cn("text-xs", isRangeValid ? 'text-green-500' : 'text-red-500')}>

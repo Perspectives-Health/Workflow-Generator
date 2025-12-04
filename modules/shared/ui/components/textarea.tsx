@@ -35,6 +35,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         };
 
         const handleFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+            e.stopPropagation();
             setIsFocused(true);
             onFocus?.(e);
             autoResize();
