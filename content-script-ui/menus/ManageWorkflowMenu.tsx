@@ -123,20 +123,24 @@ export function ManageWorkflowMenu() {
                         if (metadata?.xpath) {
                             // Clear previous highlight if exists
                             if (highlightedElementRef.current) {
-                                highlightedElementRef.current.style.outline = '';
+                                highlightedElementRef.current.style.boxShadow = '';
+                                highlightedElementRef.current.style.backgroundColor = '';
                                 highlightedElementRef.current = null;
                             }
                             
                             const pageElement = findElementByXPath(metadata.xpath, document);
                             if (pageElement) {
-                                pageElement.style.outline = '2px solid #22c55e';
+                                // Use box-shadow for a glow effect that's visible even with wrapped elements
+                                pageElement.style.boxShadow = '0 0 0 3px #22c55e, 0 0 12px 4px rgba(34, 197, 94, 0.6)';
+                                pageElement.style.backgroundColor = 'rgba(34, 197, 94, 0.15)';
                                 highlightedElementRef.current = pageElement;
                                 pageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 
                                 // Clear highlight after 3 seconds
                                 setTimeout(() => {
                                     if (highlightedElementRef.current === pageElement) {
-                                        pageElement.style.outline = '';
+                                        pageElement.style.boxShadow = '';
+                                        pageElement.style.backgroundColor = '';
                                         highlightedElementRef.current = null;
                                     }
                                 }, 3000);
@@ -219,7 +223,8 @@ export function ManageWorkflowMenuItem({
             const timer = setTimeout(() => {
                 // Remove highlight from element when status resets
                 if (highlightedElementRef.current) {
-                    highlightedElementRef.current.style.outline = '';
+                    highlightedElementRef.current.style.boxShadow = '';
+                    highlightedElementRef.current.style.backgroundColor = '';
                     highlightedElementRef.current = null;
                 }
                 setViewOnPageStatus(null);
@@ -291,7 +296,8 @@ export function ManageWorkflowMenuItem({
     const handleViewOnCurrentPage = (path: string) => {
         // Clear previous highlight if exists
         if (highlightedElementRef.current) {
-            highlightedElementRef.current.style.outline = '';
+            highlightedElementRef.current.style.boxShadow = '';
+            highlightedElementRef.current.style.backgroundColor = '';
             highlightedElementRef.current = null;
         }
 
@@ -305,8 +311,9 @@ export function ManageWorkflowMenuItem({
             return;
         }
 
-        // Add green border highlight
-        element.style.outline = '2px solid #22c55e';
+        // Use box-shadow for a glow effect that's visible even with wrapped elements
+        element.style.boxShadow = '0 0 0 3px #22c55e, 0 0 12px 4px rgba(34, 197, 94, 0.6)';
+        element.style.backgroundColor = 'rgba(34, 197, 94, 0.15)';
         highlightedElementRef.current = element;
 
         // Scroll element into view

@@ -50,7 +50,7 @@ export const getElementLabel = (element: Element): string => {
 
         if (labelElement) {
             // Use textContent and trim for clean result
-            return labelElement.textContent?.trim() ?? null;
+            return labelElement.textContent?.trim() ?? '';
         }
     }
 
@@ -106,7 +106,7 @@ export const getComboboxOptions = (element: Element): string[] => {
                     const options = JSON.parse(decodedOptions);
                     
                     // Extract the text values from the array
-                    return options.map((option: any) => option.text || option.title || option.value);
+                    return options.map((option: any) => option.text || option.title || option.value || '');
                 } catch (error) {
                     console.error('Failed to parse combobox options:', error);
                     return [];

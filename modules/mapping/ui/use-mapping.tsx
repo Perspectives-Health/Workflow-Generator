@@ -150,14 +150,26 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 label: value.elementType === 'select' ? value.elementOptions : value.elementLabel,
                 placeholder: value.elementPlaceholder,
             }));
+
+            const newMetadataArray = metadataArray.map((metadata) => {
+                // Handle select types with empty options - convert to free_response
+                if ((metadata.type === 'select') && Array.isArray(metadata.label) && metadata.label.length === 0) {
+                    return {
+                        ...metadata,
+                        label: "",
+                        type: "free_response"
+                    }
+                }
+                return metadata;
+            });
             
             const { workflowName, workflowCategory, workflowProgressNoteType, centerId } = formDataRef.current!;
             
-            console.log(metadataArray);
+            console.log(newMetadataArray);
             console.log(base64Image)
             const response = await createWorkflow({
                 workflowName,
-                metadata: metadataArray,
+                metadata: newMetadataArray,
                 centerId,
                 screenshot: base64Image,
                 categoryInstructions: {
