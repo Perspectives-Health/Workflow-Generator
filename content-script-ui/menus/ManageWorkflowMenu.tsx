@@ -5,14 +5,18 @@ import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflow
 import { MappingMetadata } from "@/modules/shared/types";
 import { useDebouncedCallback } from "@/modules/shared/ui/hooks/use-debounce";
 import { usePathLogger } from "@/modules/mapping/domain/path-logger";
-import { Check, Pencil, XIcon, RefreshCcw, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { Check, Pencil, XIcon, RefreshCcw, ChevronDownIcon, ChevronUpIcon, Loader2Icon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/modules/shared/ui/components/tooltip";
-import { saveScrollPosition } from "@/modules/shared/shared.utils";
+import { displayDate, saveScrollPosition } from "@/modules/shared/shared.utils";
 import { findElementByXPath, queryFormElement } from "@/modules/mapping/domain/query-elements";
 import { getMode } from "@/modules/mapping/mapping.utils";
 import { GroupingEditor } from "@/modules/mapping/ui/components/GroupingEditor";
 import { TextArea } from "@/modules/shared/ui/components/textarea";
 import { WorkflowPrompt } from "@/modules/mapping/ui/components/WorkflowPrompt";
+import { usePopulateQueries } from "@/modules/populate/use-populate-queries";
+import { Button } from "@/modules/shared/ui/components/button";
+import { injectFormData } from "@/modules/populate/domain/emr-populator";
+import { TranscriptLoader } from "@/modules/populate/ui/components/transcript-loader";
 
 
 export function ManageWorkflowMenu() {
@@ -20,12 +24,23 @@ export function ManageWorkflowMenu() {
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
     const { value: savedScrollPositions, isLoading: isScrollPositionLoading } = useStorageValue(sharedStorage.manageWorkflowMenuScrollPositions);
+    const { value: workflowSessionIdMap } = useStorageValue(sharedStorage.workflowSessionIdMap);
     const { useGetWorkflowMapping, useUpdateWorkflow } = useWorkflowsQueries();
     const { data: workflowMapping, isLoading: isWorkflowMappingLoading } = useGetWorkflowMapping(selectedWorkflowId ?? '');
+    const { mutateAsync: updateWorkflow, isPending: updatingWorkflow } = useUpdateWorkflow();
+    const { useGetNoteData, useTestPopulate, useGetDefaultTranscript } = usePopulateQueries();
+    const { mutateAsync: testPopulate, isPending: isTestPopulatePending } = useTestPopulate();
+    const { data: defaultTranscript, isLoading: isDefaultTranscriptLoading } = useGetDefaultTranscript(selectedWorkflowId ?? '');
 
-    const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
+    const sessionInfo = selectedWorkflowId && workflowSessionIdMap ? workflowSessionIdMap[selectedWorkflowId] : undefined;
+    const sessionId = sessionInfo?.sessionId;
+    const createdAt = sessionInfo?.createdAt;
+    const { data: noteData, isLoading: isNoteDataLoading, refetch: refetchNoteData } = useGetNoteData(sessionId ?? '', selectedWorkflowId ?? '');
+
     const [isRestoringScroll, setIsRestoringScroll] = useState(true);
     const [isGroupingEditorOpen, setIsGroupingEditorOpen] = useState(false);
+    const [transcriptLoaderOpen, setTranscriptLoaderOpen] = useState(false);
+    const [transcript, setTranscript] = useState<string>('');
 
     const manageWorkflowListRef = useRef<HTMLDivElement>(null);
     const highlightedElementRef = useRef<HTMLElement | null>(null);
@@ -39,6 +54,12 @@ export function ManageWorkflowMenu() {
     );
 
     const scrollPosition = selectedWorkflowId && savedScrollPositions ? savedScrollPositions[selectedWorkflowId]?.scrollPosition : undefined;
+
+    useEffect(() => {
+        if (defaultTranscript) {
+            setTranscript(defaultTranscript);
+        }
+    }, [defaultTranscript]);
 
     useEffect(() => {
         setIsRestoringScroll(true);
@@ -88,6 +109,49 @@ export function ManageWorkflowMenu() {
         }
     }, [scrollPosition, mapping, isWorkflowMappingLoading, isScrollPositionLoading]);
 
+    const handleTestPopulate = async () => {
+        if (!selectedWorkflowId) return;
+        try {
+            const sessionId = await testPopulate({ workflowId: selectedWorkflowId, transcript });
+            if (sessionId) {
+                const currentMap = await sharedStorage.workflowSessionIdMap.getValue();
+                await sharedStorage.workflowSessionIdMap.setValue({
+                    ...currentMap,
+                    [selectedWorkflowId]: {
+                        sessionId,
+                        createdAt: new Date().toISOString()
+                    }
+                });
+            }
+            setTranscriptLoaderOpen(false);
+        } catch (error) {
+            console.error("handleTestPopulate error", error);
+        }
+    }
+
+    const handlePopulate = async () => {
+        if (!selectedWorkflowId || !sessionId) return;
+        try {
+            const { data: freshNoteData } = await refetchNoteData();
+            if (freshNoteData) {
+                await injectFormData(freshNoteData)
+            }
+        } catch (error) {
+            console.error("handlePopulate error", error);
+        }
+    }
+
+    const handleFillSingleAnswer = async (index: number) => {
+        if (!selectedWorkflowId || !sessionId) return;
+        try {
+            const { data: freshNoteData } = await refetchNoteData();
+            if (freshNoteData) {
+                await injectFormData(freshNoteData, index);
+            }
+        } catch (error) {
+            console.error("handleFillSingleAnswer error", error);
+        }
+    }
 
     return (
         <div className="w-full flex flex-col gap-2 p-2">
@@ -109,15 +173,15 @@ export function ManageWorkflowMenu() {
                 </button>
             </div>
             {isGroupingEditorOpen && (
-                <GroupingEditor 
-                    workflowMapping={workflowMapping} 
+                <GroupingEditor
+                    workflowMapping={workflowMapping}
                     setIsOpen={setIsGroupingEditorOpen}
                     onScrollToItem={(key) => {
                         const element = manageWorkflowListRef.current?.querySelector(`[data-mapping-key="${key}"]`);
                         if (element) {
                             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
-                        
+
                         // Also highlight the element on the current page
                         const metadata = mapping.find(m => m.index === key);
                         if (metadata?.xpath) {
@@ -127,7 +191,7 @@ export function ManageWorkflowMenu() {
                                 highlightedElementRef.current.style.backgroundColor = '';
                                 highlightedElementRef.current = null;
                             }
-                            
+
                             const pageElement = findElementByXPath(metadata.xpath, document);
                             if (pageElement) {
                                 // Use box-shadow for a glow effect that's visible even with wrapped elements
@@ -135,7 +199,7 @@ export function ManageWorkflowMenu() {
                                 pageElement.style.backgroundColor = 'rgba(34, 197, 94, 0.15)';
                                 highlightedElementRef.current = pageElement;
                                 pageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                
+
                                 // Clear highlight after 3 seconds
                                 setTimeout(() => {
                                     if (highlightedElementRef.current === pageElement) {
@@ -156,25 +220,39 @@ export function ManageWorkflowMenu() {
                         key={index}
                         metadata={metadata}
                         onUpdateProcessedQuestion={handleUpdateProcessedQuestionText}
+                        onFillSingleAnswer={handleFillSingleAnswer}
                     />
                 ))}
             </div>
             {/* ))} */}
-            {/* <div className="w-full flex flex-row justify-end items-center">
-                <button className="px-3 py-2 text-xs bg-primary text-white hover:bg-primary/90" onClick={handleSave}>
-                    Save
-                </button>
-            </div> */}
+            {createdAt ? (
+                <span className="text-xs text-muted-foreground text-right w-full">
+                    Note last generated at {displayDate(createdAt)}
+                </span>
+            ) : (
+                <span className="text-xs text-muted-foreground text-right w-full">
+                    Generate answers to populate the note
+                </span>
+            )}
+            <div className="w-full flex flex-row justify-end items-center gap-2">
+                <TranscriptLoader open={transcriptLoaderOpen} setOpen={setTranscriptLoaderOpen} transcript={transcript} setTranscript={setTranscript} handleTestPopulate={handleTestPopulate} isTestPopulatePending={isTestPopulatePending} />
+                <Button className="w-24 py-2 text-xs" onClick={handlePopulate}
+                    disabled={isTestPopulatePending || !selectedWorkflowId || !sessionId || isNoteDataLoading} variant="outline">
+                    {isTestPopulatePending || isNoteDataLoading ? <Loader2Icon className="h-4 w-4 animate-spin" /> : 'Populate'}
+                </Button>
+            </div>
         </div>
     );
 }
 
 export function ManageWorkflowMenuItem({
     metadata,
-    onUpdateProcessedQuestion
+    onUpdateProcessedQuestion,
+    onFillSingleAnswer
 }: {
     metadata: MappingMetadata;
     onUpdateProcessedQuestion: (index: number, text: string) => Promise<void>;
+    onFillSingleAnswer: (index: number) => Promise<void>;
 }) {
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
 
@@ -335,8 +413,12 @@ export function ManageWorkflowMenuItem({
         }
     }
 
+    const handleFillSingleAnswer = async () => {
+        await onFillSingleAnswer(metadata.index);
+    }
+
     return (
-        <div 
+        <div
             className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0 py-2 px-3 gap-1"
             data-mapping-key={metadata.index}
         >
@@ -359,17 +441,24 @@ export function ManageWorkflowMenuItem({
                 )}
             </div>
             <div className="w-full flex flex-row justify-between items-center">
-                {viewOnPageStatus === 'not_found' ? (
-                    <span className="text-xs text-red-500">
-                        Could not locate element
-                    </span>
-                ) : (
+                <div className="w-full flex flex-row justify-start items-center gap-1">
+                    {viewOnPageStatus === 'not_found' ? (
+                        <span className="text-xs text-red-500">
+                            Could not locate element
+                        </span>
+                    ) : (
+                        <button className="text-xs text-blue-500 hover:text-blue-600 duration-300 ease-in-out"
+                            onClick={() => handleViewOnCurrentPage(metadata.xpath)}
+                        >
+                            View on Current Page
+                        </button>
+                    )}
+                    <span className="text-xs text-muted-foreground"> | </span>
                     <button className="text-xs text-blue-500 hover:text-blue-600 duration-300 ease-in-out"
-                        onClick={() => handleViewOnCurrentPage(metadata.xpath)}
-                    >
-                        View on Current Page
+                        onClick={handleFillSingleAnswer}>
+                            Fill Out
                     </button>
-                )}
+                </div>
                 {isRegeneratingProcessedQuestion ? (
                     <span className="text-xs text-muted-foreground">Regenerating...</span>
                 ) : regenerateStatus === 'completed' ? (

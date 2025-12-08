@@ -101,3 +101,11 @@ export enum MappingStage {
 }
 
 export type RegenerateProcessedQuestionResponse = components["schemas"]["RegenerateProcessedQuestionResponse"];
+
+export type TestPopuateRequestBody = {
+    sessionId: string;
+    workflowId: string;
+    categoryType: CategoryType;
+}
+
+export type NoteData = components["schemas"]["PopulateModel"];

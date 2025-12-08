@@ -1,9 +1,9 @@
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { ApiResponse, CenterDetails, CreateWorkflowRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary } from "@/modules/shared/types";
+import type { ApiResponse, CategoryType, CenterDetails, CreateWorkflowRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData } from "@/modules/shared/types";
 import { onMessage } from "webext-bridge/background";
 import { sendResponse, sendError } from "@/modules/shared/infrastructure/api-utils.background";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow } from "@/modules/shared/infrastructure/api.background";
+import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData } from "@/modules/shared/infrastructure/api.background";
 
 
 declare module "webext-bridge" {
@@ -20,6 +20,9 @@ declare module "webext-bridge" {
         "create-workflow": ProtocolWithReturn<CreateWorkflowRequest, ApiResponse<void>>;
         "save-workflow-paths": ProtocolWithReturn<{ workflowId: string, index: string, xpath: string | undefined, clickBeforeXpaths: string[] | undefined }, ApiResponse<void>>;
         "regenerate-processed-question": ProtocolWithReturn<{ workflowId: string, questionIndex: string }, ApiResponse<RegenerateProcessedQuestionResponse>>;
+        "get-default-transcript": ProtocolWithReturn<{ workflowId: string }, ApiResponse<string>>;
+        "test-populate": ProtocolWithReturn<{ workflowId: string, transcript: string }, ApiResponse<string>>;
+        "get-note-data": ProtocolWithReturn<{ sessionId: string, workflowId: string }, ApiResponse<NoteData>>;
     }
 }
 
@@ -133,6 +136,43 @@ export function registerBackgroundRoutes() {
     onMessage("regenerate-processed-question", async ({ data }) => {
         try {
             const result = await regenerateProcessedQuestion(data.workflowId, data.questionIndex);
+            return sendResponse(result);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+
+    onMessage("get-default-transcript", async ({ data }) => {
+        try {
+            const workflowDetails = await getWorkflow(data.workflowId);
+            const categoryType = workflowDetails.category_type;
+            const urlPath = categoryType === 'intake_assessment'
+                ? '/sample-transcripts/intake_assessment.txt'
+                : '/sample-transcripts/progress_note.txt';
+            const url = browser.runtime.getURL(urlPath);
+            const response = await fetch(url);
+            const sampleTranscript = await response.text();
+            return sendResponse(sampleTranscript);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+
+    onMessage("test-populate", async ({ data }) => {
+        try {
+            const clinicalSession = await createClinicalSession();
+            await updateClinicalSessionWorkflows(clinicalSession.id, [data.workflowId]);
+            await generateNote(clinicalSession.id, data.workflowId, data.transcript);
+
+            return sendResponse(clinicalSession.id);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+
+    onMessage("get-note-data", async ({ data }) => {
+        try {
+            const result = await getNoteData(data.sessionId, data.workflowId);
             return sendResponse(result);
         } catch (error) {
             return sendError(error as Error);

@@ -160,7 +160,6 @@ export const getWorkflow = async (workflowId: string) => {
 
 
 export const updateWorkflow = async (body: UpdateWorkflowRequest) => {
-    console.log('body', body);
     const { data, error } = await fastapi.PUT(`/workflows/{workflow_id}`, {
         params: {
             path: {
@@ -231,3 +230,62 @@ export const regenerateProcessedQuestion = async (workflowId: string, questionIn
     }
     return data;
 };
+
+
+export const createClinicalSession = async () => {
+    const { data, error } = await fastapi.POST(`/clinical-sessions`);
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
+
+export const updateClinicalSessionWorkflows = async (sessionId: string, workflowIds: string[]) => {
+    const { data, error } = await fastapi.PUT(`/clinical-sessions/{session_id}/workflows`, {
+        params: {
+            path: {
+                session_id: sessionId
+            }
+        },
+        body: {
+            workflow_ids: workflowIds
+        }
+    });
+    if (error) {
+        throw error;
+    }
+    return data;
+}
+
+
+export const generateNote = async (sessionId: string, workflowId: string, transcript: string) => {
+    const { data, error } = await fastapi.POST(`/populate`, {
+        body: {
+            session_id: sessionId,
+            workflow_id: workflowId,
+            transcript: transcript
+        }
+    });
+    if (error) {
+        throw error;
+    }
+    return data;
+}
+
+
+export const getNoteData = async (sessionId: string, workflowId: string) => {
+    const { data, error } = await fastapi.GET(`/populate/fill-in-data/{session_id}/{workflow_id}`, {
+        params: {
+            path: {
+                session_id: sessionId,
+                workflow_id: workflowId
+            }
+        }
+    });
+    if (error) {
+        throw error;
+    }
+    return data;
+}

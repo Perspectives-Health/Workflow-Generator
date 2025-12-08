@@ -42,5 +42,12 @@ export const sharedStorage = {
 		{
 			fallback: {},
 		}
+	),
+	// Map workflowId to session info
+	workflowSessionIdMap: storage.defineItem<Record<string, { sessionId: string; createdAt: string }>>(
+		'local:shared::workflowSessionIdMap',
+		{
+			fallback: {},
+		}
 	)
 }
