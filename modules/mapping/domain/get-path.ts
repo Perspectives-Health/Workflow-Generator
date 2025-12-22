@@ -9,10 +9,10 @@ import { EhrPlatform } from "@/modules/shared/types";
 const escapeAttr = (val: string) => val.replace(/"/g, '&quot;');
 
 
-const getEmrSpecificIdAttr = (mode: EhrPlatform): string | null => {
+const getEmrSpecificIdAttr = (mode: EhrPlatform): string[] | null => {
     switch (mode) {
         case EhrPlatform.BESTNOTES:
-            return 'data-linkid';
+            return ['data-linkid', 'data-linkid-index'];
         default:
             return null;
     }
@@ -99,29 +99,31 @@ const getUniqueElementName = (element: Element): string | null => {
 
 export const getEmrSpecificPath = (element: Element, mode: EhrPlatform | null): string | null => {
     if (!element || !mode) return null;
-    const emrSpecificIdAttr = getEmrSpecificIdAttr(mode);
-    if (!emrSpecificIdAttr) return null;
+    const emrSpecificIdAttrs = getEmrSpecificIdAttr(mode);
+    if (!emrSpecificIdAttrs) return null;
 
-    // Traverse up to find the nearest unique data-linkid anchor
-    let anchor: Element | null = element;
-    while (anchor && anchor !== document.body) {
-        if (anchor.hasAttribute(emrSpecificIdAttr)) {
-            const emrSpecificId = anchor.getAttribute(emrSpecificIdAttr);
-            // console.log('dataLinkId', dataLinkId);
-            // console.log('document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`)', document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`));
-            if (
-                emrSpecificId &&
-                document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`).length === 1
-            ) {
-                const anchorXPath = `//*[@${emrSpecificIdAttr}="${emrSpecificId}"]`;
-                // console.log('anchorXPath', anchorXPath);
-                const relativePath = buildRelativePath(anchor, element);
-                console.log('anchorXPath', anchorXPath);
-                console.log('relativePath', relativePath);
-                return anchorXPath + relativePath;
+    for (const emrSpecificIdAttr of emrSpecificIdAttrs) {
+        // Traverse up to find the nearest unique data-linkid anchor
+        let anchor: Element | null = element;
+        while (anchor && anchor !== document.body) {
+            if (anchor.hasAttribute(emrSpecificIdAttr)) {
+                const emrSpecificId = anchor.getAttribute(emrSpecificIdAttr);
+                // console.log('dataLinkId', dataLinkId);
+                // console.log('document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`)', document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`));
+                if (
+                    emrSpecificId &&
+                    document.querySelectorAll(`[${emrSpecificIdAttr}="${emrSpecificId}"]`).length === 1
+                ) {
+                    const anchorXPath = `//*[@${emrSpecificIdAttr}="${emrSpecificId}"]`;
+                    // console.log('anchorXPath', anchorXPath);
+                    const relativePath = buildRelativePath(anchor, element);
+                    console.log('anchorXPath', anchorXPath);
+                    console.log('relativePath', relativePath);
+                    return anchorXPath + relativePath;
+                }
             }
+            anchor = anchor.parentElement;
         }
-        anchor = anchor.parentElement;
     }
 
     return null;
