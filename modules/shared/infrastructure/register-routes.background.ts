@@ -162,8 +162,12 @@ export function registerBackgroundRoutes() {
         try {
             const clinicalSession = await createClinicalSession();
             await updateClinicalSessionWorkflows(clinicalSession.id, [data.workflowId]);
-            await generateNote(clinicalSession.id, data.workflowId, data.transcript);
+            
+            // Fire and forget - don't await, let it run in background
+            generateNote(clinicalSession.id, data.workflowId, data.transcript)
+                .catch(err => console.error("generateNote background error:", err));
 
+            // Return session ID immediately so frontend can start polling
             return sendResponse(clinicalSession.id);
         } catch (error) {
             return sendError(error as Error);

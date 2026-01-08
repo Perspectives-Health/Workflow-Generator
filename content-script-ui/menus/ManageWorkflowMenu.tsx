@@ -35,7 +35,8 @@ export function ManageWorkflowMenu() {
     const sessionInfo = selectedWorkflowId && workflowSessionIdMap ? workflowSessionIdMap[selectedWorkflowId] : undefined;
     const sessionId = sessionInfo?.sessionId;
     const createdAt = sessionInfo?.createdAt;
-    const { data: noteData, isLoading: isNoteDataLoading, refetch: refetchNoteData } = useGetNoteData(sessionId ?? '', selectedWorkflowId ?? '');
+    const isGenerating = sessionInfo?.isGenerating ?? false;
+    const { data: noteData, isLoading: isNoteDataLoading, refetch: refetchNoteData } = useGetNoteData(sessionId ?? '', selectedWorkflowId ?? '', isGenerating);
 
     const [isRestoringScroll, setIsRestoringScroll] = useState(true);
     const [isGroupingEditorOpen, setIsGroupingEditorOpen] = useState(false);
@@ -53,6 +54,7 @@ export function ManageWorkflowMenu() {
         [workflowMapping?.mapping_metadata]
     );
 
+        
     const scrollPosition = selectedWorkflowId && savedScrollPositions ? savedScrollPositions[selectedWorkflowId]?.scrollPosition : undefined;
 
     useEffect(() => {
@@ -119,7 +121,8 @@ export function ManageWorkflowMenu() {
                     ...currentMap,
                     [selectedWorkflowId]: {
                         sessionId,
-                        createdAt: new Date().toISOString()
+                        createdAt: new Date().toISOString(),
+                        isGenerating: true  // Start polling for note data
                     }
                 });
             }
@@ -128,6 +131,25 @@ export function ManageWorkflowMenu() {
             console.error("handleTestPopulate error", error);
         }
     }
+    
+    // Stop polling when note data is available (not empty)
+    useEffect(() => {
+        const hasNoteData = noteData && Object.keys(noteData).length > 0;
+        if (hasNoteData && isGenerating && selectedWorkflowId) {
+            // Note is ready, stop polling
+            sharedStorage.workflowSessionIdMap.getValue().then(currentMap => {
+                if (currentMap[selectedWorkflowId]?.isGenerating) {
+                    sharedStorage.workflowSessionIdMap.setValue({
+                        ...currentMap,
+                        [selectedWorkflowId]: {
+                            ...currentMap[selectedWorkflowId],
+                            isGenerating: false
+                        }
+                    });
+                }
+            });
+        }
+    }, [noteData, isGenerating, selectedWorkflowId]);
 
     const handlePopulate = async () => {
         if (!selectedWorkflowId || !sessionId) return;
@@ -225,7 +247,12 @@ export function ManageWorkflowMenu() {
                 ))}
             </div>
             {/* ))} */}
-            {createdAt ? (
+            {isGenerating ? (
+                <span className="text-xs text-muted-foreground text-right w-full flex items-center justify-end gap-1">
+                    <Loader2Icon className="h-3 w-3 animate-spin" />
+                    Generating note...
+                </span>
+            ) : createdAt ? (
                 <span className="text-xs text-muted-foreground text-right w-full">
                     Note last generated at {displayDate(createdAt)}
                 </span>
@@ -235,10 +262,10 @@ export function ManageWorkflowMenu() {
                 </span>
             )}
             <div className="w-full flex flex-row justify-end items-center gap-2">
-                <TranscriptLoader open={transcriptLoaderOpen} setOpen={setTranscriptLoaderOpen} transcript={transcript} setTranscript={setTranscript} handleTestPopulate={handleTestPopulate} isTestPopulatePending={isTestPopulatePending} />
+                <TranscriptLoader open={transcriptLoaderOpen} setOpen={setTranscriptLoaderOpen} transcript={transcript} setTranscript={setTranscript} handleTestPopulate={handleTestPopulate} isTestPopulatePending={isTestPopulatePending || isGenerating} />
                 <Button className="w-24 py-2 text-xs" onClick={handlePopulate}
-                    disabled={isTestPopulatePending || !selectedWorkflowId || !sessionId || isNoteDataLoading} variant="outline">
-                    {isTestPopulatePending || isNoteDataLoading ? <Loader2Icon className="h-4 w-4 animate-spin" /> : 'Populate'}
+                    disabled={isTestPopulatePending || isGenerating || !selectedWorkflowId || !sessionId || isNoteDataLoading} variant="outline">
+                    {isTestPopulatePending || isGenerating || isNoteDataLoading ? <Loader2Icon className="h-4 w-4 animate-spin" /> : 'Populate'}
                 </Button>
             </div>
         </div>

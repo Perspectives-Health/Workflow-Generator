@@ -15,10 +15,14 @@ export const usePopulateQueries = () => {
                 transcript
             ),
         }),
-        useGetNoteData: (sessionId: string, workflowId: string) => useQuery({
+        useGetNoteData: (sessionId: string, workflowId: string, isPolling: boolean = false) => useQuery({
             queryKey: ['note-data', workflowId, sessionId],
             queryFn: async () => api.getNoteData(sessionId, workflowId),
             enabled: !!sessionId && !!workflowId,
+            // Poll every 2 seconds when isPolling is true
+            refetchInterval: isPolling ? 2000 : false,
+            // Retry on error when polling (the note might not be ready yet)
+            retry: isPolling ? false : 3,
         }),
         useGetDefaultTranscript: (workflowId: string) => useQuery({
             queryKey: ['default-transcript', workflowId],
