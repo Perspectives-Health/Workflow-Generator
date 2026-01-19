@@ -74,6 +74,7 @@ export enum EhrPlatform {
     ALLEVA = 'alleva',
     ECW = 'ecw',
     ENSORA = 'ensora',
+    OPENCORE = 'opencore',
 }
 
 export type ElementInfo = {

@@ -9,14 +9,15 @@ export const getMode = (): EhrPlatform | null => {
                     window.location.href.includes('emedpractice') ? EhrPlatform.EMED :
                         window.location.href.includes('alleva') ? EhrPlatform.ALLEVA :
                             window.location.href.includes('ecwcloud') ? EhrPlatform.ECW :
-                                window.location.href.includes('theranest') ? EhrPlatform.ENSORA : null;
+                                window.location.href.includes('theranest') ? EhrPlatform.ENSORA :
+                                    window.location.href.includes('opencoreemr') ? EhrPlatform.OPENCORE : null;
 }
 
 
 export const isInputElement = (element: Element): boolean => {
     const tagName = element.tagName.toLowerCase();
-    return tagName === 'input' || 
-           tagName === 'textarea' || 
-           tagName === 'select' || 
-           element.getAttribute('contenteditable') === 'true';
+    return tagName === 'input' ||
+        tagName === 'textarea' ||
+        tagName === 'select' ||
+        element.getAttribute('contenteditable') === 'true';
 }

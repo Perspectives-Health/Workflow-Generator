@@ -218,3 +218,45 @@ export function synthClick(el: HTMLElement) {
                                 window.location.href.includes('theranest') ? EhrPlatform.ENSORA : null;
 
 }
+
+
+// const findElementAcrossIframes = (nestedXPath) => {
+//     const segments = nestedXPath.split('::');
+//     let currentDoc = document;
+
+//     for (let i = 0; i < segments.length; i++) {
+//         const xPath = segments[i];
+
+//         if (!xPath) {
+//             console.error(`No xPath found for segment ${i + 1}`);
+//             return null;
+//         }
+
+//         const element = findElementByXPath(xPath, currentDoc);
+
+//         if (!element) {
+//             console.error(`Element not found at segment ${i + 1}: ${xPath}`);
+//             return null;
+//         }
+
+//         // If it's the last segment, return the element (we’re done)
+//         if (i === segments.length - 1) {
+//             return element;
+//         }
+
+//         // Otherwise, the element should be an iframe
+//         if (element.tagName !== 'IFRAME') {
+//             console.error(`Expected <iframe> at segment ${i + 1}, got: ${element.tagName}`);
+//             return null;
+//         }
+
+//         try {
+//             currentDoc = element.contentDocument;
+//         } catch (err) {
+//             console.error(`Cannot access iframe at segment ${i + 1}. Possibly cross-origin.`, err);
+//             return null;
+//         }
+//     }
+
+//     return null;
+// }

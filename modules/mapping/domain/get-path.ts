@@ -131,6 +131,9 @@ export const getEmrSpecificPath = (element: Element, mode: EhrPlatform | null): 
 
 
 export const getElementPrimaryPath = (element: Element, mode: EhrPlatform | null): string => {
+    if (mode === EhrPlatform.RELIATRAX) {
+        return getElementAbsoluteXPath(element);
+    }
     // 1. Check if element has an emr specific ID attribute. Skip if mode is null.
     const emrSpecificPath = mode ? getEmrSpecificPath(element, mode) : null;
     if (emrSpecificPath) {
