@@ -28,6 +28,25 @@ export const login = async ({ email, password }: { email: string; password: stri
     }
 };
 
+export const refreshToken = async (refreshToken: string) => {
+	try {
+		const { data, error } = await fastapi.POST(`/refresh`, {
+			body: {
+				refresh_token: refreshToken,
+			}
+		});
+		if (error) {
+			throw error;
+		}
+
+		return data;
+	} catch (error) {
+		console.log('refreshToken error', error)
+		throw error;
+	}
+}
+
+
 export const getCenterDetails = async (centerId: string) => {
     try {
         const { data, error } = await fastapi.GET(`/centers/{center_id}`, {
