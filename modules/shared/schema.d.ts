@@ -25,7 +25,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/signup": {
+    "/login/bestnotes": {
         parameters: {
             query?: never;
             header?: never;
@@ -35,11 +35,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Signup
-         * @description Create a new user account with associated center.
-         *     Used for Testing Purposes Only. Real Signup is handled from the frontend.
+         * Login Bestnotes
+         * @description Authenticate user with BestNotes token and create a session.
          */
-        post: operations["signup_signup_post"];
+        post: operations["login_bestnotes_login_bestnotes_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -120,6 +119,26 @@ export interface paths {
          * @description Exchange refresh token for new access token.
          */
         post: operations["refresh_token_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Signup
+         * @description Create a new user account with associated center. Requires authentication.
+         */
+        post: operations["signup_signup_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -267,7 +286,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/unprotected-route": {
+    "/enterprises": {
         parameters: {
             query?: never;
             header?: never;
@@ -275,11 +294,63 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Protected Route
-         * @description Test endpoint.
+         * Get Enterprises
+         * @description Get all enterprises with their associated centers.
+         *
+         *     Returns:
+         *         List of all enterprises with center information
          */
-        get: operations["protected_route_unprotected_route_get"];
+        get: operations["get_enterprises_enterprises_get"];
         put?: never;
+        /**
+         * Create Enterprise
+         * @description Create a new enterprise.
+         *
+         *     Args:
+         *         data: Enterprise creation request with name
+         *
+         *     Returns:
+         *         Created enterprise details with associated centers
+         */
+        post: operations["create_enterprise_enterprises_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/enterprises/{enterprise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Enterprise
+         * @description Get enterprise details by ID including associated centers.
+         *
+         *     Args:
+         *         enterprise_id: Enterprise UUID as string
+         *
+         *     Returns:
+         *         Enterprise object with all details including:
+         *         - id, name
+         *         - centers (list of associated centers)
+         */
+        get: operations["get_enterprise_enterprises__enterprise_id__get"];
+        /**
+         * Update Enterprise
+         * @description Update enterprise properties.
+         *
+         *     Args:
+         *         enterprise_id: Enterprise UUID as string
+         *         request: Update request with optional fields
+         *
+         *     Returns:
+         *         Updated enterprise details
+         */
+        put: operations["update_enterprise_enterprises__enterprise_id__put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -303,7 +374,17 @@ export interface paths {
          */
         get: operations["get_centers_centers_get"];
         put?: never;
-        post?: never;
+        /**
+         * Create Center
+         * @description Create a new center (organization).
+         *
+         *     Args:
+         *         data: Center creation request with name, timezone, and optional metadata
+         *
+         *     Returns:
+         *         Created center details
+         */
+        post: operations["create_center_centers_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -329,11 +410,15 @@ export interface paths {
          *         - subscription_status
          *         - prompt_config
          *         - compliance_metadata
+         *         - fhir_server_url
+         *
+         *     Note: FHIR credentials (username/password) are excluded for security.
+         *     They can be set via update endpoints but are never returned in responses.
          */
         get: operations["get_center_centers__center_id__get"];
         /**
          * Update Center
-         * @description Update center properties including display consent, EMR, timezone, and prompt config.
+         * @description Update center properties including display consent, EMR, timezone, prompt config, and FHIR settings.
          *
          *     Args:
          *         center_id: Center UUID
@@ -698,6 +783,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/patients/{patient_id}/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Patient Groups
+         * @description Get all groups a patient belongs to.
+         *
+         *     Sorted by is_active (true first) then by joined_at (recent first).
+         */
+        get: operations["get_patient_groups_patients__patient_id__groups_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/audio-upload": {
         parameters: {
             query?: never;
@@ -722,6 +829,26 @@ export interface paths {
          *         HTTPException 500: If upload fails
          */
         post: operations["upload_audio_file_audio_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/audio-upload/group": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Group Audio File
+         * @description Upload audio file to S3 for a group session.
+         */
+        post: operations["upload_group_audio_file_audio_upload_group_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -836,7 +963,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/populate/populate/prompt/assembled/{workflow_id}": {
+    "/populate/prompt/assembled/{workflow_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -847,7 +974,7 @@ export interface paths {
          * Get Assembled Prompt Config
          * @description Get assembled complete prompt config for a specific workflow
          */
-        get: operations["get_assembled_prompt_config_populate_populate_prompt_assembled__workflow_id__get"];
+        get: operations["get_assembled_prompt_config_populate_prompt_assembled__workflow_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -875,6 +1002,79 @@ export interface paths {
         put?: never;
         /** Create Clinical Session */
         post: operations["create_clinical_session_clinical_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinical-sessions/group": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Group Clinical Session
+         * @description Create a new clinical session for a group.
+         *
+         *     Creates a clinical session with the specified group_id and creates
+         *     group_notes entries for all active members of the group.
+         */
+        post: operations["create_group_clinical_session_clinical_sessions_group_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinical-sessions/group/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Group Session Attendance
+         * @description Update attendance for a group clinical session.
+         *
+         *     Takes a list of patient_ids representing patients who attended the session.
+         *
+         *     Behavior:
+         *     - Patients who attended and are active members: Mark attended=true in group_notes
+         *     - Patients who attended but are not active members: Add to group, mark attended=true
+         *     - Active members who didn't attend: Mark attended=false in group_notes
+         */
+        put: operations["update_group_session_attendance_clinical_sessions_group__session_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinical-sessions/group/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Sessions By Group
+         * @description Get all completed clinical sessions for a specific group.
+         *
+         *     Returns a list of session IDs and their creation dates,
+         *     ordered by created_at descending (most recent first).
+         */
+        get: operations["get_sessions_by_group_clinical_sessions_group__group_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -922,6 +1122,29 @@ export interface paths {
          * @description Get status and full workflow details for all workflow instances in a session.
          */
         get: operations["get_session_workflow_instance_statuses_clinical_sessions__session_id__all_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clinical-sessions/{session_id}/group-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Session Group Notes
+         * @description Get all group notes for a clinical session.
+         *
+         *     Returns group notes with patient details for the specified session.
+         *     The session must be a group session (have a group_id).
+         */
+        get: operations["get_session_group_notes_clinical_sessions__session_id__group_notes_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1009,32 +1232,17 @@ export interface paths {
         };
         /**
          * Get Workflows
-         * @description Get all available workflows (form templates) for the current user's center.
+         * @description Get workflows based on provided filters.
+         *
+         *     - Neither provided: returns workflows for current user's center AND enterprise
+         *     - Only center_id: returns workflows for that specific center
+         *     - Only enterprise_id: returns workflows for that specific enterprise
+         *     - Both provided: returns workflows for both specified center AND enterprise
          */
         get: operations["get_workflows_workflows_get"];
         put?: never;
         /** Create Workflow */
         post: operations["create_workflow_workflows_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/workflows/center/{center_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Workflows By Center Id
-         * @description Get all workflows for a specific center by center ID.
-         */
-        get: operations["get_workflows_by_center_id_workflows_center__center_id__get"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1404,6 +1612,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/dashboard/audio-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audio Url */
+        get: operations["get_audio_url_dashboard_audio_url_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/dashboard/session-stats/{center_id}": {
         parameters: {
             query?: never;
@@ -1641,6 +1866,117 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/backfill-s3-file-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Backfill S3 File Keys */
+        post: operations["backfill_s3_file_keys_internal_backfill_s3_file_keys_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/reconcile-kipu-patients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reconcile Kipu Patients
+         * @description Reconcile patients between local DB and Kipu EMR using LLM matching.
+         *
+         *     Returns categorized results:
+         *     - matched: 1:1 matches between DB and Kipu
+         *     - db_duplicates: Multiple DB patients matched to same Kipu patient
+         *     - kipu_duplicates: LLM found multiple Kipu candidates for a DB patient
+         *     - db_only: DB patients with no Kipu match
+         *     - kipu_only: Kipu patients not matched by any DB patient
+         */
+        post: operations["reconcile_kipu_patients_internal_reconcile_kipu_patients_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/gemini-query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Gemini Query
+         * @description Simple Gemini query endpoint.
+         *
+         *     Send JSON body with 'prompt' field.
+         *     Returns the Gemini response.
+         */
+        post: operations["gemini_query_internal_gemini_query_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/gemini-query-file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Gemini Query File
+         * @description Gemini multimodal query endpoint with file upload.
+         *
+         *     Send as multipart/form-data with 'prompt' and 'file' fields.
+         */
+        post: operations["gemini_query_file_internal_gemini_query_file_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/backfill-group-workflow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Backfill Group Workflow
+         * @description Create Group Note Detail workflows for all centers that don't have one.
+         *
+         *     The template workflow has center_id = null and name = "Group Note Detail".
+         */
+        post: operations["backfill_group_workflow_internal_backfill_group_workflow_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/extension/update-required": {
         parameters: {
             query?: never;
@@ -1692,23 +2028,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/extension/version": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update Extension Version */
-        put: operations["update_extension_version_extension_version_put"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/emails/send": {
         parameters: {
             query?: never;
@@ -1743,6 +2062,436 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/fhir-query/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fhir Query Health
+         * @description Health check for FHIR query service
+         */
+        get: operations["fhir_query_health_fhir_query_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fhir-query/chat/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Fhir Chat
+         * @description Start a new FHIR chat session.
+         *
+         *     Returns a session_id that should be used for subsequent chat messages.
+         *     Sessions expire after 3 hours of inactivity.
+         */
+        post: operations["start_fhir_chat_fhir_query_chat_start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fhir-query/chat/message": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Fhir Chat Message
+         * @description Send a message in an existing FHIR chat session.
+         *
+         *     The agent will use conversation history to provide contextual answers.
+         *     You can ask follow-up questions like "What about his vitals?" after
+         *     finding a patient.
+         *
+         *     Args:
+         *         session_id: Chat session ID from /chat/start
+         *         message: User's message/question
+         *         max_turns: Maximum conversation turns for this message (default: 10)
+         */
+        post: operations["send_fhir_chat_message_fhir_query_chat_message_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fhir-query/chat/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End Fhir Chat
+         * @description End a FHIR chat session.
+         *
+         *     Call this when the user exits the chat interface to clean up resources.
+         *
+         *     Args:
+         *         session_id: Chat session ID to end
+         */
+        post: operations["end_fhir_chat_fhir_query_chat_end_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/perspectives-query/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Perspectives Query Health
+         * @description Health check for Perspectives query service
+         */
+        get: operations["perspectives_query_health_perspectives_query_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/perspectives-query/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Query Perspectives
+         * @description Query your Perspectives data using natural language via Claude.
+         *
+         *     The agent will automatically:
+         *     - Understand your question
+         *     - Query patients, sessions, and workflows
+         *     - Respect center isolation (you only see your data)
+         *     - Synthesize results into a natural language answer
+         *
+         *     Examples:
+         *     - "Show me all patients in our center"
+         *     - "Find patients named Smith"
+         *     - "How many sessions did patient abc-123 have?"
+         *     - "Which patients have more than 5 sessions?"
+         */
+        post: operations["query_perspectives_perspectives_query_query_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/bestnotes/sync/{enterprise_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync Bestnotes
+         * @description Sync all BestNotes data (Centers, Users, Patients) for a given Enterprise.
+         *
+         *     This endpoint triggers a full sync from BestNotes Platform API and FHIR APIs.
+         *     Mainly intended for development and testing purposes.
+         *
+         *     Args:
+         *         enterprise_id: UUID of the Enterprise to sync
+         *
+         *     Returns:
+         *         Dictionary with sync statistics:
+         *         - centers_created: Number of centers created
+         *         - centers_updated: Number of centers updated
+         *         - users_created: Number of users created
+         *         - users_updated: Number of users updated
+         *         - patients_created: Number of patients created
+         *         - patients_updated: Number of patients updated
+         */
+        post: operations["sync_bestnotes_bestnotes_sync__enterprise_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/bestnotes/sync/{enterprise_id}/sample-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Setup Sample Data
+         * @description Set up sample demo data for a specific BestNotes Fresh center.
+         *
+         *     This endpoint creates demo data (workflows, patient, clinical sessions,
+         *     workflow instances) for a single center without running the full sync.
+         *
+         *     Args:
+         *         enterprise_id: UUID of the Enterprise (must be "BestNotes Fresh")
+         *         request: Request body containing center_id
+         *
+         *     Returns:
+         *         Dictionary with demo data creation statistics:
+         *         - workflows_created: Number of workflows created
+         *         - demo_patients_created: Number of demo patients created
+         *         - demo_sessions_created: Number of demo sessions created
+         *         - demo_workflow_instances_created: Number of workflow instances created
+         */
+        post: operations["setup_sample_data_bestnotes_sync__enterprise_id__sample_data_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Charts
+         * @description Get all charts for the current user's center.
+         */
+        get: operations["get_charts_charts_get"];
+        put?: never;
+        /**
+         * Create Chart
+         * @description Upload a new chart PDF for processing.
+         *
+         *     Returns immediately with status=UPLOADED.
+         *     Processing happens in background (parse → chunk → extract).
+         *     Poll GET /charts/{id} to check status and get results.
+         */
+        post: operations["create_chart_charts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charts/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Questions
+         * @description Get the question tree for the current user's center.
+         */
+        get: operations["get_questions_charts_questions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charts/{chart_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Chart
+         * @description Get a specific chart with presigned URL and computed views.
+         */
+        get: operations["get_chart_charts__chart_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charts/{chart_id}/rerun": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rerun Chart
+         * @description Re-run extraction on an existing chart.
+         *
+         *     Returns immediately with status=UPLOADED.
+         *     Processing happens in background.
+         *     Poll GET /charts/{id} to check status and get results.
+         */
+        post: operations["rerun_chart_charts__chart_id__rerun_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/charts/seed-questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Seed Questions
+         * @description Seed the default question tree for the current user's center.
+         *     Replaces any existing questions for this center.
+         */
+        post: operations["seed_questions_charts_seed_questions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Groups */
+        get: operations["get_groups_groups_get"];
+        put?: never;
+        /** Create Group */
+        post: operations["create_group_groups_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Group By Id */
+        get: operations["get_group_by_id_groups__group_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Group
+         * @description Update a group's name, description, or is_active status.
+         */
+        patch: operations["update_group_groups__group_id__patch"];
+        trace?: never;
+    };
+    "/groups/{group_id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Group Members
+         * @description Add one or more members to a group.
+         */
+        post: operations["add_group_members_groups__group_id__members_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group_id}/members/{patient_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove Group Member
+         * @description Remove a member from a group.
+         */
+        delete: operations["remove_group_member_groups__group_id__members__patient_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/groups/{group_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Group Notes
+         * @description Get all group notes for a group, optionally filtered by patient and/or status.
+         */
+        get: operations["get_group_notes_groups__group_id__notes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -1752,7 +2501,7 @@ export interface paths {
         };
         /**
          * Index
-         * @description Checks database connection.
+         * @description Serve static homepage with server time.
          */
         get: operations["index__get"];
         put?: never;
@@ -1783,6 +2532,27 @@ export interface components {
              */
             billing_email?: string | null;
         };
+        /**
+         * AddGroupMembersRequest
+         * @description Request body for adding members to a group.
+         */
+        AddGroupMembersRequest: {
+            /** Patient Ids */
+            patient_ids: string[];
+        };
+        /**
+         * AddGroupMembersResponse
+         * @description Response for adding members to a group.
+         */
+        AddGroupMembersResponse: {
+            /** Added Count */
+            added_count: number;
+            /**
+             * Already Members
+             * @default []
+             */
+            already_members: string[];
+        };
         /** AdminSignupRequest */
         AdminSignupRequest: {
             /**
@@ -1802,6 +2572,8 @@ export interface components {
             tos_url: string;
             /** Baa Url */
             baa_url: string;
+            /** Recaptcha Token */
+            recaptcha_token: string;
         };
         /** AllCentersResponse */
         AllCentersResponse: {
@@ -1847,6 +2619,8 @@ export interface components {
             user_type: components["schemas"]["UserType"];
             /** Last Sign In At */
             last_sign_in_at: string;
+            /** Is Fresh */
+            is_fresh: boolean;
             /** Display Consent Form */
             display_consent_form: boolean;
             /** Display New Ui */
@@ -1870,6 +2644,30 @@ export interface components {
              */
             status: string;
         };
+        /** Body_create_chart_charts_post */
+        Body_create_chart_charts_post: {
+            /**
+             * File
+             * Format: binary
+             * @description PDF file to upload
+             */
+            file: string;
+            /**
+             * Patient Name
+             * @description Patient name
+             */
+            patient_name: string;
+        };
+        /** Body_gemini_query_file_internal_gemini_query_file_post */
+        Body_gemini_query_file_internal_gemini_query_file_post: {
+            /** Prompt */
+            prompt: string;
+            /**
+             * File
+             * Format: binary
+             */
+            file: string;
+        };
         /** Body_recover_transcript_internal_recover_transcript_post */
         Body_recover_transcript_internal_recover_transcript_post: {
             /**
@@ -1887,6 +2685,18 @@ export interface components {
             audio_file: string;
             /** Session Id */
             session_id: string;
+        };
+        /** Body_upload_group_audio_file_audio_upload_group_post */
+        Body_upload_group_audio_file_audio_upload_group_post: {
+            /**
+             * Audio File
+             * Format: binary
+             */
+            audio_file: string;
+            /** Session Id */
+            session_id: string;
+            /** Patient Id */
+            patient_id: string;
         };
         /**
          * CancelSubscriptionResponse
@@ -1927,7 +2737,19 @@ export interface components {
          * @description Mutually exclusive category types
          * @enum {string}
          */
-        CategoryType: "intake_assessment" | "progress_notes" | "treatment_plan" | "other";
+        CategoryType: "intake_assessment" | "progress_notes" | "treatment_plan" | "group_note" | "other";
+        /**
+         * CenterBasicResponse
+         * @description Basic center information response.
+         */
+        CenterBasicResponse: {
+            /** Center Id */
+            center_id: string;
+            /** Center Name */
+            center_name: string | null;
+            /** Timezone */
+            timezone: string | null;
+        };
         /**
          * CenterBillingOverview
          * @description Complete billing overview for internal dashboard
@@ -1978,6 +2800,9 @@ export interface components {
         /**
          * CenterDetailsResponse
          * @description Full center details response.
+         *
+         *     Note: FHIR credentials (username/password) are excluded for security.
+         *     They can be set via update endpoints but are never returned in responses.
          */
         CenterDetailsResponse: {
             /** Center Id */
@@ -2000,6 +2825,8 @@ export interface components {
             compliance_metadata: {
                 [key: string]: unknown;
             } | null;
+            /** Fhir Server Url */
+            fhir_server_url?: string | null;
         };
         /** CenterDisplayInfo */
         CenterDisplayInfo: {
@@ -2062,6 +2889,121 @@ export interface components {
             center_instructions?: components["schemas"]["CenterInstructions"];
         };
         /**
+         * ChartDetailResponse
+         * @description Response model for a chart with presigned PDF URL.
+         */
+        ChartDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Center Id */
+            center_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /** Filename */
+            filename: string;
+            /** S3 Key */
+            s3_key: string;
+            status: components["schemas"]["ChartStatus"];
+            /** Page Count */
+            page_count?: number | null;
+            /** Total Pages */
+            total_pages?: number | null;
+            /** Front Matter Pages */
+            front_matter_pages?: number | null;
+            /** Document Tree */
+            document_tree?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Question Results */
+            question_results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Branch Results */
+            branch_results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Aggregated Results */
+            aggregated_results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Executive Summary */
+            executive_summary?: {
+                [key: string]: unknown;
+            } | null;
+            /** Asam Results */
+            asam_results?: {
+                [key: string]: unknown;
+            } | null;
+            /** Created At */
+            created_at?: string | null;
+            /** Updated At */
+            updated_at?: string | null;
+            /** Pdf Url */
+            pdf_url?: string | null;
+        };
+        /**
+         * ChartResponse
+         * @description Response model for a chart.
+         */
+        ChartResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Center Id */
+            center_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /** Filename */
+            filename: string;
+            /** S3 Key */
+            s3_key: string;
+            status: components["schemas"]["ChartStatus"];
+            /** Page Count */
+            page_count?: number | null;
+            /** Total Pages */
+            total_pages?: number | null;
+            /** Front Matter Pages */
+            front_matter_pages?: number | null;
+            /** Document Tree */
+            document_tree?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Question Results */
+            question_results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Branch Results */
+            branch_results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Aggregated Results */
+            aggregated_results?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Executive Summary */
+            executive_summary?: {
+                [key: string]: unknown;
+            } | null;
+            /** Asam Results */
+            asam_results?: {
+                [key: string]: unknown;
+            } | null;
+            /** Created At */
+            created_at?: string | null;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /**
+         * ChartStatus
+         * @enum {string}
+         */
+        ChartStatus: "uploaded" | "processing" | "completed" | "failed";
+        /**
          * CheckoutSessionResponse
          * @description Response containing Stripe checkout session URL
          */
@@ -2105,6 +3047,9 @@ export interface components {
              */
             id: string;
             patient?: components["schemas"]["Patient"] | null;
+            group?: components["schemas"]["GroupInfo"] | null;
+            /** Group Notes */
+            group_notes?: components["schemas"]["GroupNoteDetail"][] | null;
             /** Workflows */
             workflows: components["schemas"]["WorkflowDisplayInfo"][];
             status: components["schemas"]["ClinicalSessionStatus"];
@@ -2113,6 +3058,8 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** User Id */
+            user_id?: string | null;
         };
         /**
          * ClinicalSessionStatus
@@ -2133,6 +3080,8 @@ export interface components {
             session_id: string;
             /** Patient Id */
             patient_id?: string | null;
+            /** User Id */
+            user_id?: string | null;
             /** Created At */
             created_at?: string | null;
             session_status?: components["schemas"]["ClinicalSessionStatus"] | null;
@@ -2170,6 +3119,30 @@ export interface components {
          */
         ContextEnum: "content" | "background" | "offscreen" | "popup";
         /**
+         * CreateCenterRequest
+         * @description Request to create a new center.
+         */
+        CreateCenterRequest: {
+            /** Center Name */
+            center_name: string;
+            /** Timezone */
+            timezone: string;
+            /** Compliance Metadata */
+            compliance_metadata?: {
+                [key: string]: unknown;
+            } | null;
+            /** Enterprise Id */
+            enterprise_id?: string | null;
+            /** Fhir Server Url */
+            fhir_server_url?: string | null;
+            /** Fhir Username */
+            fhir_username?: string | null;
+            /** Kipu Tenant Id */
+            kipu_tenant_id?: string | null;
+            /** Kipu Username */
+            kipu_username?: string | null;
+        };
+        /**
          * CreateCheckoutSessionRequest
          * @description Request to create a Stripe checkout session
          */
@@ -2184,6 +3157,58 @@ export interface components {
              * @description URL to redirect to if user cancels
              */
             cancel_url?: string | null;
+        };
+        /**
+         * CreateEnterpriseRequest
+         * @description Request to create a new enterprise.
+         */
+        CreateEnterpriseRequest: {
+            /** Name */
+            name: string;
+            /** Platform Url */
+            platform_url?: string | null;
+            /** Platform Username */
+            platform_username?: string | null;
+        };
+        /**
+         * CreateGroupRequest
+         * @description Request body for creating a new group.
+         */
+        CreateGroupRequest: {
+            /** Patient Ids */
+            patient_ids: string[];
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+        };
+        /**
+         * CreateGroupResponse
+         * @description Response for successful group creation.
+         */
+        CreateGroupResponse: {
+            /** Group Id */
+            group_id: string;
+        };
+        /**
+         * CreateGroupSessionRequest
+         * @description Request body for creating a new group clinical session.
+         */
+        CreateGroupSessionRequest: {
+            /** Group Id */
+            group_id: string;
+        };
+        /**
+         * CreateGroupSessionResponse
+         * @description Response for successful group session creation.
+         */
+        CreateGroupSessionResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Group Id */
+            group_id: string;
+            /** Group Note Ids */
+            group_note_ids: string[];
         };
         /** CreateSessionRequest */
         CreateSessionRequest: {
@@ -2234,6 +3259,112 @@ export interface components {
             content: string;
         };
         /**
+         * EnterpriseDetailsResponse
+         * @description Full enterprise details response.
+         */
+        EnterpriseDetailsResponse: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string | null;
+            /** Platform Url */
+            platform_url?: string | null;
+            /** Platform Username */
+            platform_username?: string | null;
+            /** Centers */
+            centers?: components["schemas"]["CenterBasicResponse"][] | null;
+        };
+        /**
+         * FHIRChatEndRequest
+         * @description Request model for ending a chat session
+         */
+        FHIRChatEndRequest: {
+            /**
+             * Session Id
+             * @description Chat session ID to end
+             */
+            session_id: string;
+        };
+        /**
+         * FHIRChatEndResponse
+         * @description Response model for ending a chat session
+         */
+        FHIRChatEndResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Success */
+            success: boolean;
+            /** Timestamp */
+            timestamp: string;
+        };
+        /**
+         * FHIRChatMessageRequest
+         * @description Request model for sending a chat message
+         */
+        FHIRChatMessageRequest: {
+            /**
+             * Session Id
+             * @description Chat session ID
+             */
+            session_id: string;
+            /**
+             * Message
+             * @description User message
+             */
+            message: string;
+            /**
+             * Max Turns
+             * @description Maximum conversation turns for this message
+             * @default 10
+             */
+            max_turns: number | null;
+        };
+        /**
+         * FHIRChatMessageResponse
+         * @description Response model for chat message
+         */
+        FHIRChatMessageResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Answer */
+            answer: string;
+            /** Tool Calls */
+            tool_calls: components["schemas"]["app__models__fhir_query_models__ToolCall"][];
+            /** Turns */
+            turns: number;
+            /** Completed */
+            completed: boolean;
+            /** Error */
+            error?: string | null;
+            /** Timestamp */
+            timestamp: string;
+            plan?: components["schemas"]["QueryPlan"] | null;
+        };
+        /**
+         * FHIRChatStartResponse
+         * @description Response model for starting a chat session
+         */
+        FHIRChatStartResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Timestamp */
+            timestamp: string;
+        };
+        /**
+         * FHIRHealthResponse
+         * @description Response model for FHIR health check
+         */
+        FHIRHealthResponse: {
+            /** Status */
+            status: string;
+            /** Service */
+            service: string;
+            /** Timestamp */
+            timestamp: string;
+            /** Error */
+            error?: string | null;
+        };
+        /**
          * ForceSyncRequest
          * @description Request to force sync subscription status from Stripe (internal use only)
          */
@@ -2254,6 +3385,11 @@ export interface components {
             context: components["schemas"]["ContextEnum"];
             /** Id */
             id: number;
+        };
+        /** GeminiQueryRequest */
+        GeminiQueryRequest: {
+            /** Prompt */
+            prompt: string;
         };
         /**
          * GeneralMetricsResponse
@@ -2282,6 +3418,142 @@ export interface components {
             avg_sessions_per_user_per_weekday: number;
             /** Avg Sessions Per User Per Weekend */
             avg_sessions_per_user_per_weekend: number;
+        };
+        /**
+         * GroupDetailResponse
+         * @description Response for single group with member details.
+         */
+        GroupDetailResponse: {
+            /** Group Id */
+            group_id: string;
+            /** Group Name */
+            group_name: string;
+            /** Description */
+            description?: string | null;
+            /** Group Metadata */
+            group_metadata?: {
+                [key: string]: unknown;
+            } | null;
+            /** Is Active */
+            is_active: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Members */
+            members: components["schemas"]["GroupMemberDetail"][];
+        };
+        /**
+         * GroupInfo
+         * @description Group info for session response.
+         */
+        GroupInfo: {
+            /**
+             * Group Id
+             * Format: uuid
+             */
+            group_id: string;
+            /** Group Name */
+            group_name: string;
+            /** Description */
+            description?: string | null;
+        };
+        /**
+         * GroupListItem
+         * @description Single group item in list response.
+         */
+        GroupListItem: {
+            /** Group Id */
+            group_id: string;
+            /** Group Name */
+            group_name: string;
+            /** Description */
+            description?: string | null;
+            /** Is Active */
+            is_active: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * GroupMemberDetail
+         * @description Member details within a group.
+         */
+        GroupMemberDetail: {
+            /** Patient Id */
+            patient_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Emr Patient Id */
+            emr_patient_id?: string | null;
+            /** Date Of Birth */
+            date_of_birth?: string | null;
+        };
+        /**
+         * GroupNoteDetail
+         * @description Group note with patient info for response.
+         */
+        GroupNoteDetail: {
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /** Attended */
+            attended: boolean;
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * GroupNoteResponse
+         * @description Response model for group notes endpoint.
+         */
+        GroupNoteResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /** Patient Name */
+            patient_name: string;
+            status: components["schemas"]["GroupNoteStatus"];
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * GroupNoteStatus
+         * @description Status for group note processing.
+         * @enum {string}
+         */
+        GroupNoteStatus: "created" | "processing" | "completed" | "error";
+        /**
+         * GroupSessionListItem
+         * @description Response model for listing group sessions.
+         */
+        GroupSessionListItem: {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            status: components["schemas"]["ClinicalSessionStatus"];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2364,6 +3636,11 @@ export interface components {
             /** Logs */
             logs: components["schemas"]["FrontendLog"][];
         };
+        /** LoginBestNotesRequest */
+        LoginBestNotesRequest: {
+            /** Bestnotes Token */
+            bestnotes_token: string;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Email */
@@ -2426,7 +3703,7 @@ export interface components {
             /** Patient Name */
             patient_name: string;
             /** Audio Link */
-            audio_link: string;
+            audio_link: string | null;
             /** Json To Populate */
             json_to_populate: unknown;
             /** Diarized Transcription */
@@ -2494,6 +3771,64 @@ export interface components {
             } | null;
         };
         /**
+         * PatientGroupItem
+         * @description Response model for patient's group membership.
+         */
+        PatientGroupItem: {
+            /**
+             * Group Id
+             * Format: uuid
+             */
+            group_id: string;
+            /** Group Name */
+            group_name: string;
+            /** Is Active */
+            is_active: boolean;
+            /**
+             * Joined At
+             * Format: date-time
+             */
+            joined_at: string;
+            /** Left At */
+            left_at?: string | null;
+        };
+        /**
+         * PatientGroupNoteResponse
+         * @description Response model for patient group notes endpoint.
+         */
+        PatientGroupNoteResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Patient Id
+             * Format: uuid
+             */
+            patient_id: string;
+            /**
+             * Group Id
+             * Format: uuid
+             */
+            group_id: string;
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            status: components["schemas"]["GroupNoteStatus"];
+            /** Note */
+            note?: string | null;
+            /** Attended */
+            attended: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
          * PatientMetadataResponse
          * @description Response model for patient metadata
          */
@@ -2517,6 +3852,62 @@ export interface components {
             patient_metadata?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /**
+         * PerspectivesHealthResponse
+         * @description Response model for Perspectives health check
+         */
+        PerspectivesHealthResponse: {
+            /** Status */
+            status: string;
+            /** Service */
+            service: string;
+            /** Timestamp */
+            timestamp: string;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * PerspectivesQueryRequest
+         * @description Request model for Perspectives query
+         */
+        PerspectivesQueryRequest: {
+            /**
+             * Question
+             * @description Natural language question about your Perspectives data
+             * @example Show me all patients who had sessions last week
+             */
+            question: string;
+            /**
+             * Max Turns
+             * @description Maximum conversation turns
+             * @default 10
+             */
+            max_turns: number | null;
+        };
+        /**
+         * PerspectivesQueryResponse
+         * @description Response model for Perspectives query
+         */
+        PerspectivesQueryResponse: {
+            /** Question */
+            question: string;
+            /** Answer */
+            answer: string;
+            /** Tool Calls */
+            tool_calls: components["schemas"]["app__models__perspectives_query_models__ToolCall"][];
+            /** Turns */
+            turns: number;
+            /** Completed */
+            completed: boolean;
+            /** Error */
+            error?: string | null;
+            /** Timestamp */
+            timestamp: string;
+            /** User Id */
+            user_id: string;
+            /** Center Id */
+            center_id: string;
         };
         /** PopulateCreate */
         PopulateCreate: {
@@ -2581,6 +3972,56 @@ export interface components {
          * @enum {string}
          */
         ProgressNoteType: "soap" | "dap" | "dsap";
+        /**
+         * QueryPlan
+         * @description Structured plan for executing a FHIR query.
+         *     Generated by the Planner LLM before execution.
+         */
+        QueryPlan: {
+            /**
+             * Thought Process
+             * @description Brief analysis of the clinical question
+             */
+            thought_process: string;
+            /**
+             * Steps
+             * @description Sequential list of steps to execute (1-4 steps)
+             */
+            steps?: string[] | null;
+            /**
+             * Fhir Strategy
+             * @description Specific FHIR parameters and strategies to use
+             */
+            fhir_strategy?: string | null;
+            /**
+             * Negative Check
+             * @description True if this requires finding missing data
+             * @default false
+             */
+            negative_check: boolean;
+            /**
+             * Impossible
+             * @description True if this query cannot be completed within 10 turns
+             * @default false
+             */
+            impossible: boolean;
+            /**
+             * Helpful Message
+             * @description Helpful guidance if query is impossible
+             */
+            helpful_message?: string | null;
+            /**
+             * Is General Question
+             * @description True if this is a general question not requiring FHIR queries
+             * @default false
+             */
+            is_general_question: boolean;
+            /**
+             * General Response
+             * @description Direct response for general questions (e.g., greetings, explanations, non-FHIR questions)
+             */
+            general_response?: string | null;
+        };
         /**
          * QuestionType
          * @enum {string}
@@ -2676,8 +4117,6 @@ export interface components {
             workflow_instance_id: string;
             /** Workflow Name */
             workflow_name: string;
-            /** Audio Link */
-            audio_link: string | null;
         };
         /**
          * SessionDetailResponse
@@ -2700,12 +4139,8 @@ export interface components {
             workflow_name: string;
             /** Patient Id */
             patient_id: string;
-            /** Json To Populate */
-            json_to_populate: unknown;
-            /** Diarized Transcription */
-            diarized_transcription: unknown;
-            /** Audio Link */
-            audio_link: string | null;
+            /** S3 File Key */
+            s3_file_key: string | null;
         };
         /**
          * SessionStatsResponse
@@ -2748,6 +4183,14 @@ export interface components {
              * @description Price per user per month
              */
             flat_fee_per_user: number;
+        };
+        /**
+         * SetupSampleDataRequest
+         * @description Request body for setting up sample data.
+         */
+        SetupSampleDataRequest: {
+            /** Center Id */
+            center_id: string;
         };
         /** SingleUserCreateRequest */
         SingleUserCreateRequest: {
@@ -2882,6 +4325,11 @@ export interface components {
         UpdateAllUsersRequest: {
             /** New Ext Version */
             new_ext_version: string;
+            /**
+             * Is Hard Update
+             * @default false
+             */
+            is_hard_update: boolean;
             release_note?: components["schemas"]["ReleaseNote"] | null;
         };
         /**
@@ -2899,6 +4347,14 @@ export interface components {
             prompt_config?: {
                 [key: string]: unknown;
             } | null;
+            /** Fhir Server Url */
+            fhir_server_url?: string | null;
+            /** Fhir Username */
+            fhir_username?: string | null;
+            /** Kipu Tenant Id */
+            kipu_tenant_id?: string | null;
+            /** Kipu Username */
+            kipu_username?: string | null;
         };
         /**
          * UpdateCenterResponse
@@ -2909,6 +4365,61 @@ export interface components {
             success: boolean;
             /** Message */
             message: string;
+        };
+        /**
+         * UpdateEnterpriseRequest
+         * @description Request to update enterprise properties.
+         */
+        UpdateEnterpriseRequest: {
+            /** Name */
+            name?: string | null;
+            /** Platform Url */
+            platform_url?: string | null;
+            /** Platform Username */
+            platform_username?: string | null;
+        };
+        /**
+         * UpdateGroupRequest
+         * @description Request body for updating a group.
+         */
+        UpdateGroupRequest: {
+            /** Name */
+            name?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /**
+         * UpdateGroupSessionAttendanceRequest
+         * @description Request body for updating group session attendance.
+         */
+        UpdateGroupSessionAttendanceRequest: {
+            /** Patient Ids */
+            patient_ids: string[];
+        };
+        /**
+         * UpdateGroupSessionAttendanceResponse
+         * @description Response for updating group session attendance.
+         */
+        UpdateGroupSessionAttendanceResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Group Id */
+            group_id: string;
+            /** Attended Count */
+            attended_count: number;
+            /** Absent Count */
+            absent_count: number;
+            /** New Members Added */
+            new_members_added: string[];
+        };
+        /** UpdateRequiredResponse */
+        UpdateRequiredResponse: {
+            /** Is Outdated */
+            is_outdated: boolean;
+            /** Requires Update */
+            requires_update: boolean;
         };
         /**
          * UpdateWorkflowRequest
@@ -3097,7 +4608,7 @@ export interface components {
             /** Workflow Instance Id */
             workflow_instance_id: string;
             /** User Id */
-            user_id: string;
+            user_id: string | null;
             /** Session Id */
             session_id: string;
             /** Patient Id */
@@ -3146,12 +4657,12 @@ export interface components {
          *         READY_FOR_GENERATION (str): All preprocessing is complete and instance is ready for response generation.
          *             This is a checkpoint state before starting the expensive generation process.
          *             If this state persists longer than the configured timeout (default: 5 minutes),
-         *             raises ResponseGenerationTimeoutError.
+         *             the workflow transitions to ERROR state.
          *
          *         GENERATING_RESPONSES (str): System is actively generating structured responses.
          *             Entered after generation is initiated.
          *             If this state persists longer than the configured timeout (default: 2 minutes),
-         *             raises ResponseGenerationTimeoutError.
+         *             the workflow transitions to ERROR state.
          *
          *
          *         POST_PROCESSING (str): System is actively post-processing the generated responses.
@@ -3165,16 +4676,16 @@ export interface components {
          *         REGENERATING (str): System is actively regenerating responses due to a retry request.
          *             Entered when a user requests to retry the populate process.
          *             If this state persists longer than the configured timeout (default: 2 minutes),
-         *             raises ResponseGenerationTimeoutError.
+         *             the workflow transitions to ERROR state.
          *
          *         COMPLETED (str): User has finished working with the populated forms.
          *             This is a terminal state - no further transitions allowed.
          *
          *         ERROR (str): Terminal error state, reached when:
-         *             1. ResponseGenerationTimeoutError is raised (from either waiting state)
-         *             2. ResponseGenerationError is raised
-         *             3. FormPopulationError is raised
-         *             4. WorkflowInstanceNotFoundError is raised
+         *             1. Timeout occurs during generation or processing
+         *             2. Response generation fails
+         *             3. Form population fails
+         *             4. Workflow instance data integrity issues occur
          *
          *     State Transitions:
          *         Normal Flow:
@@ -3254,18 +4765,6 @@ export interface components {
             workflow_name: string;
             status?: components["schemas"]["WorkflowPopulateStatus"] | null;
             recording_status?: components["schemas"]["WorkflowRecordingStatus"] | null;
-            /** Mapping Metadata */
-            mapping_metadata?: {
-                [key: string]: unknown;
-            } | null;
-            /** Grouped Questions */
-            grouped_questions?: {
-                [key: string]: unknown;
-            } | null;
-            /** S3 Link */
-            s3_link?: string | null;
-            /** Mapping Status */
-            mapping_status?: string | null;
         };
         /** XPathUpdate */
         XPathUpdate: {
@@ -3275,6 +4774,38 @@ export interface components {
             xpath?: string | null;
             /** Click Before Xpaths */
             click_before_xpaths?: string[] | null;
+        };
+        /**
+         * ToolCall
+         * @description Model for tool call metadata
+         */
+        app__models__fhir_query_models__ToolCall: {
+            /** Tool */
+            tool: string;
+            /** Method */
+            method: string;
+            /** Path */
+            path: string;
+            /** Status */
+            status: number;
+            /** Success */
+            success: boolean;
+        };
+        /**
+         * ToolCall
+         * @description Model for tool call metadata
+         */
+        app__models__perspectives_query_models__ToolCall: {
+            /** Tool */
+            tool: string;
+            /** Operation */
+            operation?: string | null;
+            /** Success */
+            success: boolean;
+            /** Count */
+            count?: number | null;
+            /** Error */
+            error?: string | null;
         };
     };
     responses: never;
@@ -3318,19 +4849,18 @@ export interface operations {
             };
         };
     };
-    signup_signup_post: {
+    login_bestnotes_login_bestnotes_post: {
         parameters: {
-            query: {
-                username: string;
-                password: string;
-                center_id: string;
-                user_type: components["schemas"]["UserType"];
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginBestNotesRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -3338,7 +4868,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AuthResponse"];
                 };
             };
             /** @description Validation Error */
@@ -3471,6 +5001,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuthResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    signup_signup_post: {
+        parameters: {
+            query: {
+                username: string;
+                password: string;
+                center_id: string;
+                user_type: components["schemas"]["UserType"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -3684,7 +5248,7 @@ export interface operations {
             };
         };
     };
-    protected_route_unprotected_route_get: {
+    get_enterprises_enterprises_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -3699,7 +5263,106 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["EnterpriseDetailsResponse"][];
+                };
+            };
+        };
+    };
+    create_enterprise_enterprises_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateEnterpriseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnterpriseDetailsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_enterprise_enterprises__enterprise_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                enterprise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnterpriseDetailsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_enterprise_enterprises__enterprise_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                enterprise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateEnterpriseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnterpriseDetailsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -3720,6 +5383,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CenterDisplayInfo"][];
+                };
+            };
+        };
+    };
+    create_center_centers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCenterRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CenterDetailsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -4338,6 +6034,37 @@ export interface operations {
             };
         };
     };
+    get_patient_groups_patients__patient_id__groups_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientGroupItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     upload_audio_file_audio_upload_post: {
         parameters: {
             query?: never;
@@ -4348,6 +6075,37 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_upload_audio_file_audio_upload_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_group_audio_file_audio_upload_group_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_group_audio_file_audio_upload_group_post"];
             };
         };
         responses: {
@@ -4599,7 +6357,7 @@ export interface operations {
             };
         };
     };
-    get_assembled_prompt_config_populate_populate_prompt_assembled__workflow_id__get: {
+    get_assembled_prompt_config_populate_prompt_assembled__workflow_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -4680,6 +6438,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreateSessionResponse"];
+                };
+            };
+        };
+    };
+    create_group_clinical_session_clinical_sessions_group_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGroupSessionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateGroupSessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_group_session_attendance_clinical_sessions_group__session_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateGroupSessionAttendanceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdateGroupSessionAttendanceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_sessions_by_group_clinical_sessions_group__group_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupSessionListItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -4808,6 +6665,37 @@ export interface operations {
             };
         };
     };
+    get_session_group_notes_clinical_sessions__session_id__group_notes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupNoteResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     process_clinical_session_clinical_sessions__session_id__process_put: {
         parameters: {
             query?: never;
@@ -4870,7 +6758,9 @@ export interface operations {
     };
     update_clinical_session_workflows_clinical_sessions__session_id__workflows_put: {
         parameters: {
-            query?: never;
+            query?: {
+                process_note?: boolean;
+            };
             header?: never;
             path: {
                 session_id: string;
@@ -4905,7 +6795,10 @@ export interface operations {
     };
     get_workflows_workflows_get: {
         parameters: {
-            query?: never;
+            query?: {
+                center_id?: string | null;
+                enterprise_id?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4919,6 +6812,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkflowResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -4943,37 +6845,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QueuedWorkflowResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_workflows_by_center_id_workflows_center__center_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                center_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WorkflowResponse"][];
                 };
             };
             /** @description Validation Error */
@@ -5556,6 +7427,37 @@ export interface operations {
             };
         };
     };
+    get_audio_url_dashboard_audio_url_get: {
+        parameters: {
+            query: {
+                s3_file_key: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_session_stats_dashboard_session_stats__center_id__get: {
         parameters: {
             query?: never;
@@ -5890,7 +7792,7 @@ export interface operations {
             };
         };
     };
-    get_update_required_extension_update_required_get: {
+    backfill_s3_file_keys_internal_backfill_s3_file_keys_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -5906,6 +7808,154 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    reconcile_kipu_patients_internal_reconcile_kipu_patients_post: {
+        parameters: {
+            query: {
+                center_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    gemini_query_internal_gemini_query_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GeminiQueryRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    gemini_query_file_internal_gemini_query_file_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_gemini_query_file_internal_gemini_query_file_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    backfill_group_workflow_internal_backfill_group_workflow_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_update_required_extension_update_required_get: {
+        parameters: {
+            query: {
+                user_version: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdateRequiredResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -5942,37 +7992,6 @@ export interface operations {
                 "application/json": components["schemas"]["UpdateAllUsersRequest"];
             };
         };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    update_extension_version_extension_version_put: {
-        parameters: {
-            query: {
-                version: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -6060,6 +8079,618 @@ export interface operations {
             };
         };
     };
+    fhir_query_health_fhir_query_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FHIRHealthResponse"];
+                };
+            };
+        };
+    };
+    start_fhir_chat_fhir_query_chat_start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FHIRChatStartResponse"];
+                };
+            };
+        };
+    };
+    send_fhir_chat_message_fhir_query_chat_message_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FHIRChatMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FHIRChatMessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_fhir_chat_fhir_query_chat_end_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FHIRChatEndRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FHIRChatEndResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    perspectives_query_health_perspectives_query_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerspectivesHealthResponse"];
+                };
+            };
+        };
+    };
+    query_perspectives_perspectives_query_query_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerspectivesQueryRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerspectivesQueryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_bestnotes_bestnotes_sync__enterprise_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                enterprise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: number;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    setup_sample_data_bestnotes_sync__enterprise_id__sample_data_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                enterprise_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetupSampleDataRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: number;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_charts_charts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartResponse"][];
+                };
+            };
+        };
+    };
+    create_chart_charts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_create_chart_charts_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_questions_charts_questions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_chart_charts__chart_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chart_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rerun_chart_charts__chart_id__rerun_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chart_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    seed_questions_charts_seed_questions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    get_groups_groups_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by is_active status */
+                is_active?: boolean | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupListItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_group_groups_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGroupRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateGroupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_group_by_id_groups__group_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_group_groups__group_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateGroupRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_group_members_groups__group_id__members_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddGroupMembersRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddGroupMembersResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_group_member_groups__group_id__members__patient_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+                patient_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_group_notes_groups__group_id__notes_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by patient ID */
+                patient_id?: string | null;
+            };
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientGroupNoteResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     index__get: {
         parameters: {
             query?: never;
@@ -6075,9 +8706,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "text/html": string;
                 };
             };
         };

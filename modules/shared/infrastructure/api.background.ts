@@ -103,9 +103,9 @@ export const updateCenterPromptConfig = async (centerId: string, body: UpdateCen
 
 export const getWorkflows = async (centerId: string) => {
     try {
-        const { data, error } = await fastapi.GET(`/workflows/center/{center_id}`, {
+        const { data, error } = await fastapi.GET(`/workflows`, {
             params: {
-                path: {
+                query: {
                     center_id: centerId,
                 }
             }
