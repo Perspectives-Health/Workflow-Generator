@@ -1,4 +1,4 @@
-import { Center, MenuItem } from "./types";
+import { Center, Enterprise, MenuItem } from "./types";
 
 export const sharedStorage = {
 	position: storage.defineItem<{ x: number, y: number }>(
@@ -27,6 +27,12 @@ export const sharedStorage = {
 	),
 	selectedCenter: storage.defineItem<Center | null>(
 		'local:shared::selectedCenter',
+		{
+			fallback: null,
+		}
+	),
+	selectedEnterprise: storage.defineItem<Enterprise | null>(
+		'local:shared::selectedEnterprise',
 		{
 			fallback: null,
 		}

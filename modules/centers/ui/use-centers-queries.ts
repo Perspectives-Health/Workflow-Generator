@@ -15,6 +15,10 @@ export const useCentersQueries = () => {
             queryKey: ['centers'],
             queryFn: async () => api.getCenters(),
         }),
+        useGetEnterprises: () => useQuery({
+            queryKey: ['enterprises'],
+            queryFn: async () => api.getEnterprises(),
+        }),
         useGetCenterDetails: (centerId: string) => useQuery({
             queryKey: ['center-details', centerId],
             queryFn: async () => api.getCenterDetails(centerId),

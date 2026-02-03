@@ -46,9 +46,21 @@ export function cloneHtmlElementWithStyles(element: HTMLElement, mode: EhrPlatfo
     function copyComputedStyle(source: HTMLElement, target: HTMLElement) {
         const computedStyle = getComputedStyle(source);
         for (const key of computedStyle) {
+            let value = computedStyle.getPropertyValue(key);
+            
+            // Reduce font-size slightly to counteract html2canvas's wider text rendering
+            if (mode === EhrPlatform.BESTNOTES && key === 'font-size') {
+                const fontSize = parseFloat(value);
+                if (!isNaN(fontSize)) {
+                    value = (fontSize * 0.8) + 'px';
+                    target.style.setProperty(key, value, 'important');
+                    continue;
+                }
+            }
+            
             target.style.setProperty(
                 key,
-                computedStyle.getPropertyValue(key),
+                value,
                 computedStyle.getPropertyPriority(key)
             );
         }

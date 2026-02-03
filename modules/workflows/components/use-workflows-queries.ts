@@ -11,10 +11,10 @@ export const useWorkflowsQueries = () => {
     const api = createQueries(sendMessage, workflowsQueries);
 
     return {
-        useGetWorkflows: (centerId: string) => useQuery({
-            queryKey: ['workflows', centerId],
-            queryFn: async () => api.getWorkflows(centerId),
-            enabled: !!centerId,
+        useGetWorkflows: ({ centerId, enterpriseId }: { centerId?: string, enterpriseId?: string }) => useQuery({
+            queryKey: ['workflows', centerId ?? enterpriseId],
+            queryFn: async () => api.getWorkflows({ centerId, enterpriseId }),
+            enabled: !!centerId || !!enterpriseId,
             refetchInterval: (query) => {
                 const hasInProgress = query.state.data?.some(
                     (workflow) => workflow.mapping_status === 'in_progress'
@@ -36,6 +36,7 @@ export const useWorkflowsQueries = () => {
             mutationFn: async ({ 
                 workflowId, 
                 centerId,
+                enterpriseId,
                 name, 
                 ignoreFlags, 
                 processedQuestions,
@@ -43,7 +44,8 @@ export const useWorkflowsQueries = () => {
                 grouping,
             }: { 
                 workflowId: string; 
-                centerId: string;
+                centerId?: string;
+                enterpriseId?: string;
                 name?: string; 
                 ignoreFlags?: Record<string, boolean>; 
                 processedQuestions?: Record<string, string>;
@@ -54,32 +56,33 @@ export const useWorkflowsQueries = () => {
             },
             onSuccess: (_, variables) => {
                 invalidateQueriesGlobally(['workflow-mapping', variables.workflowId]);
-                invalidateQueriesGlobally(['workflows', variables.centerId]);
+                invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
                 invalidateQueriesGlobally(['workflow-summary', variables.workflowId]);
                 // toast.success('Workflow updated successfully');
             }
         }),
         useDeleteWorkflow: () => useMutation({
-            mutationFn: async ({ centerId, workflowId }: { centerId: string; workflowId: string }) => {
+            mutationFn: async ({ centerId, enterpriseId, workflowId }: { centerId?: string; enterpriseId?: string; workflowId: string }) => {
                 return api.deleteWorkflow(workflowId);
             },
             onSuccess: (_, variables) => {
-                invalidateQueriesGlobally(['workflows', variables.centerId]);
+                invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
             }
         }),
         useCreateWorkflow: () => useMutation({
-            mutationFn: async ({ workflowName, metadata, centerId, screenshot, categoryInstructions }: { workflowName: string; metadata: PreMappingMetadata[]; centerId: string; screenshot: string; categoryInstructions: { [key: string]: unknown } }) => {
+            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; screenshot: string; categoryInstructions: { [key: string]: unknown } }) => {
 
                 return api.createWorkflow({
                     workflow_name: workflowName,
                     metadata: metadata,
                     center_id: centerId,
+                    enterprise_id: enterpriseId,
                     screenshot: screenshot,
                     category_instructions: categoryInstructions
                 });
             },
             onSuccess: (_, variables) => {
-                invalidateQueriesGlobally(['workflows', variables.centerId]);
+                invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
             }
         }),
         useSaveWorkflowPaths: () => useMutation({

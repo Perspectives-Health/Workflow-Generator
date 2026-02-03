@@ -30,6 +30,8 @@ export interface MessagingFunctions {
 
 export type Center = components["schemas"]["CenterDisplayInfo"];
 
+export type Enterprise = { id: string, name: string };
+
 export type GetCentersResponse = Center[];
 
 export type CenterDetails = components["schemas"]["CenterDetailsResponse"];
@@ -110,3 +112,5 @@ export type TestPopuateRequestBody = {
 }
 
 export type NoteData = components["schemas"]["PopulateModel"];
+
+export type EnterpriseDetailsResponse = components["schemas"]["EnterpriseDetailsResponse"];

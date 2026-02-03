@@ -21,9 +21,10 @@ interface ViewWorkflowsMenuProps {
 
 export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
+    const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
     const { useGetCenterDetails, useUpdateCenterPromptConfig } = useCentersQueries();
     const { useGetWorkflows, useDeleteWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
-    const { data: workflows, isLoading } = useGetWorkflows(selectedCenter?.center_id ?? '');
+    const { data: workflows, isLoading } = useGetWorkflows({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id });
     const { mutateAsync: deleteWorkflow, isPending: isDeletingWorkflow } = useDeleteWorkflow();
     const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
     const { data: centerDetails, isLoading: isCenterDetailsLoading } = useGetCenterDetails(selectedCenter?.center_id ?? '');
@@ -79,7 +80,8 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
             workflowName,
             workflowCategory,
             workflowProgressNoteType,
-            centerId: selectedCenter?.center_id ?? '',
+            centerId: selectedCenter?.center_id,
+            enterpriseId: selectedEnterprise?.id,
         });
         navigate("create-workflow");
     }
@@ -104,17 +106,17 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const handleDelete = async (e: Event, workflowId: string) => {
         e.preventDefault();
         e.stopPropagation();
-        if (!selectedCenter || isDeletingWorkflow) {
+        if ((!selectedCenter && !selectedEnterprise) || isDeletingWorkflow) {
             return;
         }
-        await deleteWorkflow({ centerId: selectedCenter.center_id, workflowId });
+        await deleteWorkflow({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, workflowId });
     }
 
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, workflowId: string) => {
         if (e.key === 'Enter') {
-            if (!selectedCenter) return;
+            if (!selectedCenter && !selectedEnterprise) return;
             try {
-                await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter.center_id });
+                await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id });
                 setEditingWorkflowId(null);
             } catch (error) {
                 console.error("handleKeyDown error", error);
@@ -154,35 +156,38 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
 
     return (
         <div className="w-full flex flex-col gap-2 p-2">
-            <span className="text-xs text-muted-foreground">System Prompt for {selectedCenter?.center_name}</span>
-            <TextArea
-                value={centerPromptState || ''}
-                onChange={(e) => setCenterPromptState(e.target.value)}
-                className="w-full px-2 py-1 border border-gray-200 rounded-md text-sm"
-                maxHeight={400}
-                ignoreBlurRefs={[resetButtonRef, saveButtonRef]}
-            />
-            <div className="flex flex-row justify-end items-center gap-2 w-full">
-                {centerPromptSaveStatus === 'success' ? (
-                    <span className="text-xs text-green-500 font-medium">Saved!</span>
-                ) : centerPromptSaveStatus === 'error' ? (
-                    <span className="text-xs text-red-500 font-medium">Error saving</span>
-                ) : (
-                    <>
-                        <Button ref={resetButtonRef} variant="outline" size="sm" onClick={() => setCenterPromptState(centerPrompt || '')}
-                            className="px-2 py-1 text-xs"
-                        >
-                            Reset
-                        </Button>
-                        <Button ref={saveButtonRef} variant="default" size="sm"
-                            className="px-2 py-1 text-xs bg-primary text-white hover:bg-primary/90"
-                            onClick={handleUpdateCenterPrompt}>
-                            Save
-                        </Button>
-                    </>
-                )}
-            </div>
-            <span className="text-xs text-muted-foreground">Workflows for {selectedCenter?.center_name}</span>
+            {selectedCenter && (
+                <>
+                    <span className="text-xs text-muted-foreground">System Prompt for {selectedCenter?.center_name}</span>
+                    <TextArea
+                        value={centerPromptState || ''}
+                        onChange={(e) => setCenterPromptState(e.target.value)}
+                        className="w-full px-2 py-1 border border-gray-200 rounded-md text-sm"
+                        maxHeight={400}
+                        ignoreBlurRefs={[resetButtonRef, saveButtonRef]}
+                    />
+                    <div className="flex flex-row justify-end items-center gap-2 w-full">
+                        {centerPromptSaveStatus === 'success' ? (
+                            <span className="text-xs text-green-500 font-medium">Saved!</span>
+                        ) : centerPromptSaveStatus === 'error' ? (
+                            <span className="text-xs text-red-500 font-medium">Error saving</span>
+                        ) : (
+                            <>
+                                <Button ref={resetButtonRef} variant="outline" size="sm" onClick={() => setCenterPromptState(centerPrompt || '')}
+                                    className="px-2 py-1 text-xs"
+                                >
+                                    Reset
+                                </Button>
+                                <Button ref={saveButtonRef} variant="default" size="sm"
+                                    className="px-2 py-1 text-xs bg-primary text-white hover:bg-primary/90"
+                                    onClick={handleUpdateCenterPrompt}>
+                                    Save
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </>)}
+            <span className="text-xs text-muted-foreground">Workflows for {selectedCenter?.center_name ?? selectedEnterprise?.name}</span>
             {isLoading ? (
                 <div className="w-full h-40 flex items-center justify-center text-muted-foreground text-sm">Loading...</div>
             ) : (!workflows || workflows.length === 0 ? (

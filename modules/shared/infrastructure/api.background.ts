@@ -79,6 +79,19 @@ export const getCenters = async () => {
     }
 }
 
+export const getEnterprises = async () => {
+    try {
+        const { data, error } = await fastapi.GET(`/enterprises`);
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error('Get enterprises error details:', error);
+        throw error;
+    }
+}
+
 export const updateCenterPromptConfig = async (centerId: string, body: UpdateCenterRequest) => {
     try {
         const { data, error } = await fastapi.PUT(`/centers/{center_id}`, {
@@ -101,12 +114,13 @@ export const updateCenterPromptConfig = async (centerId: string, body: UpdateCen
     }
 }
 
-export const getWorkflows = async (centerId: string) => {
+export const getWorkflows = async ({ centerId, enterpriseId }: { centerId?: string, enterpriseId?: string }) => {
     try {
         const { data, error } = await fastapi.GET(`/workflows`, {
             params: {
                 query: {
-                    center_id: centerId,
+                    ...(centerId && { center_id: centerId }),
+                    ...(enterpriseId && { enterprise_id: enterpriseId }),
                 }
             }
         });
@@ -135,6 +149,7 @@ export const createWorkflow = async (body: CreateWorkflowRequest) => {
                 // options: info.options,
             })),
             center_id: body.center_id,
+            enterprise_id: body.enterprise_id,
             screenshot: body.screenshot,
             category_instructions: body.category_instructions
         }

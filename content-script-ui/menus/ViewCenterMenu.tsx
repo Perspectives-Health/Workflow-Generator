@@ -7,12 +7,14 @@ import { navigate } from "@/modules/shared/shared.utils";
 
 
 export function ViewCenterMenu() {
-    const { useGetCenters } = useCentersQueries();
+    const { useGetCenters, useGetEnterprises } = useCentersQueries();
     const { data: centers } = useGetCenters();
+    const { data: enterprises } = useGetEnterprises();
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter)
+    const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise)
 
     const handleNext = () => {
-        if (!selectedCenter) {
+        if (!selectedCenter && !selectedEnterprise) {
             return;
         }
         navigate("view-workflows");
@@ -20,7 +22,7 @@ export function ViewCenterMenu() {
 
     return (
         <div className="w-full flex flex-col gap-2 p-2">
-            {centers && <CentersCombobox centers={centers} />}
+            {centers && enterprises && <CentersCombobox centers={centers} enterprises={enterprises} />}
             <div className="flex flex-row justify-end w-full">
                 <Button variant="default"
                 size="sm"

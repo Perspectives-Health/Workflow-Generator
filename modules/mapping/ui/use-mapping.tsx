@@ -12,7 +12,8 @@ export interface WorkflowFormData {
     workflowName: string;
     workflowCategory: CategoryType | null;
     workflowProgressNoteType: ProgressNoteType | null;
-    centerId: string;
+    centerId?: string;
+    enterpriseId?: string;
 }
 
 export const useMapping = (currMode: EhrPlatform | null) => {
@@ -163,7 +164,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 return metadata;
             });
             
-            const { workflowName, workflowCategory, workflowProgressNoteType, centerId } = formDataRef.current!;
+            const { workflowName, workflowCategory, workflowProgressNoteType, centerId, enterpriseId } = formDataRef.current!;
             
             console.log(newMetadataArray);
             console.log(base64Image)
@@ -171,6 +172,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 workflowName,
                 metadata: newMetadataArray,
                 centerId,
+                enterpriseId,
                 screenshot: base64Image,
                 categoryInstructions: {
                     selected_category: workflowCategory,

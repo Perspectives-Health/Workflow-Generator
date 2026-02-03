@@ -17,4 +17,9 @@ export const centersQueries = (sendMessage: SendMessageFn) => ({
         const response = await sendMessage("update-center-prompt-config", { centerId, body });
         if (!response.success) throw response.error;
     },
+    getEnterprises: async () => {
+        const response = await sendMessage("get-enterprises", undefined);
+        if (!response.success) throw response.error;
+        return response.data;
+    },
 });

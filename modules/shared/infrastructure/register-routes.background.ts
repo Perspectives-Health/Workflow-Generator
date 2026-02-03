@@ -1,9 +1,9 @@
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { ApiResponse, CategoryType, CenterDetails, CreateWorkflowRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData } from "@/modules/shared/types";
+import type { ApiResponse, CategoryType, CenterDetails, CreateWorkflowRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData, EnterpriseDetailsResponse } from "@/modules/shared/types";
 import { onMessage } from "webext-bridge/background";
 import { sendResponse, sendError } from "@/modules/shared/infrastructure/api-utils.background";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData } from "@/modules/shared/infrastructure/api.background";
+import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData, getEnterprises } from "@/modules/shared/infrastructure/api.background";
 
 
 declare module "webext-bridge" {
@@ -12,7 +12,7 @@ declare module "webext-bridge" {
         "get-centers": ProtocolWithReturn<void, ApiResponse<GetCentersResponse>>;
         "get-center-details": ProtocolWithReturn<{ centerId: string }, ApiResponse<CenterDetails>>;
         "update-center-prompt-config": ProtocolWithReturn<{ centerId: string, body: UpdateCenterRequest }, ApiResponse<void>>;
-        "get-workflows": ProtocolWithReturn<{ centerId: string }, ApiResponse<WorkflowSummary[]>>;
+        "get-workflows": ProtocolWithReturn<{ centerId?: string, enterpriseId?: string }, ApiResponse<WorkflowSummary[]>>;
         "get-workflow": ProtocolWithReturn<{ workflowId: string }, ApiResponse<WorkflowSummary>>;
         "get-workflow-mapping": ProtocolWithReturn<{ workflowId: string }, ApiResponse<WorkflowMapping>>;
         "update-workflow": ProtocolWithReturn<UpdateWorkflowRequest, ApiResponse<void>>;
@@ -23,6 +23,7 @@ declare module "webext-bridge" {
         "get-default-transcript": ProtocolWithReturn<{ workflowId: string }, ApiResponse<string>>;
         "test-populate": ProtocolWithReturn<{ workflowId: string, transcript: string }, ApiResponse<string>>;
         "get-note-data": ProtocolWithReturn<{ sessionId: string, workflowId: string }, ApiResponse<NoteData>>;
+        "get-enterprises": ProtocolWithReturn<void, ApiResponse<EnterpriseDetailsResponse[]>>;
     }
 }
 
@@ -45,6 +46,14 @@ export function registerBackgroundRoutes() {
         }
     });
 
+    onMessage("get-enterprises", async () => {
+        try {
+            const result = await getEnterprises();
+            return sendResponse(result);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
     onMessage("update-center-prompt-config", async ({ data }) => {
         try {
             const result = await updateCenterPromptConfig(data.centerId, data.body);
@@ -65,7 +74,7 @@ export function registerBackgroundRoutes() {
 
     onMessage("get-workflows", async ({ data }) => {
         try {
-            const result = await getWorkflows(data.centerId);
+            const result = await getWorkflows(data);
             return sendResponse(result);
         } catch (error) {
             return sendError(error as Error);

@@ -4581,6 +4581,8 @@ export interface components {
             screenshot: string;
             /** Center Id */
             center_id?: string | null;
+            /** Enterprise Id */
+            enterprise_id?: string | null;
             /** Example Image Url */
             example_image_url?: string | null;
             /** Category Instructions */
