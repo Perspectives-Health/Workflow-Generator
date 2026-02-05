@@ -360,7 +360,7 @@ export function ManageWorkflowMenuItem({
         debounceTimeoutRef.current = setTimeout(async () => {
             await onUpdateProcessedQuestion(metadata.index, newText);
             setIsSaved(true);
-        }, 600);
+        }, 1500);
     };
 
     const handleConfirmClickBeforePath = () => {
