@@ -18,8 +18,8 @@ export interface WorkflowFormData {
 
 export const useMapping = (currMode: EhrPlatform | null) => {
     const [currStage, setCurrStage] = useState<MappingStage>(MappingStage.IDLE);
-    const { useCreateWorkflow } = useWorkflowsQueries();
-    const { mutateAsync: createWorkflow } = useCreateWorkflow();
+    const { useMapWorkflow } = useWorkflowsQueries();
+    const { mutateAsync: mapWorkflow } = useMapWorkflow();
 
     const deleteResolverRef = useRef<(() => void) | null>(null);
     const screenshotRef = useRef<string>('');
@@ -168,7 +168,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
             
             console.log(newMetadataArray);
             console.log(base64Image)
-            const response = await createWorkflow({
+            const response = await mapWorkflow({
                 workflowName,
                 metadata: newMetadataArray,
                 centerId,

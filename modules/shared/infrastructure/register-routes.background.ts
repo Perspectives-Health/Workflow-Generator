@@ -1,9 +1,9 @@
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { ApiResponse, CategoryType, CenterDetails, CreateWorkflowRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData, EnterpriseDetailsResponse } from "@/modules/shared/types";
+import type { ApiResponse, CategoryType, CenterDetails, WorkflowMappingRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData, EnterpriseDetailsResponse } from "@/modules/shared/types";
 import { onMessage } from "webext-bridge/background";
 import { sendResponse, sendError } from "@/modules/shared/infrastructure/api-utils.background";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, createWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData, getEnterprises } from "@/modules/shared/infrastructure/api.background";
+import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, mapWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData, getEnterprises } from "@/modules/shared/infrastructure/api.background";
 
 
 declare module "webext-bridge" {
@@ -17,7 +17,7 @@ declare module "webext-bridge" {
         "get-workflow-mapping": ProtocolWithReturn<{ workflowId: string }, ApiResponse<WorkflowMapping>>;
         "update-workflow": ProtocolWithReturn<UpdateWorkflowRequest, ApiResponse<void>>;
         "delete-workflow": ProtocolWithReturn<{ workflowId: string }, ApiResponse<void>>;
-        "create-workflow": ProtocolWithReturn<CreateWorkflowRequest, ApiResponse<void>>;
+        "map-workflow": ProtocolWithReturn<WorkflowMappingRequest, ApiResponse<void>>;
         "save-workflow-paths": ProtocolWithReturn<{ workflowId: string, index: string, xpath: string | undefined, clickBeforeXpaths: string[] | undefined }, ApiResponse<void>>;
         "regenerate-processed-question": ProtocolWithReturn<{ workflowId: string, questionIndex: string }, ApiResponse<RegenerateProcessedQuestionResponse>>;
         "get-default-transcript": ProtocolWithReturn<{ workflowId: string }, ApiResponse<string>>;
@@ -124,9 +124,9 @@ export function registerBackgroundRoutes() {
         }
     });
 
-    onMessage("create-workflow", async ({ data }) => {
+    onMessage("map-workflow", async ({ data }) => {
         try {
-            await createWorkflow(data);
+            await mapWorkflow(data);
             return sendResponse();
         } catch (error) {
             return sendError(error as Error);

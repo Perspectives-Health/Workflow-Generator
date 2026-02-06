@@ -4571,25 +4571,6 @@ export interface components {
          * @enum {string}
          */
         VerbiageType: "pt" | "patient" | "client" | "member";
-        /** WorkflowCreate */
-        WorkflowCreate: {
-            /** Workflow Name */
-            workflow_name: string;
-            /** Metadata */
-            metadata: components["schemas"]["Metadata"][];
-            /** Screenshot */
-            screenshot: string;
-            /** Center Id */
-            center_id?: string | null;
-            /** Enterprise Id */
-            enterprise_id?: string | null;
-            /** Example Image Url */
-            example_image_url?: string | null;
-            /** Category Instructions */
-            category_instructions?: {
-                [key: string]: unknown;
-            } | null;
-        };
         /** WorkflowDisplayInfo */
         WorkflowDisplayInfo: {
             /**
@@ -4626,6 +4607,27 @@ export interface components {
             /** Workflow Name */
             workflow_name: string;
             workflow_category_type: components["schemas"]["CategoryType"];
+        };
+        /** WorkflowMappingRequest */
+        WorkflowMappingRequest: {
+            /** Workflow Name */
+            workflow_name: string;
+            /** Metadata */
+            metadata: components["schemas"]["Metadata"][];
+            /** Screenshot */
+            screenshot: string;
+            /** Center Id */
+            center_id?: string | null;
+            /** Enterprise Id */
+            enterprise_id?: string | null;
+            /** Example Image Url */
+            example_image_url?: string | null;
+            /** Category Instructions */
+            category_instructions?: {
+                [key: string]: unknown;
+            } | null;
+            /** Workflow Id */
+            workflow_id?: string | null;
         };
         /**
          * WorkflowMetadata
@@ -6836,7 +6838,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["WorkflowCreate"];
+                "application/json": components["schemas"]["WorkflowMappingRequest"];
             };
         };
         responses: {

@@ -61,7 +61,7 @@ export type PreMappingMetadata = components["schemas"]["Metadata"];
 
 export type WorkflowMapping = components["schemas"]["Mapping"];
 
-export type CreateWorkflowRequest = components["schemas"]["WorkflowCreate"];
+export type WorkflowMappingRequest = components["schemas"]["WorkflowMappingRequest"];
 
 export type UpdateCenterRequest = components["schemas"]["UpdateCenterRequest"];
 
