@@ -94,13 +94,14 @@ export enum MappingStage {
     ERROR = -1,
     IDLE = 0,
     GETTING_FORM = 1,
-    CLONING_FORM = 2,
-    FINDING_INPUTS = 3,
-    EXTRACTING_ELEMENT_INFO = 4,
-    DELETE_INPUTS = 5,
-    CAPTURING_SCREENSHOT = 6,
-    SENDING = 7,
-    COMPLETED = 8,
+    GETTING_OPTIONS = 2,
+    CLONING_FORM = 3,
+    FINDING_INPUTS = 4,
+    EXTRACTING_ELEMENT_INFO = 5,
+    DELETE_INPUTS = 6,
+    CAPTURING_SCREENSHOT = 7,
+    SENDING = 8,
+    COMPLETED = 9,
 }
 
 export type RegenerateProcessedQuestionResponse = components["schemas"]["RegenerateProcessedQuestionResponse"];

@@ -1,12 +1,13 @@
 import { useCallback, useRef, useState } from "react";
 import { EhrPlatform, MappingStage, ElementInfo, CategoryType, ProgressNoteType } from "@/modules/shared/types";
 import { hasZeroDimensions, isIgnoredInputElement, queryAllInputElements, queryFormElement } from "../domain/query-elements";
-import { getElementLabel, getElementType, getElementOptions, getElementPlaceholder, getElementSimplifiedType } from "../domain/get-attr";
+import { getElementLabel, getElementType, getElementOptions, getElementPlaceholder, getElementSimplifiedType, getComboboxOptions } from "../domain/get-attr";
 import { getElementAbsoluteXPath, getElementPrimaryPath } from "../domain/get-path";
 import { ABSOLUTE_XPATH_ATTRIBUTE, addVisualMarker, appendCloneToBody, captureScreenshot, cleanupClonedElements, cloneHtmlElementWithStyles, highlightVisualMarker, openInNewWindow, PRIMARY_PATH_ATTRIBUTE, unhighlightVisualMarker, updateVisualMarkerIdx } from "../domain/capture-dom";
 import { removeElement } from "../domain/edit-element-info";
 import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflows-queries";
 import { goBack, navigate } from "@/modules/shared/shared.utils";
+import { ensureElementVisible } from "@/modules/populate/populate-utils";
 
 export interface WorkflowFormData {
     workflowName: string;
@@ -14,6 +15,7 @@ export interface WorkflowFormData {
     workflowProgressNoteType: ProgressNoteType | null;
     centerId?: string;
     enterpriseId?: string;
+    workflowId?: string;
 }
 
 export const useMapping = (currMode: EhrPlatform | null) => {
@@ -56,7 +58,19 @@ export const useMapping = (currMode: EhrPlatform | null) => {
             if (!formEl) {
                 throw new Error('Form element not found');
             }
-                
+
+            setCurrStage(MappingStage.GETTING_OPTIONS);
+            const comboboxElements = formEl.querySelectorAll('[role="combobox"]');
+            for (const combobox of Array.from(comboboxElements)) {
+                await ensureElementVisible(combobox as HTMLElement);
+                const options = await getComboboxOptions(combobox);
+                combobox.setAttribute('combobox-options', JSON.stringify(options));
+            }
+
+            // return;
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            // return;
+            
             setCurrStage(MappingStage.CLONING_FORM);
             const clonedFormEl = cloneHtmlElementWithStyles(formEl, currMode);
             appendCloneToBody(clonedFormEl);
@@ -81,6 +95,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 const elementPrimaryPath = el.getAttribute(PRIMARY_PATH_ATTRIBUTE) || '';
                 const elementAbsoluteXPath = el.getAttribute(ABSOLUTE_XPATH_ATTRIBUTE) || '';
                 const elementLabel = getElementLabel(el);
+                console.log('elementLabel', elementLabel);
                 const elementPlaceholder = getElementPlaceholder(el);
                 const elementOptions = getElementOptions(el, currMode);
                 
@@ -164,15 +179,17 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 return metadata;
             });
             
-            const { workflowName, workflowCategory, workflowProgressNoteType, centerId, enterpriseId } = formDataRef.current!;
+            const { workflowName, workflowCategory, workflowProgressNoteType, centerId, enterpriseId, workflowId } = formDataRef.current!;
             
             console.log(newMetadataArray);
             console.log(base64Image)
+            // return;
             const response = await mapWorkflow({
                 workflowName,
                 metadata: newMetadataArray,
                 centerId,
                 enterpriseId,
+                workflowId,
                 screenshot: base64Image,
                 categoryInstructions: {
                     selected_category: workflowCategory,

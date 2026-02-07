@@ -64,8 +64,21 @@ export function ManageWorkflowMenu() {
     }, [defaultTranscript]);
 
     useEffect(() => {
+        console.log("selectedWorkflowId changed, setting isRestoringScroll to true", selectedWorkflowId);
         setIsRestoringScroll(true);
     }, [selectedWorkflowId]);
+
+    // Safety timeout: if isRestoringScroll is stuck at true for 5 seconds, force it to false
+    useEffect(() => {
+        if (!isRestoringScroll) return;
+        
+        const safetyTimeout = setTimeout(() => {
+            console.log("Safety timeout: forcing isRestoringScroll to false after 5 seconds");
+            setIsRestoringScroll(false);
+        }, 3000);
+
+        return () => clearTimeout(safetyTimeout);
+    }, [isRestoringScroll]);
 
 
     const handleUpdateProcessedQuestionText = async (index: number, processedQuestionText: string) => {
@@ -102,11 +115,13 @@ export function ManageWorkflowMenu() {
                 if (manageWorkflowListRef.current) {
                     manageWorkflowListRef.current.scrollTop = scrollPosition;
                 }
+                console.log("timeout, restored scroll position", scrollPosition);
                 setIsRestoringScroll(false);
             }, 1000);
 
             return () => clearTimeout(timeoutId);
         } else {
+            console.log("no scroll position, setting isRestoringScroll to false");
             setIsRestoringScroll(false);
         }
     }, [scrollPosition, mapping, isWorkflowMappingLoading, isScrollPositionLoading]);

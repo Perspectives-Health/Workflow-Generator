@@ -25,7 +25,17 @@ export function CreateWorkflowMenu({ currStage, endDelete }: CreateWorkflowMenuP
                 </div>
                 <div className="w-full flex flex-row justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                        2. Finding Input Elements
+                        2. Getting Combobox Options
+                    </span>
+                    {currStage === MappingStage.GETTING_OPTIONS ? (
+                        <Loader className="w-4 h-4" />
+                    ) : currStage > MappingStage.GETTING_OPTIONS && (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                    )}
+                </div>
+                <div className="w-full flex flex-row justify-between items-center">
+                    <span className="text-sm text-muted-foreground">
+                        3. Finding Input Elements
                     </span>
                     {currStage === MappingStage.FINDING_INPUTS ? (
                         <Loader className="w-4 h-4" />
@@ -35,7 +45,7 @@ export function CreateWorkflowMenu({ currStage, endDelete }: CreateWorkflowMenuP
                 </div>
                 <div className="w-full flex flex-row justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                        3. Extracting Element Info
+                        4. Extracting Element Info
                     </span>
                     {currStage === MappingStage.EXTRACTING_ELEMENT_INFO ? (
                         <Loader className="w-4 h-4" />
@@ -45,7 +55,7 @@ export function CreateWorkflowMenu({ currStage, endDelete }: CreateWorkflowMenuP
                 </div>
                 <div className="w-full flex flex-row justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                        4. Deleting Input Elements
+                        5. Deleting Input Elements
                     </span>
                     {currStage === MappingStage.DELETE_INPUTS ? (
                         <button 
@@ -66,7 +76,7 @@ export function CreateWorkflowMenu({ currStage, endDelete }: CreateWorkflowMenuP
                 )}
                 <div className="w-full flex flex-row justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                        5. Capturing Screenshot
+                        6. Capturing Screenshot
                     </span>
                     {currStage === MappingStage.CAPTURING_SCREENSHOT ? (
                         <Loader className="w-4 h-4" />
@@ -76,7 +86,7 @@ export function CreateWorkflowMenu({ currStage, endDelete }: CreateWorkflowMenuP
                 </div>
                 <div className="w-full flex flex-row justify-between items-center">
                     <span className="text-sm text-muted-foreground">
-                        6. Completed
+                        7. Completed
                     </span>
                     {currStage === MappingStage.COMPLETED ? (
                         <CheckCircle className="w-4 h-4 text-green-500" />
