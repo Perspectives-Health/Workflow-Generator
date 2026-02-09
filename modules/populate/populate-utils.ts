@@ -101,21 +101,21 @@ export const convertStringToParagraphs = (inputString: string): string => {
     if (!inputString || typeof inputString !== 'string') {
         return '';
     }
-    
+
     // Split by newline characters and filter out empty strings
     const paragraphs = inputString
         .split(/\r?\n/)
         .map(paragraph => paragraph.trim())
         .filter(paragraph => paragraph.length > 0);
-    
+
     // If no paragraphs found, return empty string
     if (paragraphs.length === 0) {
         return '';
     }
-    
+
     // Convert each paragraph to a <p> element
     const paragraphElements = paragraphs.map(paragraph => `<p>${paragraph}</p>`);
-    
+
     // Join all paragraph elements
     return paragraphElements.join('');
 };
@@ -152,28 +152,28 @@ export const ensureElementVisible = async (element: HTMLElement): Promise<void> 
  * @returns Promise<HTMLElement | null>
  */
 export const findElementAcrossIframesWithRetry = async (
-    nestedXPath: string, 
-    maxRetries: number = 1, 
+    nestedXPath: string,
+    maxRetries: number = 1,
     retryDelay: number = 1000
 ): Promise<HTMLElement | null> => {
     let element = findElementAcrossIframes(nestedXPath);
-    
+
     if (element) {
         return element;
     }
-    
+
     // Retry up to maxRetries times
     for (let i = 0; i < maxRetries; i++) {
         console.log(`Element not found, retrying in ${retryDelay}ms... (attempt ${i + 1}/${maxRetries})`);
         await new Promise(resolve => setTimeout(resolve, retryDelay));
-        
+
         element = findElementAcrossIframes(nestedXPath);
         if (element) {
             console.log(`Element found on retry attempt ${i + 1}`);
             return element;
         }
     }
-    
+
     console.error(`Element not found after ${maxRetries} retry attempts`);
     return null;
 }
@@ -193,7 +193,7 @@ export const findClosestComboboxOptions = (element: HTMLElement): HTMLElement | 
         if (distance < minDistance) {
             minDistance = distance;
             closestCandidate = candidate as HTMLElement;
-        }    
+        }
     });
 
     return closestCandidate;
@@ -205,9 +205,9 @@ export function synthClick(el: HTMLElement) {
     el.dispatchEvent(new MouseEvent("mousedown", opts));
     el.dispatchEvent(new MouseEvent("mouseup", opts));
     el.dispatchEvent(new MouseEvent("click", opts));
-  }
+}
 
-  export const getMode = (): EhrPlatform | null => {
+export const getMode = (): EhrPlatform | null => {
     return window.location.href.includes('reliatrax') ? EhrPlatform.RELIATRAX :
         window.location.href.includes('kipu') ? EhrPlatform.KIPU :
             window.location.href.includes('simplepractice') ? EhrPlatform.SIMPLEPRACTICE :
@@ -218,6 +218,28 @@ export function synthClick(el: HTMLElement) {
                                 window.location.href.includes('theranest') ? EhrPlatform.ENSORA : null;
 
 }
+
+
+export const findClosestOptionWrapper = (element: HTMLElement): HTMLElement | null => {
+    const candidates = document.querySelectorAll('.v-combobox__content, .v-select__content, .v-autocomplete__content');
+    const targetY = element.getBoundingClientRect().y;
+
+    let closestCandidate: HTMLElement | null = null;
+    let minDistance = Infinity;
+
+    candidates.forEach((candidate) => {
+        const candidateY = candidate.getBoundingClientRect().y;
+        const distance = Math.abs(candidateY - targetY);
+
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestCandidate = candidate as HTMLElement;
+        }
+    });
+
+    return closestCandidate;
+}
+
 
 
 // const findElementAcrossIframes = (nestedXPath) => {

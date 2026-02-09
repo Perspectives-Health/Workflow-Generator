@@ -69,16 +69,17 @@ export const useWorkflowsQueries = () => {
                 invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
             }
         }),
-        useCreateWorkflow: () => useMutation({
-            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; screenshot: string; categoryInstructions: { [key: string]: unknown } }) => {
+        useMapWorkflow: () => useMutation({
+            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions, workflowId }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; screenshot: string; categoryInstructions: { [key: string]: unknown }; workflowId?: string }) => {
 
-                return api.createWorkflow({
+                return api.mapWorkflow({
                     workflow_name: workflowName,
                     metadata: metadata,
                     center_id: centerId,
                     enterprise_id: enterpriseId,
                     screenshot: screenshot,
-                    category_instructions: categoryInstructions
+                    category_instructions: categoryInstructions,
+                    workflow_id: workflowId
                 });
             },
             onSuccess: (_, variables) => {

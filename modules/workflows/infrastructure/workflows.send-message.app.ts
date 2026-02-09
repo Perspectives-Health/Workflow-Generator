@@ -1,5 +1,5 @@
 import { SendMessageFn } from "@/modules/shared/infrastructure/isomorphic-message";
-import { CreateWorkflowRequest } from "@/modules/shared/types";
+import { WorkflowMappingRequest } from "@/modules/shared/types";
 
 export const workflowsQueries = (sendMessage: SendMessageFn) => ({
     getWorkflows: async ({ centerId, enterpriseId }: { centerId?: string, enterpriseId?: string }) => {
@@ -27,8 +27,8 @@ export const workflowsQueries = (sendMessage: SendMessageFn) => ({
         if (!result.success) throw result.error;
         return result.data;
     },
-    createWorkflow: async (body: CreateWorkflowRequest) => {
-        const result = await sendMessage("create-workflow", body);
+    mapWorkflow: async (body: WorkflowMappingRequest) => {
+        const result = await sendMessage("map-workflow", body);
         if (!result.success) throw result.error;
     },
     saveWorkflowPaths: async (workflowId: string, index: string, xpath: string | undefined, clickBeforeXpaths: string[] | undefined) => {

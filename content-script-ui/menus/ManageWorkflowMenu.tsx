@@ -23,6 +23,7 @@ export function ManageWorkflowMenu() {
 
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
+    const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
     const { value: savedScrollPositions, isLoading: isScrollPositionLoading } = useStorageValue(sharedStorage.manageWorkflowMenuScrollPositions);
     const { value: workflowSessionIdMap } = useStorageValue(sharedStorage.workflowSessionIdMap);
     const { useGetWorkflowMapping, useUpdateWorkflow } = useWorkflowsQueries();
@@ -64,19 +65,33 @@ export function ManageWorkflowMenu() {
     }, [defaultTranscript]);
 
     useEffect(() => {
+        console.log("selectedWorkflowId changed, setting isRestoringScroll to true", selectedWorkflowId);
         setIsRestoringScroll(true);
     }, [selectedWorkflowId]);
 
+    // Safety timeout: if isRestoringScroll is stuck at true for 5 seconds, force it to false
+    useEffect(() => {
+        if (!isRestoringScroll) return;
+        
+        const safetyTimeout = setTimeout(() => {
+            console.log("Safety timeout: forcing isRestoringScroll to false after 5 seconds");
+            setIsRestoringScroll(false);
+        }, 3000);
+
+        return () => clearTimeout(safetyTimeout);
+    }, [isRestoringScroll]);
+
 
     const handleUpdateProcessedQuestionText = async (index: number, processedQuestionText: string) => {
-        if (!selectedWorkflowId || !selectedCenter) return;
+        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise)) return;
         try {
             await updateWorkflow({
                 workflowId: selectedWorkflowId,
                 processedQuestions: {
                     [index]: processedQuestionText
                 },
-                centerId: selectedCenter.center_id
+                centerId: selectedCenter?.center_id,
+                enterpriseId: selectedEnterprise?.id,
             });
         } catch (error) {
             console.error("handleUpdateProcessedQuestionText error", error);
@@ -102,11 +117,13 @@ export function ManageWorkflowMenu() {
                 if (manageWorkflowListRef.current) {
                     manageWorkflowListRef.current.scrollTop = scrollPosition;
                 }
+                console.log("timeout, restored scroll position", scrollPosition);
                 setIsRestoringScroll(false);
             }, 1000);
 
             return () => clearTimeout(timeoutId);
         } else {
+            console.log("no scroll position, setting isRestoringScroll to false");
             setIsRestoringScroll(false);
         }
     }, [scrollPosition, mapping, isWorkflowMappingLoading, isScrollPositionLoading]);

@@ -112,6 +112,24 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
         await deleteWorkflow({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, workflowId });
     }
 
+    const handleRemapWorkflow = async (e: Event, workflowId: string) => {
+        // TODO
+        e.preventDefault();
+        e.stopPropagation();
+        if (!workflowId) {
+            return;
+        }
+        startMapping({
+            workflowName,
+            workflowCategory,
+            workflowProgressNoteType,
+            centerId: selectedCenter?.center_id,
+            enterpriseId: selectedEnterprise?.id,
+            workflowId,
+        });
+        navigate("create-workflow");
+    }
+
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, workflowId: string) => {
         if (e.key === 'Enter') {
             if (!selectedCenter && !selectedEnterprise) return;
@@ -227,6 +245,9 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
                                         onSelect={(e) => handleEdit(e, workflow.workflow_id)}
                                     >
                                         Edit Workflow Name
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={(e) => handleRemapWorkflow(e, workflow.workflow_id)} >
+                                        Remap Workflow
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={(e) => handleDelete(e, workflow.workflow_id)} className="text-destructive focus:text-destructive focus:bg-destructive/10">
                                         Delete Workflow

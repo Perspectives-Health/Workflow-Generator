@@ -10,6 +10,7 @@ import { CategoryType, ProgressNoteType } from "@/modules/shared/types";
 export function WorkflowPrompt() {
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
+    const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
     const { useGetWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
     const { data: workflowSummary, isLoading: isWorkflowSummaryLoading } = useGetWorkflow(selectedWorkflowId ?? '');
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
@@ -27,11 +28,12 @@ export function WorkflowPrompt() {
     }, [workflowSummary]);
 
     const handleSaveWorkflowPrompt = async () => {
-        if (!selectedWorkflowId || !selectedCenter) return;
+        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise)) return;
         try {
             const requestBody = {
                 workflowId: selectedWorkflowId,
-                centerId: selectedCenter.center_id,
+                centerId: selectedCenter?.center_id,
+                enterpriseId: selectedEnterprise?.id,
                 promptConfig: {
                     category_instructions: {
                         prompt: workflowPromptState,

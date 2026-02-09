@@ -1,7 +1,7 @@
 import { fastapi } from "@/modules/shared/infrastructure/api-client.background";
 import { authStorage } from "@/modules/auth/auth.storage";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { CreateWorkflowRequest, UpdateCenterRequest, UpdateWorkflowRequest } from "../types";
+import { UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMappingRequest } from "../types";
 // import { CreateWorkflowRequest } from "../types";
 
 
@@ -134,7 +134,7 @@ export const getWorkflows = async ({ centerId, enterpriseId }: { centerId?: stri
     }
 }
 
-export const createWorkflow = async (body: CreateWorkflowRequest) => {
+export const mapWorkflow = async (body: WorkflowMappingRequest) => {
     const { data, error } = await fastapi.POST("/workflows", {
         body: {
             workflow_name: body.workflow_name,
@@ -151,7 +151,8 @@ export const createWorkflow = async (body: CreateWorkflowRequest) => {
             center_id: body.center_id,
             enterprise_id: body.enterprise_id,
             screenshot: body.screenshot,
-            category_instructions: body.category_instructions
+            category_instructions: body.category_instructions,
+            workflow_id: body.workflow_id
         }
     });
     if (error) {
