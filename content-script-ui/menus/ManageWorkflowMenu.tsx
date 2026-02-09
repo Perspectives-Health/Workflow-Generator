@@ -23,6 +23,7 @@ export function ManageWorkflowMenu() {
 
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
+    const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
     const { value: savedScrollPositions, isLoading: isScrollPositionLoading } = useStorageValue(sharedStorage.manageWorkflowMenuScrollPositions);
     const { value: workflowSessionIdMap } = useStorageValue(sharedStorage.workflowSessionIdMap);
     const { useGetWorkflowMapping, useUpdateWorkflow } = useWorkflowsQueries();
@@ -82,14 +83,15 @@ export function ManageWorkflowMenu() {
 
 
     const handleUpdateProcessedQuestionText = async (index: number, processedQuestionText: string) => {
-        if (!selectedWorkflowId || !selectedCenter) return;
+        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise)) return;
         try {
             await updateWorkflow({
                 workflowId: selectedWorkflowId,
                 processedQuestions: {
                     [index]: processedQuestionText
                 },
-                centerId: selectedCenter.center_id
+                centerId: selectedCenter?.center_id,
+                enterpriseId: selectedEnterprise?.id,
             });
         } catch (error) {
             console.error("handleUpdateProcessedQuestionText error", error);

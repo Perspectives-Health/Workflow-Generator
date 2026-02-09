@@ -37,7 +37,8 @@ export function GroupingEditor({ workflowMapping, setIsOpen, onScrollToItem }: G
     const { useUpdateWorkflow } = useWorkflowsQueries();
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
-
+    const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
+    
     const [groupingState, setGroupingState] = useState<GroupingState>({});
     const [isRangeValid, setIsRangeValid] = useState(true);
     const [missingIndices, setMissingIndices] = useState<number[]>([]);
@@ -122,11 +123,12 @@ export function GroupingEditor({ workflowMapping, setIsOpen, onScrollToItem }: G
     const groupingEntries = Object.entries(groupingState);
 
     const handleConfirmGrouping = async () => {
-        if (!isRangeValid || !workflowMapping?.workflow_id || !selectedCenter) return;
+        if (!isRangeValid || !workflowMapping?.workflow_id || (!selectedCenter && !selectedEnterprise)) return;
         try {
             const requestBody = {
                 workflowId: workflowMapping?.workflow_id,
-                centerId: selectedCenter.center_id,
+                centerId: selectedCenter?.center_id,
+                enterpriseId: selectedEnterprise?.id,
                 grouping: groupingState
             }
             console.log('requestBody', requestBody);
