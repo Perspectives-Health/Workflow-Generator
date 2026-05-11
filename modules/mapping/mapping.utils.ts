@@ -10,7 +10,8 @@ export const getMode = (): EhrPlatform | null => {
                         window.location.href.includes('alleva') ? EhrPlatform.ALLEVA :
                             window.location.href.includes('ecwcloud') ? EhrPlatform.ECW :
                                 window.location.href.includes('theranest') ? EhrPlatform.ENSORA :
-                                    window.location.href.includes('opencoreemr') ? EhrPlatform.OPENCORE : null;
+                                    window.location.href.includes('opencoreemr') ? EhrPlatform.OPENCORE : 
+                                        window.location.href.includes('sunwavehealth') ? EhrPlatform.SUNWAVE : null
 }
 
 
