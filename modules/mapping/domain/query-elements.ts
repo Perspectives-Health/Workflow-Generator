@@ -22,6 +22,9 @@ export const queryFormElement = async (mode: EhrPlatform | null) => {
         case EhrPlatform.ALLEVA:
             formEl = document.querySelector("#divMainContainer");
             break;
+        case EhrPlatform.SUNWAVE:
+            formEl = document.querySelector("#tabInnerBodyId");
+            break;
     }
 
     if (formEl) return formEl;

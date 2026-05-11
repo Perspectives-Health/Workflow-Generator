@@ -16,7 +16,7 @@ export const PRIMARY_PATH_ATTRIBUTE = 'data-primary-path';
 export const ABSOLUTE_XPATH_ATTRIBUTE = 'data-absolute-xpath';
 
 
-export function appendCloneToBody(clone: HTMLElement) {
+export function appendCloneToBody(clone: HTMLElement, mode?: EhrPlatform | null) {
     const wrapper = document.createElement("div");
 
     // Full viewport takeover - fixed position ignores parent overflow:hidden
@@ -29,9 +29,11 @@ export function appendCloneToBody(clone: HTMLElement) {
     wrapper.style.zIndex = "99999";
     wrapper.style.backgroundColor = "white";
 
-    wrapper.appendChild(clone);
-    document.body.appendChild(wrapper);
     wrapper.classList.add(CLONED_FORM_ELEMENT_WRAPPER_CLASS);
+
+    wrapper.appendChild(clone);
+    const wrapperParent = mode === EhrPlatform.SUNWAVE ? document.documentElement : document.body;
+    wrapperParent.appendChild(wrapper);
 
     return wrapper;
 }

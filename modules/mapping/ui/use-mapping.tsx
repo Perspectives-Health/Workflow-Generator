@@ -73,7 +73,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
             
             setCurrStage(MappingStage.CLONING_FORM);
             const clonedFormEl = cloneHtmlElementWithStyles(formEl, currMode);
-            appendCloneToBody(clonedFormEl);
+            appendCloneToBody(clonedFormEl, currMode);
             
             setCurrStage(MappingStage.FINDING_INPUTS);
             const allInputElements = queryAllInputElements(clonedFormEl);
