@@ -17,8 +17,10 @@ export const getMode = (): EhrPlatform | null => {
 
 export const isInputElement = (element: Element): boolean => {
     const tagName = element.tagName.toLowerCase();
-    return tagName === 'input' ||
+    const isInput = tagName === 'input' ||
         tagName === 'textarea' ||
         tagName === 'select' ||
-        element.getAttribute('contenteditable') === 'true';
+        element.getAttribute('contenteditable') === 'true' ||
+        (element instanceof HTMLElement && element.isContentEditable);
+    return isInput
 }

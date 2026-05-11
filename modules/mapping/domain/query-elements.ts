@@ -1,4 +1,5 @@
 import { EhrPlatform } from "@/modules/shared/types";
+import { isInputElement } from "../mapping.utils";
 
 
 export const queryFormElement = async (mode: EhrPlatform | null) => {
@@ -118,10 +119,9 @@ const manualQueryMode = (): Promise<HTMLElement | null> => {
 };
 
 export const queryAllInputElements = (formEl: HTMLElement) => {
-    const inputSelector = 'input, textarea, select, [contenteditable="true"]';
-    const inputElements = formEl.querySelectorAll(inputSelector);
-    return Array.from(inputElements);
-}
+    const candidates = formEl.querySelectorAll('input, textarea, select, [contenteditable]');
+    return Array.from(candidates).filter(isInputElement);
+  };
 
 export const isIgnoredInputElement = (element: Element) => {
     if (element.id === 'problem_list_text_field' || element.id === 'token-input-diagnosis_code') {
