@@ -7,6 +7,7 @@ import { getElementAbsoluteXPath, getElementPrimaryPath } from "./get-path";
 const MAX_HTML2CANVAS_ATTEMPTS = 5;
 const HTML2CANVAS_TIMEOUT_MS = 60 * 1000;
 const JPEG_QUALITY = 0.7;
+const HTML2CANVAS_EXPORT_RETRY_SCALES = [undefined, 1, 0.9, 0.8, 0.7, 0.6] as const;
 
 const CLONED_FORM_ELEMENT_CLASS = 'sire-mapping-form';
 export const VISUAL_MARKER_CLASS = 'visual-marker';
@@ -251,46 +252,109 @@ export const unhighlightVisualMarker = (marker: HTMLElement) => {
     marker.style.backgroundColor = 'rgba(255, 165, 0, 0.8)';
 }
 
-const html2canvasWithTimeout = (element: HTMLElement, timeoutMs: number): Promise<HTMLCanvasElement> => {
+const html2canvasWithTimeout = (element: HTMLElement, timeoutMs: number, scale?: number): Promise<HTMLCanvasElement> => {
     return new Promise((resolve, reject) => {
+        const rect = element.getBoundingClientRect();
+        const effectiveScale = scale ?? window.devicePixelRatio;
+        console.log('[mapping screenshot] html2canvas starting', {
+            timeoutMs,
+            scale: scale ?? 'default',
+            elementRect: {
+                width: rect.width,
+                height: rect.height,
+            },
+            elementScroll: {
+                width: element.scrollWidth,
+                height: element.scrollHeight,
+            },
+            devicePixelRatio: window.devicePixelRatio,
+            estimatedPixelArea: Math.round(element.scrollWidth * element.scrollHeight * effectiveScale * effectiveScale),
+        });
         const timer = setTimeout(() => {
+            console.log("html2canvas timedout")
             reject(new Error('html2canvas timed out'));
         }, timeoutMs);
 
-        html2canvas(element, { ignoreElements: () => false })
+        html2canvas(element, {
+            ignoreElements: () => false,
+            ...(scale === undefined ? {} : { scale }),
+        })
             .then(canvas => {
                 clearTimeout(timer);
+                console.log('[mapping screenshot] html2canvas resolved', {
+                    scale: scale ?? 'default',
+                    canvasWidth: canvas.width,
+                    canvasHeight: canvas.height,
+                    canvasPixelArea: canvas.width * canvas.height,
+                });
                 resolve(canvas);
             })
             .catch(error => {
                 clearTimeout(timer);
+                console.error('[mapping screenshot] html2canvas rejected', error);
                 reject(error);
             });
     });
 };
 
 const retryHtml2Canvas = async (
-    element: HTMLElement
+    element: HTMLElement,
+    scale?: number
 ): Promise<HTMLCanvasElement> => {
     for (let i = 0; i < MAX_HTML2CANVAS_ATTEMPTS; i++) {
         try {
-            return await html2canvasWithTimeout(element, HTML2CANVAS_TIMEOUT_MS);
+            return await html2canvasWithTimeout(element, HTML2CANVAS_TIMEOUT_MS, scale);
         } catch (error) {
-            console.warn(`html2canvas attempt ${i + 1}/${MAX_HTML2CANVAS_ATTEMPTS} failed:`, error);
+            console.warn(`html2canvas attempt ${i + 1}/${MAX_HTML2CANVAS_ATTEMPTS} failed at scale ${scale ?? 'default'}:`, error);
             await new Promise(res => setTimeout(res, 300));
         }
     }
     throw new Error(`Canvas creation failed after ${MAX_HTML2CANVAS_ATTEMPTS} attempts.`);
 };
 
+const isEmptyDataUrl = (dataUrl: string) => dataUrl === 'data:,' || dataUrl === 'data:';
+
 export const captureScreenshot = async (formElement: HTMLElement): Promise<string> => {
     try {
-        const canvas = await retryHtml2Canvas(formElement);
-        canvas.classList.add(CANVAS_CLASS);
-        document.body.appendChild(canvas);
-        const base64Image = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
-        return base64Image
+        for (const scale of HTML2CANVAS_EXPORT_RETRY_SCALES) {
+            const canvas = await retryHtml2Canvas(formElement, scale);
+            const base64Image = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+            const emptyDataUrl = isEmptyDataUrl(base64Image);
+            const hasCanvasPixels = canvas.width > 0 && canvas.height > 0;
+            console.log('[mapping screenshot] toDataURL result', {
+                scale: scale ?? 'default',
+                imagePrefix: base64Image.slice(0, 32),
+                imageLength: base64Image.length,
+                isEmptyDataUrl: emptyDataUrl,
+                hasCanvasPixels,
+                canvasWidth: canvas.width,
+                canvasHeight: canvas.height,
+                canvasPixelArea: canvas.width * canvas.height,
+            });
+
+            if (!emptyDataUrl) {
+                canvas.classList.add(CANVAS_CLASS);
+                document.body.appendChild(canvas);
+                return base64Image;
+            }
+
+            if (!hasCanvasPixels) {
+                throw new Error('Canvas export failed because html2canvas returned a zero-size canvas');
+            }
+
+            console.warn('[mapping screenshot] empty data URL, retrying with lower scale', {
+                scale: scale ?? 'default',
+                canvasWidth: canvas.width,
+                canvasHeight: canvas.height,
+                canvasPixelArea: canvas.width * canvas.height,
+            });
+            canvas.width = 0;
+            canvas.height = 0;
+        }
+
+        throw new Error('Canvas export failed for all html2canvas scales');
     } catch (error) {
+        console.error('[mapping screenshot] captureScreenshot failed', error);
         throw new Error('Failed to get screenshot and element info');
     } finally {
         // document.querySelector(`.${CLONED_FORM_ELEMENT_CLASS}`)?.remove();
