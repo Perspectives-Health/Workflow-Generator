@@ -114,13 +114,14 @@ export const updateCenterPromptConfig = async (centerId: string, body: UpdateCen
     }
 }
 
-export const getWorkflows = async ({ centerId, enterpriseId }: { centerId?: string, enterpriseId?: string }) => {
+export const getWorkflows = async ({ centerId, enterpriseId, isGlobal }: { centerId?: string, enterpriseId?: string, isGlobal?: boolean }) => {
     try {
         const { data, error } = await fastapi.GET(`/workflows`, {
             params: {
                 query: {
                     ...(centerId && { center_id: centerId }),
                     ...(enterpriseId && { enterprise_id: enterpriseId }),
+                    ...(isGlobal && { is_global: true }),
                 }
             }
         });
@@ -152,7 +153,8 @@ export const mapWorkflow = async (body: WorkflowMappingRequest) => {
             enterprise_id: body.enterprise_id,
             screenshot: body.screenshot,
             category_instructions: body.category_instructions,
-            workflow_id: body.workflow_id
+            workflow_id: body.workflow_id,
+            is_ur: body.is_ur
         }
     });
     if (error) {

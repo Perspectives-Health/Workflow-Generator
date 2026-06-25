@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { Check, ChevronsUpDown, Building2, Building } from "lucide-react"
+import { Check, ChevronsUpDown, Building2, Building, Globe } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Center, EnterpriseDetailsResponse, GetCentersResponse } from "@/modules/shared/types"
 import { displayDate } from "@/modules/shared/shared.utils"
@@ -8,6 +8,7 @@ import { useStorageValue } from "@/modules/shared/ui/hooks/use-storage-value"
 import { TextInput } from "@/modules/shared/ui/components/text-input"
 
 type ListItem = 
+  | { type: 'global'; data: null }
   | { type: 'center'; data: Center }
   | { type: 'enterprise'; data: EnterpriseDetailsResponse }
 
@@ -18,6 +19,7 @@ export function CentersCombobox({ centers, enterprises }: { centers: GetCentersR
   const dropdownRef = useRef<HTMLDivElement>(null)
   const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter)
   const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise)
+  const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal)
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -44,26 +46,38 @@ export function CentersCombobox({ centers, enterprises }: { centers: GetCentersR
 
   // Combine centers and enterprises into a single list
   const combinedList: ListItem[] = [
+    { type: 'global', data: null },
     ...(enterprises ?? []).map((enterprise): ListItem => ({ type: 'enterprise', data: enterprise })),
     ...(centers ?? []).map((center): ListItem => ({ type: 'center', data: center })),
   ]
 
   // Filter by search query
   const filteredList = combinedList.filter((item) => {
-    const name = item.type === 'center' 
-      ? item.data.center_name 
-      : item.data.name ?? ''
+    const name = item.type === 'global'
+      ? 'Global'
+      : item.type === 'center' 
+        ? item.data.center_name 
+        : item.data.name ?? ''
     return name.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   const handleSelectItem = (item: ListItem) => {
-    if (item.type === 'center') {
+    if (item.type === 'global') {
+      if (selectedGlobal) {
+        sharedStorage.selectedGlobal.setValue(false)
+      } else {
+        sharedStorage.selectedGlobal.setValue(true)
+        sharedStorage.selectedCenter.setValue(null)
+        sharedStorage.selectedEnterprise.setValue(null)
+      }
+    } else if (item.type === 'center') {
       const center = item.data
       if (selectedCenter && selectedCenter.center_id === center.center_id) {
         sharedStorage.selectedCenter.setValue(null)
       } else {
         sharedStorage.selectedCenter.setValue(center)
         sharedStorage.selectedEnterprise.setValue(null)
+        sharedStorage.selectedGlobal.setValue(false)
       }
     } else {
       const enterprise = item.data
@@ -72,6 +86,7 @@ export function CentersCombobox({ centers, enterprises }: { centers: GetCentersR
       } else {
         sharedStorage.selectedEnterprise.setValue({ id: enterprise.id, name: enterprise.name ?? '' })
         sharedStorage.selectedCenter.setValue(null)
+        sharedStorage.selectedGlobal.setValue(false)
       }
     }
     setOpen(false)
@@ -79,13 +94,16 @@ export function CentersCombobox({ centers, enterprises }: { centers: GetCentersR
   }
 
   const getDisplayText = () => {
+    if (selectedGlobal) return 'Global'
     if (selectedCenter) return selectedCenter.center_name
     if (selectedEnterprise) return selectedEnterprise.name
-    return "Select center or enterprise..."
+    return "Select center, enterprise, or global..."
   }
 
   const isItemSelected = (item: ListItem): boolean => {
-    if (item.type === 'center') {
+    if (item.type === 'global') {
+      return !!selectedGlobal
+    } else if (item.type === 'center') {
       return selectedCenter?.center_id === item.data.center_id
     } else {
       return selectedEnterprise?.id === item.data.id
@@ -131,15 +149,21 @@ export function CentersCombobox({ centers, enterprises }: { centers: GetCentersR
             ) : (
               <ul className="py-1">
                 {filteredList.map((item) => {
-                  const key = item.type === 'center' 
-                    ? `center-${item.data.center_id}` 
-                    : `enterprise-${item.data.id}`
-                  const name = item.type === 'center' 
-                    ? item.data.center_name 
-                    : item.data.name ?? 'Unnamed'
-                  const subtitle = item.type === 'center'
-                    ? `Created: ${displayDate(item.data.created_at)}`
-                    : 'Enterprise'
+                  const key = item.type === 'global'
+                    ? 'global'
+                    : item.type === 'center' 
+                      ? `center-${item.data.center_id}` 
+                      : `enterprise-${item.data.id}`
+                  const name = item.type === 'global'
+                    ? 'Global'
+                    : item.type === 'center' 
+                      ? item.data.center_name 
+                      : item.data.name ?? 'Unnamed'
+                  const subtitle = item.type === 'global'
+                    ? 'Global workflows'
+                    : item.type === 'center'
+                      ? `Created: ${displayDate(item.data.created_at)}`
+                      : 'Enterprise'
 
                   return (
                     <li
@@ -148,7 +172,9 @@ export function CentersCombobox({ centers, enterprises }: { centers: GetCentersR
                       className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 flex flex-row justify-between items-center"
                     >
                       <span className="flex flex-row items-center gap-2">
-                        {item.type === 'enterprise' ? (
+                        {item.type === 'global' ? (
+                          <Globe className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                        ) : item.type === 'enterprise' ? (
                           <Building2 className="h-4 w-4 text-purple-500 flex-shrink-0" />
                         ) : (
                           <Building className="h-4 w-4 text-blue-500 flex-shrink-0" />

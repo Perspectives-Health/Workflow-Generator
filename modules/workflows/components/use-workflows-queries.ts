@@ -9,12 +9,14 @@ import { PreMappingMetadata } from "@/modules/shared/types";
 export const useWorkflowsQueries = () => {
     const { sendMessage } = useMessaging();
     const api = createQueries(sendMessage, workflowsQueries);
+    const getWorkflowsScopeKey = ({ centerId, enterpriseId, isGlobal }: { centerId?: string; enterpriseId?: string; isGlobal?: boolean }) =>
+        isGlobal ? 'global' : centerId ?? enterpriseId ?? '';
 
     return {
-        useGetWorkflows: ({ centerId, enterpriseId }: { centerId?: string, enterpriseId?: string }) => useQuery({
-            queryKey: ['workflows', centerId ?? enterpriseId],
-            queryFn: async () => api.getWorkflows({ centerId, enterpriseId }),
-            enabled: !!centerId || !!enterpriseId,
+        useGetWorkflows: ({ centerId, enterpriseId, isGlobal }: { centerId?: string, enterpriseId?: string, isGlobal?: boolean }) => useQuery({
+            queryKey: ['workflows', getWorkflowsScopeKey({ centerId, enterpriseId, isGlobal })],
+            queryFn: async () => api.getWorkflows({ centerId, enterpriseId, isGlobal }),
+            enabled: !!centerId || !!enterpriseId || !!isGlobal,
             refetchInterval: (query) => {
                 const hasInProgress = query.state.data?.some(
                     (workflow) => workflow.mapping_status === 'in_progress'
@@ -42,10 +44,12 @@ export const useWorkflowsQueries = () => {
                 processedQuestions,
                 promptConfig,
                 grouping,
+                isGlobal,
             }: { 
                 workflowId: string; 
                 centerId?: string;
                 enterpriseId?: string;
+                isGlobal?: boolean;
                 name?: string; 
                 ignoreFlags?: Record<string, boolean>; 
                 processedQuestions?: Record<string, string>;
@@ -56,21 +60,21 @@ export const useWorkflowsQueries = () => {
             },
             onSuccess: (_, variables) => {
                 invalidateQueriesGlobally(['workflow-mapping', variables.workflowId]);
-                invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
+                invalidateQueriesGlobally(['workflows', getWorkflowsScopeKey(variables)]);
                 invalidateQueriesGlobally(['workflow-summary', variables.workflowId]);
                 // toast.success('Workflow updated successfully');
             }
         }),
         useDeleteWorkflow: () => useMutation({
-            mutationFn: async ({ centerId, enterpriseId, workflowId }: { centerId?: string; enterpriseId?: string; workflowId: string }) => {
+            mutationFn: async ({ centerId, enterpriseId, workflowId }: { centerId?: string; enterpriseId?: string; isGlobal?: boolean; workflowId: string }) => {
                 return api.deleteWorkflow(workflowId);
             },
             onSuccess: (_, variables) => {
-                invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
+                invalidateQueriesGlobally(['workflows', getWorkflowsScopeKey(variables)]);
             }
         }),
         useMapWorkflow: () => useMutation({
-            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions, workflowId }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; screenshot: string; categoryInstructions: { [key: string]: unknown }; workflowId?: string }) => {
+            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions, workflowId }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; isGlobal?: boolean; screenshot: string; categoryInstructions: { [key: string]: unknown }; workflowId?: string }) => {
 
                 return api.mapWorkflow({
                     workflow_name: workflowName,
@@ -79,11 +83,12 @@ export const useWorkflowsQueries = () => {
                     enterprise_id: enterpriseId,
                     screenshot: screenshot,
                     category_instructions: categoryInstructions,
-                    workflow_id: workflowId
+                    workflow_id: workflowId,
+                    is_ur: false
                 });
             },
             onSuccess: (_, variables) => {
-                invalidateQueriesGlobally(['workflows', variables.centerId ?? variables.enterpriseId ?? '']);
+                invalidateQueriesGlobally(['workflows', getWorkflowsScopeKey(variables)]);
             }
         }),
         useSaveWorkflowPaths: () => useMutation({

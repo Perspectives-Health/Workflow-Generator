@@ -37,6 +37,12 @@ export const sharedStorage = {
 			fallback: null,
 		}
 	),
+	selectedGlobal: storage.defineItem<boolean>(
+		'local:shared::selectedGlobal',
+		{
+			fallback: false,
+		}
+	),
 	selectedWorkflowId: storage.defineItem<string | null>(
 		'local:shared::selectedWorkflowId',
 		{

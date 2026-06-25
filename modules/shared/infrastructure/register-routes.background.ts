@@ -12,7 +12,7 @@ declare module "webext-bridge" {
         "get-centers": ProtocolWithReturn<void, ApiResponse<GetCentersResponse>>;
         "get-center-details": ProtocolWithReturn<{ centerId: string }, ApiResponse<CenterDetails>>;
         "update-center-prompt-config": ProtocolWithReturn<{ centerId: string, body: UpdateCenterRequest }, ApiResponse<void>>;
-        "get-workflows": ProtocolWithReturn<{ centerId?: string, enterpriseId?: string }, ApiResponse<WorkflowSummary[]>>;
+        "get-workflows": ProtocolWithReturn<{ centerId?: string, enterpriseId?: string, isGlobal?: boolean }, ApiResponse<WorkflowSummary[]>>;
         "get-workflow": ProtocolWithReturn<{ workflowId: string }, ApiResponse<WorkflowSummary>>;
         "get-workflow-mapping": ProtocolWithReturn<{ workflowId: string }, ApiResponse<WorkflowMapping>>;
         "update-workflow": ProtocolWithReturn<UpdateWorkflowRequest, ApiResponse<void>>;
