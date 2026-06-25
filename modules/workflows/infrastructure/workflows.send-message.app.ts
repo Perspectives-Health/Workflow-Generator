@@ -2,8 +2,8 @@ import { SendMessageFn } from "@/modules/shared/infrastructure/isomorphic-messag
 import { WorkflowMappingRequest } from "@/modules/shared/types";
 
 export const workflowsQueries = (sendMessage: SendMessageFn) => ({
-    getWorkflows: async ({ centerId, enterpriseId }: { centerId?: string, enterpriseId?: string }) => {
-        const result = await sendMessage("get-workflows", { centerId, enterpriseId });
+    getWorkflows: async ({ centerId, enterpriseId, isGlobal }: { centerId?: string, enterpriseId?: string, isGlobal?: boolean }) => {
+        const result = await sendMessage("get-workflows", { centerId, enterpriseId, isGlobal });
         if (!result.success) throw result.error;
         return result.data;
     },

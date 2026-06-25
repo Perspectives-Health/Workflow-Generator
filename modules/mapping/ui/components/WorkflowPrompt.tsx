@@ -11,6 +11,8 @@ export function WorkflowPrompt() {
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
     const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
+    const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal);
+    const isGlobalSelected = !!selectedGlobal;
     const { useGetWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
     const { data: workflowSummary, isLoading: isWorkflowSummaryLoading } = useGetWorkflow(selectedWorkflowId ?? '');
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
@@ -28,12 +30,13 @@ export function WorkflowPrompt() {
     }, [workflowSummary]);
 
     const handleSaveWorkflowPrompt = async () => {
-        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise)) return;
+        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise && !isGlobalSelected)) return;
         try {
             const requestBody = {
                 workflowId: selectedWorkflowId,
                 centerId: selectedCenter?.center_id,
                 enterpriseId: selectedEnterprise?.id,
+                isGlobal: isGlobalSelected,
                 promptConfig: {
                     category_instructions: {
                         prompt: workflowPromptState,

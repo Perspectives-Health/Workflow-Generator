@@ -22,9 +22,11 @@ interface ViewWorkflowsMenuProps {
 export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
     const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
+    const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal);
+    const isGlobalSelected = !!selectedGlobal;
     const { useGetCenterDetails, useUpdateCenterPromptConfig } = useCentersQueries();
     const { useGetWorkflows, useDeleteWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
-    const { data: workflows, isLoading } = useGetWorkflows({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id });
+    const { data: workflows, isLoading } = useGetWorkflows({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, isGlobal: isGlobalSelected });
     const { mutateAsync: deleteWorkflow, isPending: isDeletingWorkflow } = useDeleteWorkflow();
     const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
     const { data: centerDetails, isLoading: isCenterDetailsLoading } = useGetCenterDetails(selectedCenter?.center_id ?? '');
@@ -82,6 +84,7 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
             workflowProgressNoteType,
             centerId: selectedCenter?.center_id,
             enterpriseId: selectedEnterprise?.id,
+            isGlobal: isGlobalSelected,
         });
         navigate("create-workflow");
     }
@@ -106,10 +109,10 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const handleDelete = async (e: Event, workflowId: string) => {
         e.preventDefault();
         e.stopPropagation();
-        if ((!selectedCenter && !selectedEnterprise) || isDeletingWorkflow) {
+        if ((!selectedCenter && !selectedEnterprise && !isGlobalSelected) || isDeletingWorkflow) {
             return;
         }
-        await deleteWorkflow({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, workflowId });
+        await deleteWorkflow({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, isGlobal: isGlobalSelected, workflowId });
     }
 
     const handleRemapWorkflow = async (e: Event, workflowId: string) => {
@@ -125,6 +128,7 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
             workflowProgressNoteType,
             centerId: selectedCenter?.center_id,
             enterpriseId: selectedEnterprise?.id,
+            isGlobal: isGlobalSelected,
             workflowId,
         });
         navigate("create-workflow");
@@ -132,9 +136,9 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
 
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>, workflowId: string) => {
         if (e.key === 'Enter') {
-            if (!selectedCenter && !selectedEnterprise) return;
+            if (!selectedCenter && !selectedEnterprise && !isGlobalSelected) return;
             try {
-                await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id });
+                await updateWorkflow({ workflowId, name: newWorkflowName, centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, isGlobal: isGlobalSelected });
                 setEditingWorkflowId(null);
             } catch (error) {
                 console.error("handleKeyDown error", error);
@@ -205,7 +209,7 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
                         )}
                     </div>
                 </>)}
-            <span className="text-xs text-muted-foreground">Workflows for {selectedCenter?.center_name ?? selectedEnterprise?.name}</span>
+            <span className="text-xs text-muted-foreground">Workflows for {isGlobalSelected ? 'Global' : selectedCenter?.center_name ?? selectedEnterprise?.name}</span>
             {isLoading ? (
                 <div className="w-full h-40 flex items-center justify-center text-muted-foreground text-sm">Loading...</div>
             ) : (!workflows || workflows.length === 0 ? (

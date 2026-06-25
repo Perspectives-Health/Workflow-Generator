@@ -12,9 +12,10 @@ export function ViewCenterMenu() {
     const { data: enterprises } = useGetEnterprises();
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter)
     const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise)
+    const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal)
 
     const handleNext = () => {
-        if (!selectedCenter && !selectedEnterprise) {
+        if (!selectedCenter && !selectedEnterprise && !selectedGlobal) {
             return;
         }
         navigate("view-workflows");

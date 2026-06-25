@@ -1,5 +1,4 @@
-import { ReceiptTurkishLiraIcon } from "lucide-react";
-import { ElementInfo } from "../mapping.types";
+import { ElementInfo } from "@/modules/shared/types";
 import { VISUAL_MARKER_CLASS } from "./capture-dom";
 
 export const removeElement = (elementInfo: ElementInfo, idxToDelete: number) => {

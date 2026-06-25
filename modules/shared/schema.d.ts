@@ -435,6 +435,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/centers/{center_id}/integuru-user-id/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Integuru User Id
+         * @description Generate a new integuru_user_id via Integuru and persist it to a center.
+         */
+        post: operations["generate_integuru_user_id_centers__center_id__integuru_user_id_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/billing/create-checkout-session": {
         parameters: {
             query?: never;
@@ -755,9 +775,49 @@ export interface paths {
         post?: never;
         /**
          * Delete Patient
-         * @description Delete a patient and all associated records.
+         * @description Delete a patient. Soft delete by default; hard delete when requested.
          */
         delete: operations["delete_patient_patients__patient_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/patients/search-emr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Emr Patients
+         * @description Search patients directly in the center's configured EMR.
+         */
+        get: operations["search_emr_patients_patients_search_emr_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/patients/create-from-emr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Patient From Emr
+         * @description Create a local patient from a server-validated EMR search result.
+         */
+        post: operations["create_patient_from_emr_patients_create_from_emr_post"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -855,6 +915,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/audio-resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Audio Resources */
+        delete: operations["delete_audio_resources_audio_resources_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/populate": {
         parameters: {
             query?: never;
@@ -869,6 +946,26 @@ export interface paths {
          * @description Populate the workflow and table results with the LLM response
          */
         post: operations["populate_populate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/populate/sunwave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Populate Sunwave
+         * @description Populate a Sunwave form through the Sunwave API.
+         */
+        post: operations["populate_sunwave_populate_sunwave_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1153,6 +1250,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/clinical-sessions/{session_id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Clinical Session Comments
+         * @description Get session comments from session_metadata["comments"].
+         */
+        get: operations["get_clinical_session_comments_clinical_sessions__session_id__comments_get"];
+        put?: never;
+        /**
+         * Add Clinical Session Comment
+         * @description Add a single comment item in session_metadata["comments"].
+         *     Provide: { "type": "...", "data": "..." }
+         */
+        post: operations["add_clinical_session_comment_clinical_sessions__session_id__comments_post"];
+        /**
+         * Remove Clinical Session Comment
+         * @description Remove a single comment item in session_metadata["comments"].
+         *     Provide: { "type": "...", "idx": 0 }
+         */
+        delete: operations["remove_clinical_session_comment_clinical_sessions__session_id__comments_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/clinical-sessions/{session_id}/process": {
         parameters: {
             query?: never;
@@ -1234,15 +1361,73 @@ export interface paths {
          * Get Workflows
          * @description Get workflows based on provided filters.
          *
-         *     - Neither provided: returns workflows for current user's center AND enterprise
+         *     - Neither provided: returns workflows for current user's center plus
+         *       enterprise-scoped workflows for the current enterprise
+         *       (where center_id is null)
          *     - Only center_id: returns workflows for that specific center
          *     - Only enterprise_id: returns workflows for that specific enterprise
-         *     - Both provided: returns workflows for both specified center AND enterprise
+         *     - Both provided: returns workflows for the specified center plus
+         *       enterprise-scoped workflows for the specified enterprise
+         *       (where center_id is null)
+         *     - is_global=true: returns only global workflows
+         *       (where center_id and enterprise_id are null)
          */
         get: operations["get_workflows_workflows_get"];
         put?: never;
         /** Create Workflow */
         post: operations["create_workflow_workflows_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/bestnotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Bestnotes Workflow */
+        post: operations["create_bestnotes_workflow_workflows_bestnotes_post"];
+        /** Delete Bestnotes Workflows */
+        delete: operations["delete_bestnotes_workflows_workflows_bestnotes_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/sunwave": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Sunwave Workflow */
+        post: operations["create_sunwave_workflow_workflows_sunwave_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workflows/emr-available-forms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Emr Available Forms */
+        get: operations["get_emr_available_forms_workflows_emr_available_forms_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1517,6 +1702,26 @@ export interface paths {
          * @description Get detailed session data for a specific user.
          */
         get: operations["get_user_sessions_dashboard_user_sessions__user_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/user-sessions/{session_id}/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Session Transcript
+         * @description Get transcript for a specific clinical session.
+         */
+        get: operations["get_session_transcript_dashboard_user_sessions__session_id__transcript_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1892,17 +2097,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Reconcile Kipu Patients
-         * @description Reconcile patients between local DB and Kipu EMR using LLM matching.
-         *
-         *     Returns categorized results:
-         *     - matched: 1:1 matches between DB and Kipu
-         *     - db_duplicates: Multiple DB patients matched to same Kipu patient
-         *     - kipu_duplicates: LLM found multiple Kipu candidates for a DB patient
-         *     - db_only: DB patients with no Kipu match
-         *     - kipu_only: Kipu patients not matched by any DB patient
-         */
+        /** Reconcile Kipu Patients */
         post: operations["reconcile_kipu_patients_internal_reconcile_kipu_patients_post"];
         delete?: never;
         options?: never;
@@ -2179,6 +2374,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/perspectives-query/chat/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Perspectives Chat
+         * @description Start a new Perspectives chat session.
+         *
+         *     Returns a session_id that should be used for subsequent chat messages.
+         *     Sessions are preserved for analysis.
+         */
+        post: operations["start_perspectives_chat_perspectives_query_chat_start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/perspectives-query/query": {
         parameters: {
             query?: never;
@@ -2205,6 +2423,174 @@ export interface paths {
          *     - "Which patients have more than 5 sessions?"
          */
         post: operations["query_perspectives_perspectives_query_query_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/perspectives-query/chat/message": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Perspectives Chat Message
+         * @description Send a message in an existing Perspectives chat session.
+         *
+         *     The agent will use conversation history to provide contextual answers.
+         *     You can ask follow-up questions like "What about their sessions?" after
+         *     finding a patient.
+         *
+         *     Args:
+         *         session_id: Chat session ID from /chat/start
+         *         message: User's message/question
+         *         max_turns: Maximum conversation turns for this message (default: 10)
+         */
+        post: operations["send_perspectives_chat_message_perspectives_query_chat_message_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/perspectives-query/chat/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End Perspectives Chat
+         * @description End a Perspectives chat session.
+         *
+         *     Call this when the user exits the chat interface to clean up resources.
+         *
+         *     Args:
+         *         session_id: Chat session ID to end
+         */
+        post: operations["end_perspectives_chat_perspectives_query_chat_end_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/query-agent/chat/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Query Agent Chat
+         * @description Start a new query agent chat session.
+         *
+         *     Returns a session_id that should be used for subsequent chat messages.
+         *     The unified query agent will intelligently route your questions to either:
+         *     - FHIR Agent: For external EHR data (patients, conditions, medications, labs)
+         *     - Perspectives Agent: For internal app data (sessions, workflows, charts)
+         */
+        post: operations["start_query_agent_chat_query_agent_chat_start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/query-agent/chat/message": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send Query Agent Chat Message
+         * @description Send a message in an existing query agent chat session.
+         *
+         *     The agent will:
+         *     1. Analyze your question to determine the best agent (FHIR or Perspectives)
+         *     2. Route to the appropriate specialized agent
+         *     3. Return the answer with metadata about which agent was used
+         *
+         *     The response includes `agent_used` field indicating which agent handled the query:
+         *     - "fhir": External EHR data was queried
+         *     - "perspectives": Internal app data was queried
+         *     - "web_search": Web search was performed to find the answer
+         *     - "none": Question was unanswerable or required clarification
+         *
+         *     Args:
+         *         session_id: Chat session ID from /chat/start
+         *         message: User's message/question
+         *         max_turns: Maximum conversation turns for this message (default: 10)
+         */
+        post: operations["send_query_agent_chat_message_query_agent_chat_message_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/query-agent/chat/message/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stream Query Agent Chat Message
+         * @description Stream a chat message response with real-time events.
+         *
+         *     Events emitted:
+         *     - route_decision: Which agent was chosen and why
+         *     - plan: Query execution plan (FHIR only)
+         *     - tool_start: Tool execution beginning
+         *     - tool_result: Tool execution result
+         *     - text_delta: Streaming text from LLM
+         *     - done: Final response with full data
+         */
+        post: operations["stream_query_agent_chat_message_query_agent_chat_message_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/query-agent/chat/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End Query Agent Chat
+         * @description End a query agent chat session.
+         *
+         *     Call this when the user exits the chat interface to clean up resources.
+         *
+         *     Args:
+         *         session_id: Chat session ID to end
+         */
+        post: operations["end_query_agent_chat_query_agent_chat_end_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2293,34 +2679,6 @@ export interface paths {
          */
         get: operations["get_charts_charts_get"];
         put?: never;
-        /**
-         * Create Chart
-         * @description Upload a new chart PDF for processing.
-         *
-         *     Returns immediately with status=UPLOADED.
-         *     Processing happens in background (parse → chunk → extract).
-         *     Poll GET /charts/{id} to check status and get results.
-         */
-        post: operations["create_chart_charts_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/charts/questions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Questions
-         * @description Get the question tree for the current user's center.
-         */
-        get: operations["get_questions_charts_questions_get"];
-        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -2348,7 +2706,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/charts/{chart_id}/rerun": {
+    "/charts/bestnotes-classic": {
         parameters: {
             query?: never;
             header?: never;
@@ -2358,35 +2716,10 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Rerun Chart
-         * @description Re-run extraction on an existing chart.
-         *
-         *     Returns immediately with status=UPLOADED.
-         *     Processing happens in background.
-         *     Poll GET /charts/{id} to check status and get results.
+         * Create Bestnotes Classic Chart
+         * @description Fetch a BestNotes snapshot for an existing patient and create a chart.
          */
-        post: operations["rerun_chart_charts__chart_id__rerun_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/charts/seed-questions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Seed Questions
-         * @description Seed the default question tree for the current user's center.
-         *     Replaces any existing questions for this center.
-         */
-        post: operations["seed_questions_charts_seed_questions_post"];
+        post: operations["create_bestnotes_classic_chart_charts_bestnotes_classic_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2492,6 +2825,736 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/reclaim/initialize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Initialize Reclaim */
+        post: operations["initialize_reclaim_reclaim_initialize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/locations/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Extract Reclaim Locations */
+        post: operations["extract_reclaim_locations_reclaim_locations_extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/sync/enqueue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enqueue Reclaim Sync
+         * @description You can use this route to enqueue a center sync with manual overrides.
+         */
+        post: operations["enqueue_reclaim_sync_reclaim_sync_enqueue_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Reclaim Runs */
+        get: operations["list_reclaim_runs_reclaim_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Reclaim Run */
+        get: operations["get_reclaim_run_reclaim_runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/runs/{run_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Reclaim Run */
+        post: operations["cancel_reclaim_run_reclaim_runs__run_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/center-metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Center Metrics */
+        get: operations["get_center_metrics_reclaim_center_metrics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Questions */
+        get: operations["get_audit_ledger_questions_reclaim_audit_ledger_questions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/question": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Audit Ledger Question */
+        post: operations["post_audit_ledger_question_reclaim_audit_ledger_question_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/questions/{audit_question_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Audit Ledger Question */
+        delete: operations["delete_audit_ledger_question_reclaim_audit_ledger_questions__audit_question_id__delete"];
+        options?: never;
+        head?: never;
+        /** Patch Audit Ledger Question */
+        patch: operations["patch_audit_ledger_question_reclaim_audit_ledger_questions__audit_question_id__patch"];
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Issues */
+        get: operations["get_audit_ledger_issues_reclaim_audit_ledger_issues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/issues/{issue_id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Issue Timeline */
+        get: operations["get_audit_ledger_issue_timeline_reclaim_audit_ledger_issues__issue_id__timeline_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/issues/{issue_id}/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Issue Units */
+        get: operations["get_audit_ledger_issue_units_reclaim_audit_ledger_issues__issue_id__units_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Stats */
+        get: operations["get_audit_ledger_stats_reclaim_audit_ledger_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Staff */
+        get: operations["get_audit_ledger_staff_reclaim_audit_ledger_staff_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/sources/{audit_issue_unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Issue Unit Sources */
+        get: operations["get_audit_ledger_issue_unit_sources_reclaim_audit_ledger_sources__audit_issue_unit_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-ledger/sources/{audit_issue_unit_id}/source/{source_doc_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Ledger Issue Unit Source Artifact */
+        get: operations["get_audit_ledger_issue_unit_source_artifact_reclaim_audit_ledger_sources__audit_issue_unit_id__source__source_doc_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/charts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Reclaim Charts */
+        get: operations["get_reclaim_charts_reclaim_charts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/charts/{chart_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Reclaim Chart */
+        get: operations["get_reclaim_chart_reclaim_charts__chart_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Reclaim Issues */
+        get: operations["get_reclaim_issues_reclaim_issues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Reclaim Answers */
+        get: operations["get_reclaim_answers_reclaim_answers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/answers/{chart_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Reclaim Answers For Chart */
+        get: operations["get_reclaim_answers_for_chart_reclaim_answers__chart_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-issues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Issues */
+        get: operations["get_audit_issues_reclaim_audit_issues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/audit-issues/{chart_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Issues For Chart */
+        get: operations["get_audit_issues_for_chart_reclaim_audit_issues__chart_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/ur": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Ur */
+        get: operations["get_ur_reclaim_ur_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/ur/{chart_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Ur For Chart */
+        get: operations["get_ur_for_chart_reclaim_ur__chart_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/harness/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Analysis Runs */
+        get: operations["list_analysis_runs_reclaim_harness_runs_get"];
+        put?: never;
+        /** Create Analysis Run */
+        post: operations["create_analysis_run_reclaim_harness_runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/harness/runs/{analysis_run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Analysis Run */
+        get: operations["get_analysis_run_reclaim_harness_runs__analysis_run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/harness/runs/{analysis_run_id}/artifacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Analysis Run Artifacts */
+        get: operations["list_analysis_run_artifacts_reclaim_harness_runs__analysis_run_id__artifacts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/harness/artifacts/{artifact_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Analysis Artifact Download */
+        get: operations["get_analysis_artifact_download_reclaim_harness_artifacts__artifact_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/emails/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reclaim Email Templates
+         * @description Testing/manual preview only. These Reclaim email endpoints compose and store email content in the database, but they never send email and are not the production delivery path.
+         */
+        get: operations["list_reclaim_email_templates_reclaim_emails_templates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/emails/compositions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Reclaim Email Compositions
+         * @description Testing/manual preview only. These Reclaim email endpoints compose and store email content in the database, but they never send email and are not the production delivery path.
+         */
+        get: operations["list_reclaim_email_compositions_reclaim_emails_compositions_get"];
+        put?: never;
+        /**
+         * Create Reclaim Email Composition
+         * @description Testing/manual preview only. These Reclaim email endpoints compose and store email content in the database, but they never send email and are not the production delivery path.
+         */
+        post: operations["create_reclaim_email_composition_reclaim_emails_compositions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/reclaim/emails/compositions/{composition_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Reclaim Email Composition
+         * @description Testing/manual preview only. These Reclaim email endpoints compose and store email content in the database, but they never send email and are not the production delivery path.
+         */
+        get: operations["get_reclaim_email_composition_reclaim_emails_compositions__composition_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/queue-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Job Queue Counts
+         * @description Return queue/in-flight counts for UI queue-pressure display.
+         */
+        get: operations["job_queue_counts_jobs_queue_counts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Job Status Summary
+         * @description Return counts by job status and most recent errors (with filters).
+         */
+        get: operations["job_status_summary_jobs_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/chart-runs/{chart_run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Chart Run */
+        get: operations["get_chart_run_jobs_chart_runs__chart_run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/chart-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Chart Runs */
+        get: operations["list_chart_runs_jobs_chart_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/chart-runs/{chart_run_id}/transitions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Chart Run Transitions */
+        get: operations["list_chart_run_transitions_jobs_chart_runs__chart_run_id__transitions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Chart Tasks
+         * @description List tasks for a chart (optionally filtered by type).
+         */
+        get: operations["list_chart_tasks_tasks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Task Queue
+         * @description List queued tasks for the current center (newest first).
+         */
+        get: operations["list_task_queue_tasks_queue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tasks/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Task Status
+         * @description Update a task status (open -> queued -> closed).
+         */
+        patch: operations["update_task_status_tasks__task_id__patch"];
+        trace?: never;
+    };
     "/": {
         parameters: {
             query?: never;
@@ -2575,12 +3638,117 @@ export interface components {
             /** Recaptcha Token */
             recaptcha_token: string;
         };
+        /**
+         * AgentRoute
+         * @description Enum for agent routing decisions
+         * @enum {string}
+         */
+        AgentRoute: "fhir" | "perspectives" | "web_search" | "unanswerable";
         /** AllCentersResponse */
         AllCentersResponse: {
             /** Center Id */
             center_id: string;
             /** Center Name */
             center_name: string;
+        };
+        /** AnalysisArtifactDownloadResponse */
+        AnalysisArtifactDownloadResponse: {
+            artifact: components["schemas"]["AnalysisArtifactReference"];
+            /** Downloadurl */
+            downloadUrl: string;
+            /** Expiresinseconds */
+            expiresInSeconds: number;
+        };
+        /** AnalysisArtifactListResponse */
+        AnalysisArtifactListResponse: {
+            /** Artifacts */
+            artifacts: components["schemas"]["AnalysisArtifactReference"][];
+        };
+        /** AnalysisArtifactReference */
+        AnalysisArtifactReference: {
+            /**
+             * Artifactid
+             * Format: uuid
+             */
+            artifactId: string;
+            /** Kind */
+            kind: string;
+            /** Format */
+            format: string;
+            /** Name */
+            name: string;
+            /** Rowcount */
+            rowCount?: number | null;
+            /** Bytecount */
+            byteCount?: number | null;
+            /** Createdat */
+            createdAt?: string | null;
+        };
+        /** AnalysisRunDetailResponse */
+        AnalysisRunDetailResponse: {
+            /**
+             * Analysisrunid
+             * Format: uuid
+             */
+            analysisRunId: string;
+            /** Centerid */
+            centerId: string;
+            /** Jobid */
+            jobId?: string | null;
+            /** Attempt */
+            attempt: number;
+            /** Objective */
+            objective: string;
+            /** Templatetype */
+            templateType: string;
+            /** Template */
+            template: {
+                [key: string]: unknown;
+            };
+            status: components["schemas"]["AnalysisRunStatus"];
+            /** Currentstep */
+            currentStep?: string | null;
+            /** Summary */
+            summary?: string | null;
+            /** Result */
+            result?: {
+                [key: string]: unknown;
+            };
+            /** Error */
+            error?: {
+                [key: string]: unknown;
+            } | null;
+            /** Artifacts */
+            artifacts?: components["schemas"]["AnalysisArtifactReference"][];
+            /** Createdat */
+            createdAt?: string | null;
+            /** Startedat */
+            startedAt?: string | null;
+            /** Completedat */
+            completedAt?: string | null;
+        };
+        /** AnalysisRunListResponse */
+        AnalysisRunListResponse: {
+            /** Runs */
+            runs: components["schemas"]["AnalysisRunDetailResponse"][];
+        };
+        /**
+         * AnalysisRunStatus
+         * @enum {string}
+         */
+        AnalysisRunStatus: "queued" | "running" | "succeeded" | "failed";
+        /** AnalysisTemplateRequest */
+        AnalysisTemplateRequest: {
+            /**
+             * Type
+             * @default message
+             */
+            type: string;
+            /**
+             * Version
+             * @default v1
+             */
+            version: string;
         };
         /**
          * AttachPaymentMethodRequest
@@ -2598,6 +3766,12 @@ export interface components {
              */
             billing_email?: string | null;
         };
+        /**
+         * AuditUnitKeyStrategy
+         * @description Stable identity strategy for concrete audit issue units.
+         * @enum {string}
+         */
+        AuditUnitKeyStrategy: "artifact_date_and_doc_family" | "interval" | "artifact_field" | "trigger_obligation" | "discharge_event_requirement" | "single_question_defect";
         /** AuthResponse */
         AuthResponse: {
             /** Access Token */
@@ -2625,6 +3799,14 @@ export interface components {
             display_consent_form: boolean;
             /** Display New Ui */
             display_new_ui: boolean;
+            /** Is Fhir Available */
+            is_fhir_available: boolean;
+            /** Disable Pt Create */
+            disable_pt_create: boolean;
+            /** Can Search Emr Patients */
+            can_search_emr_patients: boolean;
+            /** Emr */
+            emr: string;
         };
         /** BackfillGroupingsResponse */
         BackfillGroupingsResponse: {
@@ -2644,19 +3826,66 @@ export interface components {
              */
             status: string;
         };
-        /** Body_create_chart_charts_post */
-        Body_create_chart_charts_post: {
+        /** BestNotesClassicChartRequest */
+        BestNotesClassicChartRequest: {
             /**
-             * File
-             * Format: binary
-             * @description PDF file to upload
+             * Patient Id
+             * Format: uuid
              */
-            file: string;
+            patient_id: string;
+        };
+        /** BestNotesWorkflowDeleteResponse */
+        BestNotesWorkflowDeleteResponse: {
+            /** Deleted Workflow Ids */
+            deleted_workflow_ids: string[];
+            /** Deleted Count */
+            deleted_count: number;
+            /** Retained Count */
+            retained_count: number;
+            /** Message */
+            message: string;
+        };
+        /** BestNotesWorkflowIdentity */
+        BestNotesWorkflowIdentity: {
+            /** Name */
+            name: string;
+            /** Questionnaire Url */
+            questionnaire_url: string;
+            /** Questionnaire Ver */
+            questionnaire_ver: string;
+        };
+        /**
+         * BestNotesWorkflowRequest
+         * @description Stub request model for BestNotes form schema ingestion.
+         */
+        BestNotesWorkflowRequest: {
+            /** Workflow Name */
+            workflow_name: string;
+            /** Questionnaire Url */
+            questionnaire_url: string;
+            /** Questionnaire Ver */
+            questionnaire_ver: string;
+            /** Form Schema */
+            form_schema: {
+                [key: string]: unknown;
+            }[];
             /**
-             * Patient Name
-             * @description Patient name
+             * Is Ur
+             * @default false
              */
-            patient_name: string;
+            is_ur: boolean;
+        };
+        /**
+         * BestNotesWorkflowResponse
+         * @description Queued response model for BestNotes workflow creation.
+         */
+        BestNotesWorkflowResponse: {
+            /** Workflow Id */
+            workflow_id: string;
+            /** Mapping Status */
+            mapping_status: string;
+            /** Message */
+            message: string;
         };
         /** Body_gemini_query_file_internal_gemini_query_file_post */
         Body_gemini_query_file_internal_gemini_query_file_post: {
@@ -2717,6 +3946,24 @@ export interface components {
             cancel_at?: string | null;
             /** Message */
             message: string;
+        };
+        /**
+         * CareTeamMember
+         * @description Care team member extracted from chart context.
+         */
+        CareTeamMember: {
+            /**
+             * Name
+             * @description Full care team member name.
+             * @default
+             */
+            name: string;
+            /**
+             * Title
+             * @description Role/title for the care team member.
+             * @default
+             */
+            title: string;
         };
         /**
          * CategoryInstructions
@@ -2861,6 +4108,11 @@ export interface components {
             include_suicidal_risk: components["schemas"]["SuicidalRisk"];
             /** @default exclude */
             disguise_phi: components["schemas"]["PHIDisguise"];
+            /**
+             * Use New Group Note System Prompt
+             * @default false
+             */
+            use_new_group_note_system_prompt: boolean;
             /** Prompt */
             prompt?: string | null;
         };
@@ -2902,6 +4154,10 @@ export interface components {
             center_id: string;
             /** Patient Name */
             patient_name: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Reclaim Run Id */
+            reclaim_run_id?: string | null;
             /** Filename */
             filename: string;
             /** S3 Key */
@@ -2916,27 +4172,17 @@ export interface components {
             /** Document Tree */
             document_tree?: {
                 [key: string]: unknown;
-            }[] | null;
-            /** Question Results */
-            question_results?: {
+            }[] | {
                 [key: string]: unknown;
-            }[] | null;
-            /** Branch Results */
-            branch_results?: {
-                [key: string]: unknown;
-            }[] | null;
-            /** Aggregated Results */
-            aggregated_results?: {
-                [key: string]: unknown;
-            }[] | null;
+            } | null;
             /** Executive Summary */
             executive_summary?: {
                 [key: string]: unknown;
             } | null;
-            /** Asam Results */
-            asam_results?: {
-                [key: string]: unknown;
-            } | null;
+            /** Casefile Share Id */
+            casefile_share_id?: string | null;
+            /** Casefile Status */
+            casefile_status?: string | null;
             /** Created At */
             created_at?: string | null;
             /** Updated At */
@@ -2958,6 +4204,10 @@ export interface components {
             center_id: string;
             /** Patient Name */
             patient_name: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Reclaim Run Id */
+            reclaim_run_id?: string | null;
             /** Filename */
             filename: string;
             /** S3 Key */
@@ -2972,27 +4222,17 @@ export interface components {
             /** Document Tree */
             document_tree?: {
                 [key: string]: unknown;
-            }[] | null;
-            /** Question Results */
-            question_results?: {
+            }[] | {
                 [key: string]: unknown;
-            }[] | null;
-            /** Branch Results */
-            branch_results?: {
-                [key: string]: unknown;
-            }[] | null;
-            /** Aggregated Results */
-            aggregated_results?: {
-                [key: string]: unknown;
-            }[] | null;
+            } | null;
             /** Executive Summary */
             executive_summary?: {
                 [key: string]: unknown;
             } | null;
-            /** Asam Results */
-            asam_results?: {
-                [key: string]: unknown;
-            } | null;
+            /** Casefile Share Id */
+            casefile_share_id?: string | null;
+            /** Casefile Status */
+            casefile_status?: string | null;
             /** Created At */
             created_at?: string | null;
             /** Updated At */
@@ -3003,6 +4243,41 @@ export interface components {
          * @enum {string}
          */
         ChartStatus: "uploaded" | "processing" | "completed" | "failed";
+        /** ChartTaskResponse */
+        ChartTaskResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Chart Id
+             * Format: uuid
+             */
+            chart_id: string;
+            task_type: components["schemas"]["ChartTaskType"];
+            /** Description */
+            description: string;
+            status: components["schemas"]["ChartTaskStatus"];
+            /** Created At */
+            created_at?: string | null;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /**
+         * ChartTaskStatus
+         * @enum {string}
+         */
+        ChartTaskStatus: "open" | "queued" | "closed";
+        /**
+         * ChartTaskType
+         * @enum {string}
+         */
+        ChartTaskType: "ur" | "audit";
+        /** ChartTaskUpdate */
+        ChartTaskUpdate: {
+            status: components["schemas"]["ChartTaskStatus"];
+        };
         /**
          * CheckoutSessionResponse
          * @description Response containing Stripe checkout session URL
@@ -3105,6 +4380,7 @@ export interface components {
             /** Patient Id */
             patient_id?: string | null;
             status?: components["schemas"]["ClinicalSessionStatus"] | null;
+            comments?: components["schemas"]["SessionComments"] | null;
         };
         /** ClinicianBulkCreateRequest */
         ClinicianBulkCreateRequest: {
@@ -3118,6 +4394,21 @@ export interface components {
          * @enum {string}
          */
         ContextEnum: "content" | "background" | "offscreen" | "popup";
+        /** CreateAnalysisRunRequest */
+        CreateAnalysisRunRequest: {
+            /** Objective */
+            objective: string;
+            template?: components["schemas"]["AnalysisTemplateRequest"];
+        };
+        /** CreateAnalysisRunResponse */
+        CreateAnalysisRunResponse: {
+            /**
+             * Analysisrunid
+             * Format: uuid
+             */
+            analysisRunId: string;
+            status: components["schemas"]["AnalysisRunStatus"];
+        };
         /**
          * CreateCenterRequest
          * @description Request to create a new center.
@@ -3141,6 +4432,10 @@ export interface components {
             kipu_tenant_id?: string | null;
             /** Kipu Username */
             kipu_username?: string | null;
+            /** Bn Classic Public Key */
+            bn_classic_public_key?: string | null;
+            /** Bn Classic Private Key */
+            bn_classic_private_key?: string | null;
         };
         /**
          * CreateCheckoutSessionRequest
@@ -3210,6 +4505,53 @@ export interface components {
             /** Group Note Ids */
             group_note_ids: string[];
         };
+        /** CreateReclaimAuditLedgerQuestionRequest */
+        CreateReclaimAuditLedgerQuestionRequest: {
+            /** Question Key */
+            question_key: string;
+            /** Title */
+            title: string;
+            followup_policy: components["schemas"]["QuestionFollowupPolicy"];
+            unit_key_strategy: components["schemas"]["AuditUnitKeyStrategy"];
+            /** Predefined Category */
+            predefined_category?: string | null;
+            /** Intent Prompt */
+            intent_prompt: string;
+            /** Evidence Prompt */
+            evidence_prompt: string;
+            /** Instruction Prompt */
+            instruction_prompt: string;
+            /** Steps Prompt */
+            steps_prompt: string;
+            /** Loc Filter */
+            loc_filter?: components["schemas"]["LevelOfCare"][];
+        };
+        /** CreateReclaimEmailCompositionRequest */
+        CreateReclaimEmailCompositionRequest: {
+            /** Template Type */
+            template_type: string;
+            /**
+             * Template Version
+             * @default v1
+             */
+            template_version: string;
+            /** Analysisrunid */
+            analysisRunId?: string | null;
+            /** Recipients */
+            recipients?: components["schemas"]["ReclaimEmailRecipient"][];
+            /** Subject */
+            subject?: string | null;
+            /** Preheader */
+            preheader?: string | null;
+            /** Payload */
+            payload?: {
+                [key: string]: unknown;
+            } | null;
+            /** Metadata */
+            metadata?: {
+                [key: string]: unknown;
+            };
+        };
         /** CreateSessionRequest */
         CreateSessionRequest: {
             /** Workflow Ids */
@@ -3273,6 +4615,46 @@ export interface components {
             platform_username?: string | null;
             /** Centers */
             centers?: components["schemas"]["CenterBasicResponse"][] | null;
+        };
+        /** ExtractReclaimLocationsRequest */
+        ExtractReclaimLocationsRequest: {
+            provider: components["schemas"]["InitializeReclaimProvider"];
+        };
+        /** ExtractReclaimLocationsResponse */
+        ExtractReclaimLocationsResponse: {
+            /** Success */
+            success: boolean;
+            /** Message */
+            message: string;
+            /** Center Id */
+            center_id: string;
+            /**
+             * Created Count
+             * @default 0
+             */
+            created_count: number;
+            /**
+             * Revived Count
+             * @default 0
+             */
+            revived_count: number;
+            /**
+             * Existing Count
+             * @default 0
+             */
+            existing_count: number;
+            /**
+             * Linked Patient Count
+             * @default 0
+             */
+            linked_patient_count: number;
+            /**
+             * Cleared Patient Count
+             * @default 0
+             */
+            cleared_patient_count: number;
+            /** Locations */
+            locations?: components["schemas"]["ReclaimExtractedLocationItem"][];
         };
         /**
          * FHIRChatEndRequest
@@ -3420,6 +4802,18 @@ export interface components {
             avg_sessions_per_user_per_weekend: number;
         };
         /**
+         * GenerateInteguruUserIdResponse
+         * @description Response for generated integuru_user_id.
+         */
+        GenerateInteguruUserIdResponse: {
+            /** Success */
+            success: boolean;
+            /** Message */
+            message: string;
+            /** Integuru User Id */
+            integuru_user_id: string;
+        };
+        /**
          * GroupDetailResponse
          * @description Response for single group with member details.
          */
@@ -3561,6 +4955,39 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
+         * InitializeReclaimProvider
+         * @enum {string}
+         */
+        InitializeReclaimProvider: "kipu" | "sunwave" | "bestnotes_classic";
+        /** InitializeReclaimRequest */
+        InitializeReclaimRequest: {
+            provider: components["schemas"]["InitializeReclaimProvider"];
+            audit: components["schemas"]["ReclaimAuditConfig"];
+            ur: components["schemas"]["ReclaimURConfig"];
+            /** Patient Ids */
+            patient_ids?: string[];
+            /** Kipu Location Filter Param */
+            kipu_location_filter_param?: ("location_id" | "select_location") | null;
+            /** Kipu Tenant Id */
+            kipu_tenant_id?: string | null;
+            /** Kipu Username */
+            kipu_username?: string | null;
+        };
+        /** InitializeReclaimResponse */
+        InitializeReclaimResponse: {
+            /** Success */
+            success: boolean;
+            /** Message */
+            message: string;
+            /** Center Id */
+            center_id: string;
+            /** Integuru User Id */
+            integuru_user_id?: string | null;
+            /** Integuru Initialized */
+            integuru_initialized: boolean;
+            reclaim_config: components["schemas"]["ReclaimConfig"];
+        };
+        /**
          * InvoiceListResponse
          * @description List of invoices
          */
@@ -3620,6 +5047,28 @@ export interface components {
              */
             period_end: string;
         };
+        /**
+         * KipuClientSearchResult
+         * @description Result item returned by Kipu's client quick search.
+         */
+        KipuClientSearchResult: {
+            /** Patient Id */
+            patient_id: number;
+            /** Fullname */
+            fullname: string;
+            /** Preferred Fullname */
+            preferred_fullname: string;
+            /** Mr */
+            mr?: string | null;
+            /** Number */
+            number?: string | null;
+            /** Keywords */
+            keywords?: (string | null)[];
+            /** Is Discharged */
+            is_discharged: boolean;
+            /** Details Url */
+            details_url: string;
+        };
         /** LatestVersionResponse */
         LatestVersionResponse: {
             /** Latest Version */
@@ -3631,6 +5080,12 @@ export interface components {
          * @enum {string}
          */
         LevelEnum: "info" | "warn" | "error";
+        /**
+         * LevelOfCare
+         * @description Canonical patient-facing LOC classifications for reclaim and audit gating.
+         * @enum {string}
+         */
+        LevelOfCare: "DT" | "RES" | "PHP" | "IOP" | "OP" | "OTHER" | "Unassigned";
         /** LogRequest */
         LogRequest: {
             /** Logs */
@@ -3638,8 +5093,12 @@ export interface components {
         };
         /** LoginBestNotesRequest */
         LoginBestNotesRequest: {
-            /** Bestnotes Token */
-            bestnotes_token: string;
+            /** User Id */
+            user_id: string;
+            /** User Email */
+            user_email: string;
+            /** Sso Code */
+            sso_code: string;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -3744,10 +5203,41 @@ export interface components {
             patient_name: string;
             /** Center Id */
             center_id?: string | null;
+            /** Enterprise Id */
+            enterprise_id?: string | null;
+            /** Is Sample */
+            is_sample?: boolean | null;
             /** Date Of Birth */
             date_of_birth?: string | null;
             /** Emr Patient Id */
             emr_patient_id?: string | null;
+            /** Sunwave Mri */
+            sunwave_mri?: string | null;
+            /**
+             * Patient Status
+             * @default current
+             */
+            patient_status: string;
+            /** Kipu Patient Id */
+            kipu_patient_id?: string | null;
+            /** Location Id */
+            location_id?: string | null;
+            /** Location Name */
+            location_name?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Next Ur */
+            next_ur?: string | null;
+            /** Facesheet Info */
+            facesheet_info?: {
+                [key: string]: unknown;
+            } | null;
+            /** Current Level Of Care */
+            current_level_of_care?: string | null;
+            /** Last Synced At */
+            last_synced_at?: string | null;
+            /** Deleted At */
+            deleted_at?: string | null;
             /** Patient Metadata */
             patient_metadata?: {
                 [key: string]: unknown;
@@ -3761,14 +5251,76 @@ export interface components {
             patient_name: string;
             /** Center Id */
             center_id?: string | null;
+            /** Enterprise Id */
+            enterprise_id?: string | null;
+            /** Is Sample */
+            is_sample?: boolean | null;
             /** Date Of Birth */
             date_of_birth?: string | null;
             /** Emr Patient Id */
             emr_patient_id?: string | null;
+            /** Sunwave Mri */
+            sunwave_mri?: string | null;
+            /**
+             * Patient Status
+             * @default current
+             */
+            patient_status: string;
+            /** Kipu Patient Id */
+            kipu_patient_id?: string | null;
+            /** Location Id */
+            location_id?: string | null;
+            /** Location Name */
+            location_name?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Next Ur */
+            next_ur?: string | null;
+            /** Facesheet Info */
+            facesheet_info?: {
+                [key: string]: unknown;
+            } | null;
+            /** Current Level Of Care */
+            current_level_of_care?: string | null;
+            /** Last Synced At */
+            last_synced_at?: string | null;
+            /** Deleted At */
+            deleted_at?: string | null;
             /** Patient Metadata */
             patient_metadata?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /**
+         * PatientCreateFromEMRRequest
+         * @description Request to create a local patient from a selected EMR search result.
+         */
+        PatientCreateFromEMRRequest: {
+            /** Query */
+            query: string;
+            /** Kipu Patient Id */
+            kipu_patient_id: string | number;
+            /** Emr Patient Id */
+            emr_patient_id?: string | null;
+        };
+        /**
+         * PatientEMRSearchResponse
+         * @description Normalized response for live patient search against the center's EMR.
+         */
+        PatientEMRSearchResponse: {
+            /** Emr */
+            emr: string;
+            /** Query */
+            query: string;
+            /**
+             * Success
+             * @default true
+             */
+            success: boolean;
+            /** Count */
+            count?: number | null;
+            /** Results */
+            results?: components["schemas"]["KipuClientSearchResult"][];
         };
         /**
          * PatientGroupItem
@@ -3844,14 +5396,120 @@ export interface components {
             patient_name?: string | null;
             /** Center Id */
             center_id?: string | null;
+            /** Enterprise Id */
+            enterprise_id?: string | null;
+            /** Is Sample */
+            is_sample?: boolean | null;
             /** Date Of Birth */
             date_of_birth?: string | null;
             /** Emr Patient Id */
             emr_patient_id?: string | null;
+            /** Sunwave Mri */
+            sunwave_mri?: string | null;
+            /**
+             * Patient Status
+             * @default current
+             */
+            patient_status: string;
+            /** Kipu Patient Id */
+            kipu_patient_id?: string | null;
+            /** Location Id */
+            location_id?: string | null;
+            /** Location Name */
+            location_name?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Next Ur */
+            next_ur?: string | null;
+            /** Facesheet Info */
+            facesheet_info?: {
+                [key: string]: unknown;
+            } | null;
+            /** Current Level Of Care */
+            current_level_of_care?: string | null;
+            /** Last Synced At */
+            last_synced_at?: string | null;
+            /** Deleted At */
+            deleted_at?: string | null;
             /** Patient Metadata */
             patient_metadata?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /**
+         * PerspectivesChatEndRequest
+         * @description Request model for ending a chat session
+         */
+        PerspectivesChatEndRequest: {
+            /**
+             * Session Id
+             * @description Chat session ID to end
+             */
+            session_id: string;
+        };
+        /**
+         * PerspectivesChatEndResponse
+         * @description Response model for ending a chat session
+         */
+        PerspectivesChatEndResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Success */
+            success: boolean;
+            /** Timestamp */
+            timestamp: string;
+        };
+        /**
+         * PerspectivesChatMessageRequest
+         * @description Request model for sending a chat message
+         */
+        PerspectivesChatMessageRequest: {
+            /**
+             * Session Id
+             * @description Chat session ID
+             */
+            session_id: string;
+            /**
+             * Message
+             * @description User message
+             */
+            message: string;
+            /**
+             * Max Turns
+             * @description Maximum conversation turns for this message
+             * @default 10
+             */
+            max_turns: number | null;
+        };
+        /**
+         * PerspectivesChatMessageResponse
+         * @description Response model for chat message
+         */
+        PerspectivesChatMessageResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Answer */
+            answer: string;
+            /** Tool Calls */
+            tool_calls: components["schemas"]["app__models__perspectives_query_models__ToolCall"][];
+            /** Turns */
+            turns: number;
+            /** Completed */
+            completed: boolean;
+            /** Error */
+            error?: string | null;
+            /** Timestamp */
+            timestamp: string;
+        };
+        /**
+         * PerspectivesChatStartResponse
+         * @description Response model for starting a chat session
+         */
+        PerspectivesChatStartResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Timestamp */
+            timestamp: string;
         };
         /**
          * PerspectivesHealthResponse
@@ -3923,6 +5581,12 @@ export interface components {
             type: components["schemas"]["QuestionType"];
             /** Label */
             label?: string | string[] | null;
+            /** Options */
+            options?: string[] | null;
+            /** Raw Options */
+            raw_options?: {
+                [key: string]: string;
+            }[] | null;
             /** Xpath */
             xpath: string;
             /** Placeholder */
@@ -3933,8 +5597,16 @@ export interface components {
             question_text: string;
             /** Processed Question Text */
             processed_question_text: string;
+            /** Sunwave Type */
+            sunwave_type?: string | null;
+            /** Sunwave Assessment Name */
+            sunwave_assessment_name?: string | null;
+            /** Is Widget */
+            is_widget?: boolean | null;
             /** Answer */
-            answer?: string | number | null;
+            answer?: string | number | {
+                [key: string]: string;
+            } | null;
             /** Evidence */
             evidence?: string | null;
             /** Ignore */
@@ -3972,6 +5644,89 @@ export interface components {
          * @enum {string}
          */
         ProgressNoteType: "soap" | "dap" | "dsap";
+        /**
+         * QueryAgentChatEndRequest
+         * @description Request model for ending a chat session
+         */
+        QueryAgentChatEndRequest: {
+            /**
+             * Session Id
+             * @description Chat session ID to end
+             */
+            session_id: string;
+        };
+        /**
+         * QueryAgentChatEndResponse
+         * @description Response model for ending a chat session
+         */
+        QueryAgentChatEndResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Success */
+            success: boolean;
+            /** Timestamp */
+            timestamp: string;
+        };
+        /**
+         * QueryAgentChatMessageRequest
+         * @description Request model for sending a chat message
+         */
+        QueryAgentChatMessageRequest: {
+            /**
+             * Session Id
+             * @description Chat session ID
+             */
+            session_id: string;
+            /**
+             * Message
+             * @description User message
+             */
+            message: string;
+            /**
+             * Max Turns
+             * @description Maximum conversation turns for this message
+             * @default 10
+             */
+            max_turns: number | null;
+        };
+        /**
+         * QueryAgentChatMessageResponse
+         * @description Response model for chat message with routing information
+         */
+        QueryAgentChatMessageResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Answer */
+            answer: string;
+            /** Tool Calls */
+            tool_calls: components["schemas"]["app__models__query_agent_models__ToolCall"][];
+            /** Turns */
+            turns: number;
+            /** Completed */
+            completed: boolean;
+            /** Error */
+            error?: string | null;
+            /** Timestamp */
+            timestamp: string;
+            /**
+             * Agent Used
+             * @description Which agent was used to answer: 'fhir', 'perspectives', 'web_search', or 'none' for unanswerable
+             * @enum {string}
+             */
+            agent_used: "fhir" | "perspectives" | "web_search" | "none";
+            /** @description The routing decision made by the pre-planner */
+            route_decision?: components["schemas"]["QueryRouteDecision"] | null;
+        };
+        /**
+         * QueryAgentChatStartResponse
+         * @description Response model for starting a chat session
+         */
+        QueryAgentChatStartResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Timestamp */
+            timestamp: string;
+        };
         /**
          * QueryPlan
          * @description Structured plan for executing a FHIR query.
@@ -4023,6 +5778,36 @@ export interface components {
             general_response?: string | null;
         };
         /**
+         * QueryRouteDecision
+         * @description Pre-planner output model for routing decisions.
+         *     Generated by the LLM to decide which agent should handle the query.
+         */
+        QueryRouteDecision: {
+            /** @description Which agent should handle this query */
+            route: components["schemas"]["AgentRoute"];
+            /**
+             * Confidence
+             * @description Confidence score (0-1)
+             */
+            confidence: number;
+            /**
+             * Reasoning
+             * @description Brief explanation of why this route was chosen
+             */
+            reasoning: string;
+            /**
+             * Helpful Message
+             * @description Helpful message for unanswerable queries (clarification request, etc.)
+             */
+            helpful_message?: string | null;
+        };
+        /**
+         * QuestionFollowupPolicy
+         * @description Longitudinal audit behavior for a cadenced audit question.
+         * @enum {string}
+         */
+        QuestionFollowupPolicy: "rolling_delta_stack" | "immutable_anchor_stack" | "current_artifact_recheck" | "trigger_response_recheck" | "discharge_gated" | "always_full_question";
+        /**
          * QuestionType
          * @enum {string}
          */
@@ -4035,6 +5820,1131 @@ export interface components {
             workflow_id: string;
             /** Message */
             message: string;
+        };
+        /** ReclaimAuditConfig */
+        ReclaimAuditConfig: {
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /** Send Email */
+            send_email: boolean;
+            /** Cadence Days */
+            cadence_days?: number | null;
+            /** Anchor Weekday */
+            anchor_weekday?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday") | null;
+            /** Location Ids */
+            location_ids?: string[];
+        };
+        /** ReclaimAuditLedgerIssueResponse */
+        ReclaimAuditLedgerIssueResponse: {
+            /**
+             * Issue Id
+             * Format: uuid
+             */
+            issue_id: string;
+            /** Chart Id */
+            chart_id?: string | null;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Patient Name */
+            patient_name: string;
+            /** Question Text */
+            question_text: string;
+            /** Question Id */
+            question_id: string;
+            /** Category */
+            category?: string | null;
+            /** Status */
+            status: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Last Seen At */
+            last_seen_at?: string | null;
+            /** Resolved At */
+            resolved_at?: string | null;
+            /** Current Loc */
+            current_loc?: string | null;
+            /** Patient Location */
+            patient_location?: string | null;
+            /** Attributed Staff */
+            attributed_staff?: components["schemas"]["ReclaimAuditLedgerStaffItem"][];
+            /** Raw Attributed Staff */
+            raw_attributed_staff?: components["schemas"]["ReclaimAuditLedgerStaffItem"][];
+            /** Latest Summary */
+            latest_summary?: string | null;
+            /**
+             * Active Unit Count
+             * @default 0
+             */
+            active_unit_count: number;
+            /**
+             * Resolved Unit Count
+             * @default 0
+             */
+            resolved_unit_count: number;
+            /**
+             * Total Unit Count
+             * @default 0
+             */
+            total_unit_count: number;
+            /** Units Preview */
+            units_preview?: components["schemas"]["ReclaimAuditLedgerIssueUnitItem"][];
+        };
+        /** ReclaimAuditLedgerIssueUnitItem */
+        ReclaimAuditLedgerIssueUnitItem: {
+            /**
+             * Unit Id
+             * Format: uuid
+             */
+            unit_id: string;
+            /** Unit Key */
+            unit_key: string;
+            /** Unit Type */
+            unit_type: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "resolved";
+            /** Close Reason */
+            close_reason?: string | null;
+            /** Summary */
+            summary: string;
+            /** Date Start */
+            date_start?: string | null;
+            /** Date End */
+            date_end?: string | null;
+            /** Artifact Key */
+            artifact_key?: string | null;
+            /** Field Key */
+            field_key?: string | null;
+            /** Sources */
+            sources?: components["schemas"]["ReclaimAuditLedgerIssueUnitSourceItem"][];
+            /** Attributed Staff */
+            attributed_staff?: components["schemas"]["ReclaimAuditLedgerStaffItem"][];
+            /**
+             * First Seen At
+             * Format: date-time
+             */
+            first_seen_at: string;
+            /** Last Seen At */
+            last_seen_at?: string | null;
+            /** Resolved At */
+            resolved_at?: string | null;
+        };
+        /** ReclaimAuditLedgerIssueUnitSourceItem */
+        ReclaimAuditLedgerIssueUnitSourceItem: {
+            /** Role */
+            role: string;
+            /** Source Doc Id */
+            source_doc_id?: string | null;
+            /** Source Doc Title */
+            source_doc_title?: string | null;
+            /** Source Chart Id */
+            source_chart_id?: string | null;
+            /** Source Display S3 Key */
+            source_display_s3_key?: string | null;
+            /** Date */
+            date?: string | null;
+            /** Relative Page */
+            relative_page?: number | null;
+            /** Absolute Page */
+            absolute_page?: number | null;
+            /** Text */
+            text?: string | null;
+            /** Node */
+            node?: {
+                [key: string]: unknown;
+            } | null;
+            /** Metadata */
+            metadata?: {
+                [key: string]: unknown;
+            };
+        };
+        /** ReclaimAuditLedgerQuestionResponse */
+        ReclaimAuditLedgerQuestionResponse: {
+            /**
+             * Audit Question Id
+             * Format: uuid
+             */
+            audit_question_id: string;
+            /** Question Key */
+            question_key: string;
+            /** Title */
+            title: string;
+            /** Followup Policy */
+            followup_policy: string;
+            /** Unit Key Strategy */
+            unit_key_strategy: string;
+            /** Predefined Category */
+            predefined_category?: string | null;
+            /** Intent Prompt */
+            intent_prompt: string;
+            /** Evidence Prompt */
+            evidence_prompt: string;
+            /** Instruction Prompt */
+            instruction_prompt: string;
+            /** Steps Prompt */
+            steps_prompt: string;
+            /** Loc Filter */
+            loc_filter?: string[];
+            /** Is Visible */
+            is_visible: boolean;
+        };
+        /** ReclaimAuditLedgerSourceArtifactResponse */
+        ReclaimAuditLedgerSourceArtifactResponse: {
+            /** Artifact */
+            artifact?: unknown | null;
+            /** Artifact Format */
+            artifact_format?: ("pdf" | "html" | "json") | null;
+        };
+        /** ReclaimAuditLedgerSourceListItem */
+        ReclaimAuditLedgerSourceListItem: {
+            /** Id */
+            id: string;
+            /** Title */
+            title?: string | null;
+            /** Text */
+            text?: string | null;
+            /** Role */
+            role?: string | null;
+            /** Date */
+            date?: string | null;
+        };
+        /** ReclaimAuditLedgerStaffItem */
+        ReclaimAuditLedgerStaffItem: {
+            /** Staff Key */
+            staff_key?: string | null;
+            /** Name */
+            name: string;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /** Count */
+            count?: number | null;
+            /** Issue Count */
+            issue_count?: number | null;
+            /** Staff Member Id */
+            staff_member_id?: string | null;
+            /** Email */
+            email?: string | null;
+            /** Raw Name */
+            raw_name?: string | null;
+            /** Raw Title */
+            raw_title?: string | null;
+            /** Match Status */
+            match_status?: string | null;
+            /** Match Method */
+            match_method?: string | null;
+        };
+        /** ReclaimAuditLedgerStaffResponse */
+        ReclaimAuditLedgerStaffResponse: {
+            /**
+             * Open Issue Count
+             * @default 0
+             */
+            open_issue_count: number;
+            /**
+             * Resolved Issue Count
+             * @default 0
+             */
+            resolved_issue_count: number;
+            /**
+             * Active Unit Count
+             * @default 0
+             */
+            active_unit_count: number;
+            /**
+             * Resolved Unit Count
+             * @default 0
+             */
+            resolved_unit_count: number;
+            /**
+             * Total Unit Count
+             * @default 0
+             */
+            total_unit_count: number;
+            /** Staff */
+            staff?: components["schemas"]["ReclaimAuditLedgerStaffItem"][];
+            /** Resolved By Week */
+            resolved_by_week?: components["schemas"]["ReclaimAuditLedgerWeeklyCount"][];
+        };
+        /** ReclaimAuditLedgerStatsResponse */
+        ReclaimAuditLedgerStatsResponse: {
+            /**
+             * Open Issue Count
+             * @default 0
+             */
+            open_issue_count: number;
+            /**
+             * Resolved Issue Count
+             * @default 0
+             */
+            resolved_issue_count: number;
+            /**
+             * Active Unit Count
+             * @default 0
+             */
+            active_unit_count: number;
+            /**
+             * Resolved Unit Count
+             * @default 0
+             */
+            resolved_unit_count: number;
+            /**
+             * Total Unit Count
+             * @default 0
+             */
+            total_unit_count: number;
+            /** Resolved By Week */
+            resolved_by_week?: components["schemas"]["ReclaimAuditLedgerWeeklyCount"][];
+        };
+        /** ReclaimAuditLedgerTimelineItem */
+        ReclaimAuditLedgerTimelineItem: {
+            /**
+             * Question Result Id
+             * Format: uuid
+             */
+            question_result_id: string;
+            /**
+             * Audit Run Id
+             * Format: uuid
+             */
+            audit_run_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Execution Status */
+            execution_status: string;
+            /** Assessment Mode */
+            assessment_mode: string;
+            /**
+             * Assessment Note
+             * @default
+             */
+            assessment_note: string;
+            /** Validation Error */
+            validation_error?: string | null;
+            /** Unit Reconciliation Summary */
+            unit_reconciliation_summary?: {
+                [key: string]: unknown;
+            };
+        };
+        /** ReclaimAuditLedgerWeeklyCount */
+        ReclaimAuditLedgerWeeklyCount: {
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /** Count */
+            count: number;
+        };
+        /** ReclaimCenterMetricsResponse */
+        ReclaimCenterMetricsResponse: {
+            /** Late Notes Count */
+            late_notes_count: number;
+            /** Plan Issues Count */
+            plan_issues_count: number;
+            /** Discharge Gap Count */
+            discharge_gap_count: number;
+            /** Total Issue Count */
+            total_issue_count: number;
+            /** Patients Need Attention */
+            patients_need_attention: number;
+        };
+        /** ReclaimChartAnswersResponse */
+        ReclaimChartAnswersResponse: {
+            /**
+             * Chart Id
+             * Format: uuid
+             */
+            chart_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Reclaim Run Id */
+            reclaim_run_id?: string | null;
+            /** Executive Summary */
+            executive_summary?: {
+                [key: string]: unknown;
+            } | null;
+            /** Ur Results */
+            ur_results?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** ReclaimChartAuditIssueDetailResponse */
+        ReclaimChartAuditIssueDetailResponse: {
+            /**
+             * Chart Id
+             * Format: uuid
+             */
+            chart_id: string;
+            /**
+             * Chart Urls
+             * @default []
+             */
+            chart_urls: components["schemas"]["ReclaimChartUrlItem"][];
+            /** Doc Tree Url */
+            doc_tree_url?: string | null;
+            /** Patient Name */
+            patient_name: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Admitted Date */
+            admitted_date?: string | null;
+            /** Patient Location */
+            patient_location?: string | null;
+            /** Patient Level Of Care */
+            patient_level_of_care?: string | null;
+            /**
+             * Audit Issues
+             * @default []
+             */
+            audit_issues: components["schemas"]["ReclaimChartAuditIssueItem"][];
+        };
+        /** ReclaimChartAuditIssueItem */
+        ReclaimChartAuditIssueItem: {
+            /** Question Id */
+            question_id?: string | null;
+            /** Question Text */
+            question_text?: string | null;
+            /** Predefined Category */
+            predefined_category?: string | null;
+            /**
+             * Payers
+             * @default []
+             */
+            payers: unknown[];
+        };
+        /** ReclaimChartAuditIssueResponse */
+        ReclaimChartAuditIssueResponse: {
+            /**
+             * Chart Id
+             * Format: uuid
+             */
+            chart_id: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Patient Name */
+            patient_name: string;
+            /** Question Text */
+            question_text: string;
+            /** Question Id */
+            question_id: string;
+            /** Status */
+            status?: string | null;
+            /** Display Summary */
+            display_summary?: string | null;
+            /** Predefined Category */
+            predefined_category?: string | null;
+            /**
+             * Responsible Staff Member
+             * @default []
+             */
+            responsible_staff_member: components["schemas"]["CareTeamMember"][];
+            /** Date */
+            date?: string | null;
+            /** Patient Location */
+            patient_location?: string | null;
+            /** Patient Level Of Care */
+            patient_level_of_care?: string | null;
+        };
+        /** ReclaimChartSummaryResponse */
+        ReclaimChartSummaryResponse: {
+            /**
+             * Chart Id
+             * Format: uuid
+             */
+            chart_id: string;
+            /** Center Id */
+            center_id: string;
+            /** Patient Name */
+            patient_name: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Reclaim Run Id */
+            reclaim_run_id?: string | null;
+            /** Ur Due Date */
+            ur_due_date?: string | null;
+            /** Filename */
+            filename: string;
+            /** Status */
+            status: string;
+            /** Page Count */
+            page_count?: number | null;
+            /** Total Pages */
+            total_pages?: number | null;
+            /** Front Matter Pages */
+            front_matter_pages?: number | null;
+            /** Casefile Share Id */
+            casefile_share_id?: string | null;
+            /** Casefile Status */
+            casefile_status?: string | null;
+            /**
+             * Has Document Tree
+             * @default false
+             */
+            has_document_tree: boolean;
+            /**
+             * Has Executive Summary
+             * @default false
+             */
+            has_executive_summary: boolean;
+            /**
+             * Has Ur Results
+             * @default false
+             */
+            has_ur_results: boolean;
+            /**
+             * Has Audit Run
+             * @default false
+             */
+            has_audit_run: boolean;
+            /** Created At */
+            created_at?: string | null;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /** ReclaimChartUrlItem */
+        ReclaimChartUrlItem: {
+            /** Chart Id */
+            chart_id: string;
+            /** Chart Url */
+            chart_url: string;
+            /** Chart Date */
+            chart_date?: string | null;
+        };
+        /** ReclaimConfig */
+        ReclaimConfig: {
+            provider: components["schemas"]["ReclaimProvider"];
+            audit: components["schemas"]["ReclaimAuditConfig"];
+            ur: components["schemas"]["ReclaimURConfig"];
+            /** Patient Ids */
+            patient_ids?: string[];
+            /** Kipu Location Filter Param */
+            kipu_location_filter_param?: ("location_id" | "select_location") | null;
+        };
+        /** ReclaimEmailCompositionListResponse */
+        ReclaimEmailCompositionListResponse: {
+            /** Compositions */
+            compositions: components["schemas"]["ReclaimEmailCompositionResponse"][];
+        };
+        /** ReclaimEmailCompositionResponse */
+        ReclaimEmailCompositionResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Center Id */
+            center_id: string;
+            /** Created By User Id */
+            created_by_user_id?: string | null;
+            /** Template Type */
+            template_type: string;
+            /** Template Version */
+            template_version: string;
+            /** Status */
+            status: string;
+            /** Subject */
+            subject: string;
+            /** Preheader */
+            preheader?: string | null;
+            /** Html */
+            html: string;
+            /** Text Body */
+            text_body: string;
+            /** Recipients */
+            recipients: {
+                [key: string]: unknown;
+            }[];
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ReclaimEmailRecipient */
+        ReclaimEmailRecipient: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Name */
+            name?: string | null;
+        };
+        /** ReclaimEmailTemplateInfo */
+        ReclaimEmailTemplateInfo: {
+            /** Template Type */
+            template_type: string;
+            /** Template Version */
+            template_version: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string;
+            /** Sourcepackagetype */
+            sourcePackageType: string;
+            /** Sourcepackageversion */
+            sourcePackageVersion: string;
+            /** Sourcemodes */
+            sourceModes?: string[];
+            /** Payload Schema */
+            payload_schema: {
+                [key: string]: unknown;
+            };
+        };
+        /** ReclaimEmailTemplateListResponse */
+        ReclaimEmailTemplateListResponse: {
+            /** Templates */
+            templates: components["schemas"]["ReclaimEmailTemplateInfo"][];
+        };
+        /** ReclaimExtractedLocationItem */
+        ReclaimExtractedLocationItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Location Name */
+            location_name: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "existing" | "created" | "revived";
+        };
+        /**
+         * ReclaimProvider
+         * @enum {string}
+         */
+        ReclaimProvider: "kipu" | "sunwave" | "bestnotes_classic";
+        /** ReclaimRunDetailResponse */
+        ReclaimRunDetailResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Center Id */
+            center_id: string;
+            status: components["schemas"]["ReclaimRunStatus"];
+            trigger_type: components["schemas"]["ReclaimRunTriggerType"];
+            /** Started By User Id */
+            started_by_user_id?: string | null;
+            /** Last Error */
+            last_error?: string | null;
+            status_breakdown?: components["schemas"]["ReclaimRunStatusBreakdown"];
+            metrics?: components["schemas"]["ReclaimRunMetrics"];
+            /** Created At */
+            created_at?: string | null;
+            /** Started At */
+            started_at?: string | null;
+            /** Completed At */
+            completed_at?: string | null;
+            /** Cancelled At */
+            cancelled_at?: string | null;
+            /** Reclaim Config Snapshot */
+            reclaim_config_snapshot?: {
+                [key: string]: unknown;
+            };
+            /** Scope Metadata */
+            scope_metadata?: {
+                [key: string]: unknown;
+            };
+        };
+        /** ReclaimRunMetrics */
+        ReclaimRunMetrics: {
+            /**
+             * Audit Count
+             * @default 0
+             */
+            audit_count: number;
+            /**
+             * Ur Count
+             * @default 0
+             */
+            ur_count: number;
+            /**
+             * Ur Chart Count
+             * @default 0
+             */
+            ur_chart_count: number;
+            /**
+             * Ur Completed Chart Count
+             * @default 0
+             */
+            ur_completed_chart_count: number;
+            /**
+             * Ur Question Count
+             * @default 0
+             */
+            ur_question_count: number;
+            /**
+             * Ur Answered Count
+             * @default 0
+             */
+            ur_answered_count: number;
+            /**
+             * Ur Runtime Failed Count
+             * @default 0
+             */
+            ur_runtime_failed_count: number;
+            /**
+             * Ur Found Count
+             * @default 0
+             */
+            ur_found_count: number;
+            /**
+             * Ur Not Found Count
+             * @default 0
+             */
+            ur_not_found_count: number;
+            /**
+             * Ur Error Count
+             * @default 0
+             */
+            ur_error_count: number;
+            /**
+             * Ur Failed Chart Count
+             * @default 0
+             */
+            ur_failed_chart_count: number;
+            /**
+             * Issue Count
+             * @default 0
+             */
+            issue_count: number;
+            /**
+             * Completed Count
+             * @default 0
+             */
+            completed_count: number;
+            /**
+             * Running Count
+             * @default 0
+             */
+            running_count: number;
+            /**
+             * Failed Count
+             * @default 0
+             */
+            failed_count: number;
+            /**
+             * Audit Question Count
+             * @default 0
+             */
+            audit_question_count: number;
+            /**
+             * Audit Failed Question Count
+             * @default 0
+             */
+            audit_failed_question_count: number;
+            /** Audit Failure Breakdown */
+            audit_failure_breakdown?: {
+                [key: string]: number;
+            };
+            /**
+             * Provider Failed Row Count
+             * @default 0
+             */
+            provider_failed_row_count: number;
+            /** Provider Failed Row Breakdown */
+            provider_failed_row_breakdown?: {
+                [key: string]: number;
+            };
+            /**
+             * Affected Chart Count
+             * @default 0
+             */
+            affected_chart_count: number;
+            /**
+             * Affected Question Count
+             * @default 0
+             */
+            affected_question_count: number;
+            /**
+             * Clean Audit
+             * @default true
+             */
+            clean_audit: boolean;
+            /**
+             * Llm Call Count
+             * @default 0
+             */
+            llm_call_count: number;
+            /**
+             * Llm Input Tokens
+             * @default 0
+             */
+            llm_input_tokens: number;
+            /**
+             * Llm Output Tokens
+             * @default 0
+             */
+            llm_output_tokens: number;
+            /**
+             * Llm Reasoning Tokens
+             * @default 0
+             */
+            llm_reasoning_tokens: number;
+            /**
+             * Llm Total Tokens
+             * @default 0
+             */
+            llm_total_tokens: number;
+            /**
+             * Llm Cost Usd
+             * @default 0
+             */
+            llm_cost_usd: number;
+            /**
+             * Llm Estimated Cost Usd
+             * @default 0
+             */
+            llm_estimated_cost_usd: number;
+            /**
+             * Llm Usage Finalized
+             * @default false
+             */
+            llm_usage_finalized: boolean;
+        };
+        /**
+         * ReclaimRunStatus
+         * @enum {string}
+         */
+        ReclaimRunStatus: "queued" | "running" | "completed" | "failed" | "cancelled";
+        /** ReclaimRunStatusBreakdown */
+        ReclaimRunStatusBreakdown: {
+            /**
+             * Total Charts
+             * @default 0
+             */
+            total_charts: number;
+            /**
+             * Queued Charts
+             * @default 0
+             */
+            queued_charts: number;
+            /**
+             * Running Charts
+             * @default 0
+             */
+            running_charts: number;
+            /**
+             * Completed Charts
+             * @default 0
+             */
+            completed_charts: number;
+            /**
+             * Failed Charts
+             * @default 0
+             */
+            failed_charts: number;
+            /**
+             * Cancelled Charts
+             * @default 0
+             */
+            cancelled_charts: number;
+        };
+        /** ReclaimRunSummaryResponse */
+        ReclaimRunSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Center Id */
+            center_id: string;
+            status: components["schemas"]["ReclaimRunStatus"];
+            trigger_type: components["schemas"]["ReclaimRunTriggerType"];
+            /** Started By User Id */
+            started_by_user_id?: string | null;
+            /** Last Error */
+            last_error?: string | null;
+            status_breakdown?: components["schemas"]["ReclaimRunStatusBreakdown"];
+            metrics?: components["schemas"]["ReclaimRunMetrics"];
+            /** Created At */
+            created_at?: string | null;
+            /** Started At */
+            started_at?: string | null;
+            /** Completed At */
+            completed_at?: string | null;
+            /** Cancelled At */
+            cancelled_at?: string | null;
+        };
+        /**
+         * ReclaimRunTriggerType
+         * @enum {string}
+         */
+        ReclaimRunTriggerType: "manual" | "scheduled";
+        /** ReclaimSyncEnqueueRequest */
+        ReclaimSyncEnqueueRequest: {
+            /**
+             * Trigger Audit After Sync
+             * @default false
+             */
+            trigger_audit_after_sync: boolean;
+            /**
+             * Sync Staff Directory
+             * @default false
+             */
+            sync_staff_directory: boolean;
+            /**
+             * Override Cadence
+             * @default false
+             */
+            override_cadence: boolean;
+        };
+        /** ReclaimSyncEnqueueResponse */
+        ReclaimSyncEnqueueResponse: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "skipped_active_sync" | "skipped_invalid_config" | "skipped_missing_credentials";
+            /** Center Id */
+            center_id: string;
+            /** Provider */
+            provider?: string | null;
+            /** Sync Run Id */
+            sync_run_id?: string | null;
+            /** Job Id */
+            job_id?: string | null;
+            /** Active Job Id */
+            active_job_id?: string | null;
+            /** Active Job Type */
+            active_job_type?: string | null;
+            /**
+             * Trigger Audit After Sync
+             * @default false
+             */
+            trigger_audit_after_sync: boolean;
+            /**
+             * Sync Staff Directory
+             * @default false
+             */
+            sync_staff_directory: boolean;
+            /**
+             * Override Cadence
+             * @default false
+             */
+            override_cadence: boolean;
+            /** Reason */
+            reason?: string | null;
+        };
+        /** ReclaimURChartDetailResponse */
+        ReclaimURChartDetailResponse: {
+            /**
+             * Chart Id
+             * Format: uuid
+             */
+            chart_id: string;
+            /** Ur Run Id */
+            ur_run_id?: string | null;
+            /** Reclaim Run Id */
+            reclaim_run_id?: string | null;
+            /** Ur Due Date */
+            ur_due_date?: string | null;
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            };
+            /** Chart Url */
+            chart_url: string;
+            /** Doc Tree Url */
+            doc_tree_url?: string | null;
+            /** Patient Name */
+            patient_name: string;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Admitted Date */
+            admitted_date?: string | null;
+            /** Patient Location */
+            patient_location?: string | null;
+            /** Patient Level Of Care */
+            patient_level_of_care?: string | null;
+            /**
+             * Findings
+             * @default []
+             */
+            findings: components["schemas"]["ReclaimURDimensionResponse"][];
+            workflow_instance?: components["schemas"]["ReclaimURWorkflowInstanceResponse"] | null;
+        };
+        /** ReclaimURChartResponse */
+        ReclaimURChartResponse: {
+            /**
+             * Source
+             * @default ur_run
+             * @enum {string}
+             */
+            source: "ur_run" | "patient_next_ur";
+            /** Ur Run Id */
+            ur_run_id?: string | null;
+            /** Chart Id */
+            chart_id?: string | null;
+            /** Reclaim Run Id */
+            reclaim_run_id?: string | null;
+            /** Ur Due Date */
+            ur_due_date?: string | null;
+            /** Next Ur */
+            next_ur?: string | null;
+            /** Patient Id */
+            patient_id?: string | null;
+            /** Patient Name */
+            patient_name: string;
+            /** Chart Status */
+            chart_status?: string | null;
+            /** Patient Level Of Care */
+            patient_level_of_care?: string | null;
+            /** Patient Location */
+            patient_location?: string | null;
+            /** Workflow Id */
+            workflow_id?: string | null;
+            /** Workflow Instance Id */
+            workflow_instance_id?: string | null;
+            /** Workflow Instance Status */
+            workflow_instance_status?: string | null;
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            };
+            /** Created At */
+            created_at?: string | null;
+        };
+        /** ReclaimURConfig */
+        ReclaimURConfig: {
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /**
+             * Due Window Days
+             * @default 1
+             */
+            due_window_days: number;
+            /** Location Ids */
+            location_ids?: string[];
+        };
+        /** ReclaimURDimensionResponse */
+        ReclaimURDimensionResponse: {
+            /** Id */
+            id?: string | null;
+            /** Title */
+            title?: string | null;
+            /**
+             * Items
+             * @default []
+             */
+            items: components["schemas"]["ReclaimURResultItem"][];
+        };
+        /** ReclaimURResultItem */
+        ReclaimURResultItem: {
+            /** Value */
+            value?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Execution Status */
+            execution_status?: string | null;
+            /** Question Id */
+            question_id?: string | null;
+            /** Question Text */
+            question_text?: string | null;
+            /** Family */
+            family?: string | null;
+            /** Rationale */
+            rationale?: string | null;
+            /**
+             * Facts
+             * @default []
+             */
+            facts: unknown[];
+            /**
+             * Evidence
+             * @default []
+             */
+            evidence: unknown[];
+            /**
+             * Selected Sources
+             * @default []
+             */
+            selected_sources: unknown[];
+            /**
+             * Selected Source Ids
+             * @default []
+             */
+            selected_source_ids: string[];
+            /**
+             * Selected Source Titles
+             * @default []
+             */
+            selected_source_titles: string[];
+        };
+        /** ReclaimURWorkflowInstanceResponse */
+        ReclaimURWorkflowInstanceResponse: {
+            /**
+             * Workflow Instance Id
+             * Format: uuid
+             */
+            workflow_instance_id: string;
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /**
+             * Workflow Id
+             * Format: uuid
+             */
+            workflow_id: string;
+            /** Workflow Name */
+            workflow_name: string;
+            /** Workflow Category Type */
+            workflow_category_type: string;
+            /**
+             * Is Display Only
+             * @default false
+             */
+            is_display_only: boolean;
+            /** Status */
+            status: string;
+            /** Recording Status */
+            recording_status?: string | null;
+            /** Summary */
+            summary?: string | null;
+            /** Session Metadata */
+            session_metadata?: {
+                [key: string]: unknown;
+            };
+            /** Created At */
+            created_at?: string | null;
         };
         /** RefreshTokenRequest */
         RefreshTokenRequest: {
@@ -4070,7 +6980,9 @@ export interface components {
             /** Workflow Id */
             workflow_id: string;
             /** User Id */
-            user_id: string;
+            user_id?: string | null;
+            /** Retry Comments */
+            retry_comments?: string | null;
         };
         /** RetryResponse */
         RetryResponse: {
@@ -4101,6 +7013,44 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
+        /**
+         * SessionCommentAddRequest
+         * @description Add a single comment item for a given comment type.
+         */
+        SessionCommentAddRequest: {
+            type: components["schemas"]["SessionCommentType"];
+            /** Data */
+            data: string;
+        };
+        /**
+         * SessionCommentDeleteRequest
+         * @description Remove a single comment item for a given comment type.
+         */
+        SessionCommentDeleteRequest: {
+            type: components["schemas"]["SessionCommentType"];
+            /** Idx */
+            idx: number;
+        };
+        /**
+         * SessionCommentType
+         * @enum {string}
+         */
+        SessionCommentType: "clinical_highlights" | "clinical_narrative" | "background_context" | "pt_quotes";
+        /**
+         * SessionComments
+         * @description User-provided text comments added during session recordings.
+         *     These are included in note generation prompts.
+         */
+        SessionComments: {
+            /** Clinical Highlights */
+            clinical_highlights?: string[] | null;
+            /** Clinical Narrative */
+            clinical_narrative?: string | null;
+            /** Background Context */
+            background_context?: string[] | null;
+            /** Pt Quotes */
+            pt_quotes?: string[] | null;
+        };
         /** SessionDetailMetaResponse */
         SessionDetailMetaResponse: {
             /** Patient Name */
@@ -4127,6 +7077,10 @@ export interface components {
             patient_name: string;
             /** Created At */
             created_at: string;
+            /** Start Time */
+            start_time: string;
+            /** End Time */
+            end_time: string;
             /** Session Status */
             session_status: string;
             /** Workflow Status */
@@ -4153,6 +7107,13 @@ export interface components {
             daily_completed_workflow_instances: number;
             /** Total Pending Workflow Instances */
             total_pending_workflow_instances: number;
+        };
+        /** SessionTranscriptResponse */
+        SessionTranscriptResponse: {
+            /** Session Id */
+            session_id: string;
+            /** Transcript */
+            transcript?: string | null;
         };
         /**
          * SessionsTodayByUserResponse
@@ -4268,6 +7229,69 @@ export interface components {
          * @enum {string}
          */
         SuicidalRisk: "include" | "exclude";
+        /** SunwaveAvailableForm */
+        SunwaveAvailableForm: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+        };
+        /** SunwaveAvailableFormsResponse */
+        SunwaveAvailableFormsResponse: {
+            /** Forms */
+            forms: components["schemas"]["SunwaveAvailableForm"][];
+        };
+        /** SunwavePopulateRequest */
+        SunwavePopulateRequest: {
+            /** Session Id */
+            session_id: string;
+            /** Workflow Id */
+            workflow_id: string;
+            /** Sunwave Form Instance Id */
+            sunwave_form_instance_id: string;
+            /**
+             * Include Plain
+             * @default false
+             */
+            include_plain: boolean;
+        };
+        /** SunwaveWorkflowRequest */
+        SunwaveWorkflowRequest: {
+            /** Workflow Name */
+            workflow_name: string;
+            /** Emr Patient Id */
+            emr_patient_id?: string | null;
+            /** Emr Admission Id */
+            emr_admission_id?: string | null;
+            /** Form Id */
+            form_id: string;
+            /** Form Instance Id */
+            form_instance_id?: string | null;
+            /**
+             * Is Ur
+             * @default false
+             */
+            is_ur: boolean;
+        };
+        /** SunwaveWorkflowResponse */
+        SunwaveWorkflowResponse: {
+            /** Status */
+            status: string;
+            /** Message */
+            message: string;
+            /** Emr Patient Id */
+            emr_patient_id: string;
+            /** Emr Admission Id */
+            emr_admission_id: string;
+            /** Form Id */
+            form_id: string;
+            /** Form Instance Id */
+            form_instance_id?: string | null;
+            /** Workflow Id */
+            workflow_id?: string | null;
+            /** Mapping Status */
+            mapping_status?: string | null;
+        };
         /**
          * SyncResponse
          * @description Response after forcing a sync with Stripe
@@ -4414,6 +7438,29 @@ export interface components {
             /** New Members Added */
             new_members_added: string[];
         };
+        /** UpdateReclaimAuditLedgerQuestionRequest */
+        UpdateReclaimAuditLedgerQuestionRequest: {
+            /** Question Key */
+            question_key?: string | null;
+            /** Title */
+            title?: string | null;
+            followup_policy?: components["schemas"]["QuestionFollowupPolicy"] | null;
+            unit_key_strategy?: components["schemas"]["AuditUnitKeyStrategy"] | null;
+            /** Predefined Category */
+            predefined_category?: string | null;
+            /** Intent Prompt */
+            intent_prompt?: string | null;
+            /** Evidence Prompt */
+            evidence_prompt?: string | null;
+            /** Instruction Prompt */
+            instruction_prompt?: string | null;
+            /** Steps Prompt */
+            steps_prompt?: string | null;
+            /** Loc Filter */
+            loc_filter?: components["schemas"]["LevelOfCare"][] | null;
+            /** Is Visible */
+            is_visible?: boolean | null;
+        };
         /** UpdateRequiredResponse */
         UpdateRequiredResponse: {
             /** Is Outdated */
@@ -4446,6 +7493,8 @@ export interface components {
             grouping?: {
                 [key: string]: number[];
             } | null;
+            /** Is Ur */
+            is_ur?: boolean | null;
         };
         /**
          * UpdateWorkflowResponse
@@ -4628,6 +7677,11 @@ export interface components {
             } | null;
             /** Workflow Id */
             workflow_id?: string | null;
+            /**
+             * Is Ur
+             * @default false
+             */
+            is_ur: boolean;
         };
         /**
          * WorkflowMetadata
@@ -4651,12 +7705,16 @@ export interface components {
          * @description Enumeration of all possible workflow instance states and their transitions.
          *
          *     The workflow instance follows a strict state machine with the following progression:
-         *     CREATED -> READY_FOR_GENERATION -> GENERATING_RESPONSES -> READY -> COMPLETED
+         *     CREATED -> WAITING_FOR_MAPPING|READY_FOR_GENERATION -> GENERATING_RESPONSES -> READY -> COMPLETED
          *
          *     Each state represents a specific phase in the workflow instance's lifecycle:
          *
          *     Attributes:
          *         CREATED (str): Initial state when workflow instance is first created. Occurs when the clinical_session is first created/
+         *
+         *         WAITING_FOR_MAPPING (str): User requested populate but the workflow mapping is still being created.
+         *             This is a holding state until the workflow definition reaches mapping_status=COMPLETED
+         *             or fails with mapping_status=ERROR.
          *
          *         READY_FOR_GENERATION (str): All preprocessing is complete and instance is ready for response generation.
          *             This is a checkpoint state before starting the expensive generation process.
@@ -4693,7 +7751,10 @@ export interface components {
          *
          *     State Transitions:
          *         Normal Flow:
+         *             CREATED -> WAITING_FOR_MAPPING: When populate is requested before workflow mapping completes
          *             CREATED -> READY_FOR_GENERATION: When preprocessing is complete
+         *             WAITING_FOR_MAPPING -> READY_FOR_GENERATION: When workflow mapping completes
+         *             WAITING_FOR_MAPPING -> ERROR: When workflow mapping fails
          *             READY_FOR_GENERATION -> GENERATING_RESPONSES: When starting response generation
          *             GENERATING_RESPONSES -> READY_TO_POPULATE: When responses are complete
          *             READY_TO_POPULATE -> COMPLETED: When user finishes form work
@@ -4710,7 +7771,7 @@ export interface components {
          *             READY_TO_POPULATE -> ERROR: If form population fails
          * @enum {string}
          */
-        WorkflowPopulateStatus: "created" | "ready_for_generation" | "generating_workflow_responses" | "post_processing" | "ready_to_populate" | "regenerating" | "completed" | "error";
+        WorkflowPopulateStatus: "created" | "waiting_for_mapping" | "ready_for_generation" | "generating_workflow_responses" | "post_processing" | "ready_to_populate" | "regenerating" | "completed" | "error";
         /**
          * WorkflowPromptConfig
          * @description Workflow-specific prompt configuration (stored in workflows.prompt_config).
@@ -4748,6 +7809,16 @@ export interface components {
             /** Workflow Name */
             workflow_name: string;
             mapping_status: components["schemas"]["MappingStatus"];
+            /**
+             * Is Ur
+             * @default false
+             */
+            is_ur: boolean;
+            /**
+             * Is Display Only
+             * @default false
+             */
+            is_display_only: boolean;
             category_type: components["schemas"]["CategoryType"];
             progress_note_type?: components["schemas"]["ProgressNoteType"] | null;
             /** Prompt */
@@ -4808,6 +7879,28 @@ export interface components {
             success: boolean;
             /** Count */
             count?: number | null;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * ToolCall
+         * @description Unified model for tool call metadata
+         */
+        app__models__query_agent_models__ToolCall: {
+            /** Tool */
+            tool: string;
+            /** Method */
+            method?: string | null;
+            /** Path */
+            path?: string | null;
+            /** Status */
+            status?: number | null;
+            /** Operation */
+            operation?: string | null;
+            /** Count */
+            count?: number | null;
+            /** Success */
+            success: boolean;
             /** Error */
             error?: string | null;
         };
@@ -5490,6 +8583,37 @@ export interface operations {
             };
         };
     };
+    generate_integuru_user_id_centers__center_id__integuru_user_id_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                center_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerateInteguruUserIdResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     create_checkout_session_billing_create_checkout_session_post: {
         parameters: {
             query?: never;
@@ -5863,7 +8987,10 @@ export interface operations {
     };
     get_patients_patients_get: {
         parameters: {
-            query?: never;
+            query?: {
+                status?: ("current" | "pre_admission" | "inactive" | "manual") | null;
+                eligible_for_reclaim?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5877,6 +9004,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Patient"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -5980,7 +9116,9 @@ export interface operations {
     };
     delete_patient_patients__patient_id__delete: {
         parameters: {
-            query?: never;
+            query?: {
+                hard_delete?: boolean;
+            };
             header?: never;
             path: {
                 patient_id: string;
@@ -5995,6 +9133,71 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_emr_patients_patients_search_emr_get: {
+        parameters: {
+            query: {
+                query: string;
+                exclude_existing?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatientEMRSearchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_patient_from_emr_patients_create_from_emr_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientCreateFromEMRRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Patient"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -6131,6 +9334,37 @@ export interface operations {
             };
         };
     };
+    delete_audio_resources_audio_resources_delete: {
+        parameters: {
+            query?: {
+                session_id?: string | null;
+                patient_id?: string | null;
+                user_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     populate_populate_post: {
         parameters: {
             query?: never;
@@ -6151,6 +9385,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PopulateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    populate_sunwave_populate_sunwave_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SunwavePopulateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -6700,6 +9967,107 @@ export interface operations {
             };
         };
     };
+    get_clinical_session_comments_clinical_sessions__session_id__comments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionComments"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_clinical_session_comment_clinical_sessions__session_id__comments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionCommentAddRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionComments"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_clinical_session_comment_clinical_sessions__session_id__comments_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionCommentDeleteRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionComments"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     process_clinical_session_clinical_sessions__session_id__process_put: {
         parameters: {
             query?: never;
@@ -6802,6 +10170,7 @@ export interface operations {
             query?: {
                 center_id?: string | null;
                 enterprise_id?: string | null;
+                is_global?: boolean;
             };
             header?: never;
             path?: never;
@@ -6858,6 +10227,125 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_bestnotes_workflow_workflows_bestnotes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BestNotesWorkflowRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BestNotesWorkflowResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_bestnotes_workflows_workflows_bestnotes_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BestNotesWorkflowIdentity"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BestNotesWorkflowDeleteResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_sunwave_workflow_workflows_sunwave_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SunwaveWorkflowRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SunwaveWorkflowResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_emr_available_forms_workflows_emr_available_forms_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SunwaveAvailableFormsResponse"];
                 };
             };
         };
@@ -7080,6 +10568,8 @@ export interface operations {
             query?: {
                 /** @description Optional patient ID to filter workflow instances */
                 patient_id?: string | null;
+                /** @description Optional workflow instance ID to filter to a specific instance */
+                workflow_instance_id?: string | null;
             };
             header?: never;
             path?: never;
@@ -7298,6 +10788,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SessionDetailResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_session_transcript_dashboard_user_sessions__session_id__transcript_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionTranscriptResponse"];
                 };
             };
             /** @description Validation Error */
@@ -8209,6 +11730,26 @@ export interface operations {
             };
         };
     };
+    start_perspectives_chat_perspectives_query_chat_start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerspectivesChatStartResponse"];
+                };
+            };
+        };
+    };
     query_perspectives_perspectives_query_query_post: {
         parameters: {
             query?: never;
@@ -8229,6 +11770,191 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PerspectivesQueryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    send_perspectives_chat_message_perspectives_query_chat_message_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerspectivesChatMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerspectivesChatMessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_perspectives_chat_perspectives_query_chat_end_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerspectivesChatEndRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerspectivesChatEndResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_query_agent_chat_query_agent_chat_start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryAgentChatStartResponse"];
+                };
+            };
+        };
+    };
+    send_query_agent_chat_message_query_agent_chat_message_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueryAgentChatMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryAgentChatMessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_query_agent_chat_message_query_agent_chat_message_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueryAgentChatMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_query_agent_chat_query_agent_chat_end_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueryAgentChatEndRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryAgentChatEndResponse"];
                 };
             };
             /** @description Validation Error */
@@ -8332,59 +12058,6 @@ export interface operations {
             };
         };
     };
-    create_chart_charts_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_create_chart_charts_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ChartResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_questions_charts_questions_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
     get_chart_charts__chart_id__get: {
         parameters: {
             query?: never;
@@ -8416,19 +12089,21 @@ export interface operations {
             };
         };
     };
-    rerun_chart_charts__chart_id__rerun_post: {
+    create_bestnotes_classic_chart_charts_bestnotes_classic_post: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                chart_id: string;
-            };
+            path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BestNotesClassicChartRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8443,26 +12118,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    seed_questions_charts_seed_questions_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
                 };
             };
         };
@@ -8682,6 +12337,1403 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PatientGroupNoteResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    initialize_reclaim_reclaim_initialize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InitializeReclaimRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitializeReclaimResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    extract_reclaim_locations_reclaim_locations_extract_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtractReclaimLocationsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractReclaimLocationsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enqueue_reclaim_sync_reclaim_sync_enqueue_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReclaimSyncEnqueueRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimSyncEnqueueResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_reclaim_runs_reclaim_runs_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                limit?: number;
+                created_after?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimRunSummaryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_run_reclaim_runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimRunDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_reclaim_run_reclaim_runs__run_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimRunDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_center_metrics_reclaim_center_metrics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimCenterMetricsResponse"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_questions_reclaim_audit_ledger_questions_get: {
+        parameters: {
+            query?: {
+                is_visible?: boolean | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerQuestionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_audit_ledger_question_reclaim_audit_ledger_question_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateReclaimAuditLedgerQuestionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerQuestionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_audit_ledger_question_reclaim_audit_ledger_questions__audit_question_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_audit_ledger_question_reclaim_audit_ledger_questions__audit_question_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateReclaimAuditLedgerQuestionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerQuestionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_issues_reclaim_audit_ledger_issues_get: {
+        parameters: {
+            query?: {
+                status?: "open" | "resolved" | "all";
+                staff_key?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerIssueResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_issue_timeline_reclaim_audit_ledger_issues__issue_id__timeline_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerTimelineItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_issue_units_reclaim_audit_ledger_issues__issue_id__units_get: {
+        parameters: {
+            query?: {
+                status?: "active" | "resolved" | "all";
+            };
+            header?: never;
+            path: {
+                issue_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerIssueUnitItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_stats_reclaim_audit_ledger_stats_get: {
+        parameters: {
+            query?: {
+                weeks?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerStatsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_staff_reclaim_audit_ledger_staff_get: {
+        parameters: {
+            query?: {
+                status?: "open" | "resolved" | "all";
+                weeks?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerStaffResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_issue_unit_sources_reclaim_audit_ledger_sources__audit_issue_unit_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_issue_unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerSourceListItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_ledger_issue_unit_source_artifact_reclaim_audit_ledger_sources__audit_issue_unit_id__source__source_doc_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_issue_unit_id: string;
+                source_doc_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimAuditLedgerSourceArtifactResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_charts_reclaim_charts_get: {
+        parameters: {
+            query?: {
+                patient_id?: string | null;
+                reclaim_run_id?: string | null;
+                status?: string | null;
+                limit?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartSummaryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_chart_reclaim_charts__chart_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chart_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartSummaryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_issues_reclaim_issues_get: {
+        parameters: {
+            query?: {
+                /** @description Only include issues whose date is within the last N days */
+                last_n_days?: number | null;
+                status?: "open" | "resolved" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartAuditIssueResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_answers_reclaim_answers_get: {
+        parameters: {
+            query?: {
+                chart_id?: string | null;
+                patient_id?: string | null;
+                reclaim_run_id?: string | null;
+                section?: ("executive_summary" | "ur" | "audit") | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartAnswersResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_answers_for_chart_reclaim_answers__chart_id__get: {
+        parameters: {
+            query?: {
+                section?: ("executive_summary" | "ur" | "audit") | null;
+            };
+            header?: never;
+            path: {
+                chart_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartAnswersResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_issues_reclaim_audit_issues_get: {
+        parameters: {
+            query?: {
+                /** @description Only include issues whose date is within the last N days */
+                last_n_days?: number | null;
+                status?: "open" | "resolved" | "all";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartAuditIssueResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_audit_issues_for_chart_reclaim_audit_issues__chart_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chart_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimChartAuditIssueDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ur_reclaim_ur_get: {
+        parameters: {
+            query?: {
+                /** @description Only include charts whose UR due date is within the next N days */
+                next_n_days?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimURChartResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ur_for_chart_reclaim_ur__chart_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chart_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimURChartDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_analysis_runs_reclaim_harness_runs_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["AnalysisRunStatus"] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisRunListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_analysis_run_reclaim_harness_runs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAnalysisRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateAnalysisRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analysis_run_reclaim_harness_runs__analysis_run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisRunDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_analysis_run_artifacts_reclaim_harness_runs__analysis_run_id__artifacts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                analysis_run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisArtifactListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analysis_artifact_download_reclaim_harness_artifacts__artifact_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                artifact_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisArtifactDownloadResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_reclaim_email_templates_reclaim_emails_templates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimEmailTemplateListResponse"];
+                };
+            };
+        };
+    };
+    list_reclaim_email_compositions_reclaim_emails_compositions_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimEmailCompositionListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_reclaim_email_composition_reclaim_emails_compositions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateReclaimEmailCompositionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimEmailCompositionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reclaim_email_composition_reclaim_emails_compositions__composition_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                composition_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReclaimEmailCompositionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    job_queue_counts_jobs_queue_counts_get: {
+        parameters: {
+            query?: {
+                center_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    job_status_summary_jobs_status_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                job_type?: string | null;
+                since?: string | null;
+                until?: string | null;
+                limit?: number;
+                only_failed?: boolean;
+                include_payload?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_chart_run_jobs_chart_runs__chart_run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chart_run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_chart_runs_jobs_chart_runs_get: {
+        parameters: {
+            query?: {
+                center_id?: string | null;
+                patient_id?: string | null;
+                state?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_chart_run_transitions_jobs_chart_runs__chart_run_id__transitions_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                chart_run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_chart_tasks_tasks_get: {
+        parameters: {
+            query: {
+                chart_id: string;
+                task_type?: components["schemas"]["ChartTaskType"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartTaskResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_task_queue_tasks_queue_get: {
+        parameters: {
+            query?: {
+                task_type?: components["schemas"]["ChartTaskType"] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartTaskResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_task_status_tasks__task_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChartTaskUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChartTaskResponse"];
                 };
             };
             /** @description Validation Error */

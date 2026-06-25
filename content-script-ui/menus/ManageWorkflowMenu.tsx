@@ -24,6 +24,8 @@ export function ManageWorkflowMenu() {
     const { value: selectedWorkflowId } = useStorageValue(sharedStorage.selectedWorkflowId);
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
     const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
+    const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal);
+    const isGlobalSelected = !!selectedGlobal;
     const { value: savedScrollPositions, isLoading: isScrollPositionLoading } = useStorageValue(sharedStorage.manageWorkflowMenuScrollPositions);
     const { value: workflowSessionIdMap } = useStorageValue(sharedStorage.workflowSessionIdMap);
     const { useGetWorkflowMapping, useUpdateWorkflow } = useWorkflowsQueries();
@@ -83,7 +85,7 @@ export function ManageWorkflowMenu() {
 
 
     const handleUpdateProcessedQuestionText = async (index: number, processedQuestionText: string) => {
-        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise)) return;
+        if (!selectedWorkflowId || (!selectedCenter && !selectedEnterprise && !isGlobalSelected)) return;
         try {
             await updateWorkflow({
                 workflowId: selectedWorkflowId,
@@ -92,6 +94,7 @@ export function ManageWorkflowMenu() {
                 },
                 centerId: selectedCenter?.center_id,
                 enterpriseId: selectedEnterprise?.id,
+                isGlobal: isGlobalSelected,
             });
         } catch (error) {
             console.error("handleUpdateProcessedQuestionText error", error);
@@ -264,27 +267,31 @@ export function ManageWorkflowMenu() {
                 ))}
             </div>
             {/* ))} */}
-            {isGenerating ? (
-                <span className="text-xs text-muted-foreground text-right w-full flex items-center justify-end gap-1">
-                    <Loader2Icon className="h-3 w-3 animate-spin" />
-                    Generating note...
-                </span>
-            ) : createdAt ? (
-                <span className="text-xs text-muted-foreground text-right w-full">
-                    Note last generated at {displayDate(createdAt)}
-                </span>
-            ) : (
-                <span className="text-xs text-muted-foreground text-right w-full">
-                    Generate answers to populate the note
-                </span>
+            {!isGlobalSelected && (
+                <>
+                    {isGenerating ? (
+                        <span className="text-xs text-muted-foreground text-right w-full flex items-center justify-end gap-1">
+                            <Loader2Icon className="h-3 w-3 animate-spin" />
+                            Generating note...
+                        </span>
+                    ) : createdAt ? (
+                        <span className="text-xs text-muted-foreground text-right w-full">
+                            Note last generated at {displayDate(createdAt)}
+                        </span>
+                    ) : (
+                        <span className="text-xs text-muted-foreground text-right w-full">
+                            Generate answers to populate the note
+                        </span>
+                    )}
+                    <div className="w-full flex flex-row justify-end items-center gap-2">
+                        <TranscriptLoader open={transcriptLoaderOpen} setOpen={setTranscriptLoaderOpen} transcript={transcript} setTranscript={setTranscript} handleTestPopulate={handleTestPopulate} isTestPopulatePending={isTestPopulatePending || isGenerating} />
+                        <Button className="w-24 py-2 text-xs" onClick={handlePopulate}
+                            disabled={isTestPopulatePending || isGenerating || !selectedWorkflowId || !sessionId || isNoteDataLoading} variant="outline">
+                            {isTestPopulatePending || isGenerating || isNoteDataLoading ? <Loader2Icon className="h-4 w-4 animate-spin" /> : 'Populate'}
+                        </Button>
+                    </div>
+                </>
             )}
-            <div className="w-full flex flex-row justify-end items-center gap-2">
-                <TranscriptLoader open={transcriptLoaderOpen} setOpen={setTranscriptLoaderOpen} transcript={transcript} setTranscript={setTranscript} handleTestPopulate={handleTestPopulate} isTestPopulatePending={isTestPopulatePending || isGenerating} />
-                <Button className="w-24 py-2 text-xs" onClick={handlePopulate}
-                    disabled={isTestPopulatePending || isGenerating || !selectedWorkflowId || !sessionId || isNoteDataLoading} variant="outline">
-                    {isTestPopulatePending || isGenerating || isNoteDataLoading ? <Loader2Icon className="h-4 w-4 animate-spin" /> : 'Populate'}
-                </Button>
-            </div>
         </div>
     );
 }
@@ -466,7 +473,7 @@ export function ManageWorkflowMenuItem({
             className="w-full flex flex-col justify-center items-start border-b border-gray-200 pb-2 last:border-b-0 py-2 px-3 gap-1"
             data-mapping-key={metadata.index}
         >
-            <span className="text-sm font-semibold">{metadata.index} - {metadata.question_text}</span>
+            <span className="text-sm font-semibold">{metadata.index} - {metadata.question_text || metadata.label}</span>
             <div className="relative w-full">
                 <TextArea
                     value={processedQuestionText}

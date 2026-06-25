@@ -38,6 +38,8 @@ export function GroupingEditor({ workflowMapping, setIsOpen, onScrollToItem }: G
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
     const { value: selectedCenter } = useStorageValue(sharedStorage.selectedCenter);
     const { value: selectedEnterprise } = useStorageValue(sharedStorage.selectedEnterprise);
+    const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal);
+    const isGlobalSelected = !!selectedGlobal;
     
     const [groupingState, setGroupingState] = useState<GroupingState>({});
     const [isRangeValid, setIsRangeValid] = useState(true);
@@ -123,12 +125,13 @@ export function GroupingEditor({ workflowMapping, setIsOpen, onScrollToItem }: G
     const groupingEntries = Object.entries(groupingState);
 
     const handleConfirmGrouping = async () => {
-        if (!isRangeValid || !workflowMapping?.workflow_id || (!selectedCenter && !selectedEnterprise)) return;
+        if (!isRangeValid || !workflowMapping?.workflow_id || (!selectedCenter && !selectedEnterprise && !isGlobalSelected)) return;
         try {
             const requestBody = {
                 workflowId: workflowMapping?.workflow_id,
                 centerId: selectedCenter?.center_id,
                 enterpriseId: selectedEnterprise?.id,
+                isGlobal: isGlobalSelected,
                 grouping: groupingState
             }
             console.log('requestBody', requestBody);
