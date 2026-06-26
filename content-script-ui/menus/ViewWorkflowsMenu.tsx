@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/modules/shared/ui/components/button";
 import { sharedStorage } from "@/modules/shared/shared.storage";
 import { displayDate, navigate } from "@/modules/shared/shared.utils";
-import { CategoryType, ProgressNoteType } from "@/modules/shared/types";
+import { EhrPlatform, ProgressNoteType, WorkflowCategorySelection } from "@/modules/shared/types";
 import { useStorageValue } from "@/modules/shared/ui/hooks/use-storage-value";
 import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflows-queries";
 import { OverflowMenu } from "@/modules/shared/ui/components/overflow-menu";
@@ -25,11 +25,17 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     const { value: selectedGlobal } = useStorageValue(sharedStorage.selectedGlobal);
     const isGlobalSelected = !!selectedGlobal;
     const { useGetCenterDetails, useUpdateCenterPromptConfig } = useCentersQueries();
-    const { useGetWorkflows, useDeleteWorkflow, useUpdateWorkflow } = useWorkflowsQueries();
+    const { useGetWorkflows, useDeleteWorkflow, useUpdateWorkflow, useGetEmrAvailableForms, useCreateSunwaveWorkflow } = useWorkflowsQueries();
     const { data: workflows, isLoading } = useGetWorkflows({ centerId: selectedCenter?.center_id, enterpriseId: selectedEnterprise?.id, isGlobal: isGlobalSelected });
     const { mutateAsync: deleteWorkflow, isPending: isDeletingWorkflow } = useDeleteWorkflow();
     const { mutateAsync: updateWorkflow } = useUpdateWorkflow();
+    const { mutateAsync: createSunwaveWorkflow, isPending: isCreatingSunwaveWorkflow } = useCreateSunwaveWorkflow();
     const { data: centerDetails, isLoading: isCenterDetailsLoading } = useGetCenterDetails(selectedCenter?.center_id ?? '');
+    const isSunwaveCenter = centerDetails?.emr?.toLowerCase() === EhrPlatform.SUNWAVE;
+    const { data: emrAvailableForms, isLoading: isEmrAvailableFormsLoading, error: emrAvailableFormsError } = useGetEmrAvailableForms({
+        centerId: selectedCenter?.center_id ?? '',
+        enabled: isSunwaveCenter
+    });
     const { mutateAsync: updateCenterPrompt } = useUpdateCenterPromptConfig(selectedCenter?.center_id ?? '');
 
     const [editingWorkflowId, setEditingWorkflowId] = useState<string | null>(null);
@@ -42,8 +48,17 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
 
     // Form state managed locally
     const [workflowName, setWorkflowName] = useState('');
-    const [workflowCategory, setWorkflowCategory] = useState<CategoryType | null>(null);
+    const [selectedSunwaveFormId, setSelectedSunwaveFormId] = useState('');
+    const [workflowCategory, setWorkflowCategory] = useState<WorkflowCategorySelection | null>(null);
     const [workflowProgressNoteType, setWorkflowProgressNoteType] = useState<ProgressNoteType | null>(null);
+
+    const selectedSunwaveForm = useMemo(() => (
+        emrAvailableForms?.forms.find((form) => form.id === selectedSunwaveFormId)
+    ), [emrAvailableForms, selectedSunwaveFormId]);
+    const hasEmrAvailableForms = !!emrAvailableForms?.forms.length;
+    const isCreateWorkflowDisabled = isSunwaveCenter
+        ? !selectedCenter?.center_id || !hasEmrAvailableForms || !selectedSunwaveForm || isCreatingSunwaveWorkflow
+        : !workflowName || !workflowCategory || (workflowCategory === 'progress_notes' && !workflowProgressNoteType);
 
     // Sort workflows with in_progress first
     const sortedWorkflows = useMemo(() => {
@@ -66,6 +81,20 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     }, [centerPrompt]);
 
     useEffect(() => {
+        if (!isSunwaveCenter) {
+            setSelectedSunwaveFormId('');
+            return;
+        }
+
+        if (!selectedSunwaveFormId) return;
+
+        if (!selectedSunwaveForm) {
+            setSelectedSunwaveFormId('');
+            setWorkflowName('');
+        }
+    }, [isSunwaveCenter, selectedSunwaveForm, selectedSunwaveFormId]);
+
+    useEffect(() => {
         if (centerPromptSaveStatus !== 'idle') {
             const timer = setTimeout(() => {
                 setCenterPromptSaveStatus('idle');
@@ -75,6 +104,28 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
     }, [centerPromptSaveStatus]);
 
     const handleCreateNewWorkflow = async () => {
+        if (isSunwaveCenter) {
+            if (!selectedCenter?.center_id || !selectedSunwaveForm || !hasEmrAvailableForms) {
+                return;
+            }
+
+            const isUrWorkflow = workflowCategory === 'ur';
+
+            await createSunwaveWorkflow({
+                workflow_name: selectedSunwaveForm.name,
+                center_id: selectedCenter.center_id,
+                form_id: selectedSunwaveForm.id,
+                category_instructions: workflowCategory ? {
+                    selected_category: isUrWorkflow ? 'other' : workflowCategory,
+                    progress_note_type: workflowCategory === 'progress_notes' ? workflowProgressNoteType : undefined,
+                } : undefined,
+                is_ur: isUrWorkflow
+            });
+            setSelectedSunwaveFormId('');
+            setWorkflowName('');
+            return;
+        }
+
         if (!workflowName || !workflowCategory || (workflowCategory === 'progress_notes' && !workflowProgressNoteType)) {
             return;
         }
@@ -266,23 +317,46 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
                 <span className="text-xs font-medium text-muted-foreground w-full text-left" >
                     Create New Workflow
                 </span>
-                <TextInput
-                    type="text"
-                    placeholder="Enter workflow name"
-                    value={workflowName}
-                    onChange={(e) => setWorkflowName(e.target.value)}
-                    className="w-full p-2 border border-gray-200 rounded-md text-sm"
-                />
+                {isSunwaveCenter ? (
+                    <select
+                        value={selectedSunwaveFormId}
+                        onChange={(e) => {
+                            const selectedForm = emrAvailableForms?.forms.find((form) => form.id === e.target.value);
+                            setSelectedSunwaveFormId(e.target.value);
+                            setWorkflowName(selectedForm?.name ?? '');
+                        }}
+                        className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                        disabled={isEmrAvailableFormsLoading}
+                    >
+                        <option value="">
+                            {isEmrAvailableFormsLoading ? 'Loading forms...' : 'Select form'}
+                        </option>
+                        {emrAvailableForms?.forms.map((form) => (
+                            <option key={form.id} value={form.id}>
+                                {form.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <TextInput
+                        type="text"
+                        placeholder="Enter workflow name"
+                        value={workflowName}
+                        onChange={(e) => setWorkflowName(e.target.value)}
+                        className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                    />
+                )}
                 <div className="flex flex-row justify-between items-center gap-2 w-full">
                     <select
                         value={workflowCategory ?? ''}
-                        onChange={(e) => setWorkflowCategory(e.target.value as CategoryType)}
+                        onChange={(e) => setWorkflowCategory(e.target.value as WorkflowCategorySelection)}
                         className="flex-1 p-2 border border-gray-200 rounded-md text-xs"
                     >
                         <option value="">Select Category</option>
                         <option value="intake_assessment">Intake Assessment</option>
                         <option value="progress_notes">Progress Notes</option>
                         <option value="treatment_plan">Treatment Plan</option>
+                        <option value="ur">UR</option>
                         <option value="other">Other</option>
                     </select>
                     <select
@@ -303,9 +377,9 @@ export function ViewWorkflowsMenu({ startMapping }: ViewWorkflowsMenuProps) {
                     size="sm"
                     onClick={handleCreateNewWorkflow}
                     className="px-3 py-2 text-xs bg-primary text-white hover:bg-primary/90"
-                    disabled={!workflowName || !workflowCategory || (workflowCategory === 'progress_notes' && !workflowProgressNoteType)}
+                    disabled={isCreateWorkflowDisabled}
                 >
-                    Next
+                    {isSunwaveCenter ? 'Create' : 'Next'}
                 </Button>
             </div>
         </div>

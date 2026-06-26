@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { EhrPlatform, MappingStage, ElementInfo, CategoryType, ProgressNoteType } from "@/modules/shared/types";
+import { EhrPlatform, MappingStage, ElementInfo, WorkflowCategorySelection, ProgressNoteType } from "@/modules/shared/types";
 import { hasZeroDimensions, isIgnoredInputElement, queryAllInputElements, queryFormElement } from "../domain/query-elements";
 import { getElementLabel, getElementType, getElementOptions, getElementPlaceholder, getElementSimplifiedType, getComboboxOptions } from "../domain/get-attr";
 import { getElementAbsoluteXPath, getElementPrimaryPath } from "../domain/get-path";
@@ -11,7 +11,7 @@ import { ensureElementVisible } from "@/modules/populate/populate-utils";
 
 export interface WorkflowFormData {
     workflowName: string;
-    workflowCategory: CategoryType | null;
+    workflowCategory: WorkflowCategorySelection | null;
     workflowProgressNoteType: ProgressNoteType | null;
     centerId?: string;
     enterpriseId?: string;
@@ -181,6 +181,7 @@ export const useMapping = (currMode: EhrPlatform | null) => {
             });
             
             const { workflowName, workflowCategory, workflowProgressNoteType, centerId, enterpriseId, isGlobal, workflowId } = formDataRef.current!;
+            const isUrWorkflow = workflowCategory === 'ur';
             
             console.log(newMetadataArray);
             console.log(base64Image)
@@ -194,11 +195,11 @@ export const useMapping = (currMode: EhrPlatform | null) => {
                 workflowId,
                 screenshot: base64Image,
                 categoryInstructions: {
-                    selected_category: workflowCategory,
-                    progress_note_type: workflowProgressNoteType,
-                }
+                    selected_category: isUrWorkflow ? 'other' : workflowCategory,
+                    progress_note_type: workflowCategory === 'progress_notes' ? workflowProgressNoteType : undefined,
+                },
+                isUr: isUrWorkflow,
             });
-            console.log('response', response);
 
             setCurrStage(MappingStage.COMPLETED);
             await new Promise((resolve) => setTimeout(resolve, 3000));
