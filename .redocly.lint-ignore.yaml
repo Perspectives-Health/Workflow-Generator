@@ -25,7 +25,6 @@ openapi.json:
     - '#/paths/~1billing~1internal~1centers/get/responses'
     - '#/paths/~1webhooks~1stripe/post/responses'
     - '#/paths/~1clinical-sessions/post/responses'
-    - '#/paths/~1workflows~1emr-available-forms/get/responses'
     - '#/paths/~1workflows~1backfill-groupings/post/responses'
     - '#/paths/~1dashboard~1users-today/get/responses'
     - '#/paths/~1dashboard~1dau/get/responses'

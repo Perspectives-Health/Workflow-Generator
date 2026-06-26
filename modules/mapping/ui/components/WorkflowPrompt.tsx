@@ -4,7 +4,7 @@ import { TextArea } from "@/modules/shared/ui/components/textarea";
 import { useStorageValue } from "@/modules/shared/ui/hooks/use-storage-value";
 import { sharedStorage } from "@/modules/shared/shared.storage";
 import { useWorkflowsQueries } from "@/modules/workflows/components/use-workflows-queries";
-import { CategoryType, ProgressNoteType } from "@/modules/shared/types";
+import { ProgressNoteType, WorkflowCategorySelection } from "@/modules/shared/types";
 
 
 export function WorkflowPrompt() {
@@ -18,14 +18,14 @@ export function WorkflowPrompt() {
     const { mutateAsync: updateWorkflow, isPending } = useUpdateWorkflow();
 
     const [workflowPromptState, setWorkflowPromptState] = useState<string>('');
-    const [categoryType, setCategoryType] = useState<CategoryType | null>(null);
+    const [categoryType, setCategoryType] = useState<WorkflowCategorySelection | null>(null);
     const [progressNoteType, setProgressNoteType] = useState<ProgressNoteType | null>(null);
     const resetButtonRef = useRef<HTMLButtonElement>(null);
     const saveButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         setWorkflowPromptState(workflowSummary?.prompt ?? '');
-        setCategoryType(workflowSummary?.category_type ?? null);
+        setCategoryType(workflowSummary?.is_ur ? 'ur' : workflowSummary?.category_type ?? null);
         setProgressNoteType(workflowSummary?.progress_note_type ?? null);
     }, [workflowSummary]);
 
@@ -40,12 +40,12 @@ export function WorkflowPrompt() {
                 promptConfig: {
                     category_instructions: {
                         prompt: workflowPromptState,
-                        selected_category: categoryType,
+                        selected_category: categoryType === 'ur' ? 'other' : categoryType,
                         progress_note_type: categoryType === 'progress_notes' ? progressNoteType : undefined,
                     }
-                }
+                },
+                isUr: categoryType === 'ur',
             }
-            console.log('requestBody', requestBody);
             await updateWorkflow(requestBody);
         } catch (error) {
             console.error("handleSaveWorkflowPrompt error", error);
@@ -66,13 +66,14 @@ export function WorkflowPrompt() {
                 <div className="flex flex-row justify-center items-center gap-2">
                     <select
                         value={categoryType ?? ''}
-                        onChange={(e) => setCategoryType(e.target.value as CategoryType)}
+                        onChange={(e) => setCategoryType(e.target.value as WorkflowCategorySelection)}
                         className="w-36 p-2 border border-gray-200 rounded-md text-xs"
                     >
                         <option value="">Select Category</option>
                         <option value="intake_assessment">Intake Assessment</option>
                         <option value="progress_notes">Progress Notes</option>
                         <option value="treatment_plan">Treatment Plan</option>
+                        <option value="ur">UR</option>
                         <option value="other">Other</option>
                     </select>
                     <select

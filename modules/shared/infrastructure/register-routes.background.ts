@@ -1,9 +1,9 @@
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { ApiResponse, CategoryType, CenterDetails, WorkflowMappingRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData, EnterpriseDetailsResponse } from "@/modules/shared/types";
+import type { ApiResponse, CategoryType, CenterDetails, WorkflowMappingRequest, GetCentersResponse, RegenerateProcessedQuestionResponse, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMapping, WorkflowSummary, NoteData, EnterpriseDetailsResponse, SunwaveWorkflowRequest, SunwaveWorkflowResponse, SunwaveAvailableFormsResponse } from "@/modules/shared/types";
 import { onMessage } from "webext-bridge/background";
 import { sendResponse, sendError } from "@/modules/shared/infrastructure/api-utils.background";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, mapWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData, getEnterprises } from "@/modules/shared/infrastructure/api.background";
+import { getCenters, getWorkflows, login, updateWorkflow, deleteWorkflow, mapWorkflow, saveWorkflowPaths, regenerateProcessedQuestion, getCenterDetails, updateCenterPromptConfig, getWorkflowMapping, getWorkflow, generateNote, createClinicalSession, updateClinicalSessionWorkflows, getNoteData, getEnterprises, createSunwaveWorkflow, getEmrAvailableForms } from "@/modules/shared/infrastructure/api.background";
 
 
 declare module "webext-bridge" {
@@ -18,6 +18,8 @@ declare module "webext-bridge" {
         "update-workflow": ProtocolWithReturn<UpdateWorkflowRequest, ApiResponse<void>>;
         "delete-workflow": ProtocolWithReturn<{ workflowId: string }, ApiResponse<void>>;
         "map-workflow": ProtocolWithReturn<WorkflowMappingRequest, ApiResponse<void>>;
+        "create-sunwave-workflow": ProtocolWithReturn<SunwaveWorkflowRequest, ApiResponse<SunwaveWorkflowResponse>>;
+        "get-emr-available-forms": ProtocolWithReturn<{ centerId: string }, ApiResponse<SunwaveAvailableFormsResponse>>;
         "save-workflow-paths": ProtocolWithReturn<{ workflowId: string, index: string, xpath: string | undefined, clickBeforeXpaths: string[] | undefined }, ApiResponse<void>>;
         "regenerate-processed-question": ProtocolWithReturn<{ workflowId: string, questionIndex: string }, ApiResponse<RegenerateProcessedQuestionResponse>>;
         "get-default-transcript": ProtocolWithReturn<{ workflowId: string }, ApiResponse<string>>;
@@ -107,7 +109,8 @@ export function registerBackgroundRoutes() {
                     ignore_flags: data.ignore_flags ?? undefined,
                     processed_questions: data.processed_questions ?? undefined,
                     prompt_config: data.prompt_config ?? undefined,
-                    grouping: data.grouping ?? undefined
+                    grouping: data.grouping ?? undefined,
+                    is_ur: data.is_ur
                 });
             return sendResponse();
         } catch (error) {
@@ -128,6 +131,25 @@ export function registerBackgroundRoutes() {
         try {
             await mapWorkflow(data);
             return sendResponse();
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+
+    onMessage("create-sunwave-workflow", async ({ data }) => {
+        try {
+            const result = await createSunwaveWorkflow(data);
+            return sendResponse(result);
+        } catch (error) {
+            return sendError(error as Error);
+        }
+    });
+
+    onMessage("get-emr-available-forms", async ({ data }) => {
+        try {
+            const result = await getEmrAvailableForms(data.centerId);
+            
+            return sendResponse(result);
         } catch (error) {
             return sendError(error as Error);
         }

@@ -3,7 +3,7 @@ import { useMessaging } from "@/modules/shared/ui/entrypoint-provider";
 import { createQueries } from "@/modules/shared/infrastructure/create-queries";
 import { workflowsQueries } from "../infrastructure/workflows.send-message.app";
 import { invalidateQueriesGlobally } from "@/modules/shared/infrastructure/query-client";
-import { PreMappingMetadata } from "@/modules/shared/types";
+import { PreMappingMetadata, SunwaveWorkflowRequest } from "@/modules/shared/types";
 
 
 export const useWorkflowsQueries = () => {
@@ -34,6 +34,12 @@ export const useWorkflowsQueries = () => {
             queryFn: async () => api.getWorkflowMapping(workflowId),
             enabled: !!workflowId
         }),
+        useGetEmrAvailableForms: ({ centerId, enabled = true }: { centerId: string; enabled?: boolean }) => useQuery({
+            queryKey: ['emr-available-forms', centerId],
+            queryFn: async () => api.getEmrAvailableForms(centerId),
+            staleTime: 1000 * 60 * 60 * 1,
+            enabled: enabled && !!centerId,
+        }),
         useUpdateWorkflow: () => useMutation({
             mutationFn: async ({ 
                 workflowId, 
@@ -45,6 +51,7 @@ export const useWorkflowsQueries = () => {
                 promptConfig,
                 grouping,
                 isGlobal,
+                isUr,
             }: { 
                 workflowId: string; 
                 centerId?: string;
@@ -55,8 +62,9 @@ export const useWorkflowsQueries = () => {
                 processedQuestions?: Record<string, string>;
                 promptConfig?: Record<string, unknown>;
                 grouping?: Record<string, number[]>;
+                isUr?: boolean;
             }) => {
-                return api.updateWorkflow(workflowId, name, ignoreFlags, processedQuestions, promptConfig, grouping);
+                return api.updateWorkflow(workflowId, name, ignoreFlags, processedQuestions, promptConfig, grouping, isUr);
             },
             onSuccess: (_, variables) => {
                 invalidateQueriesGlobally(['workflow-mapping', variables.workflowId]);
@@ -74,7 +82,7 @@ export const useWorkflowsQueries = () => {
             }
         }),
         useMapWorkflow: () => useMutation({
-            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions, workflowId }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; isGlobal?: boolean; screenshot: string; categoryInstructions: { [key: string]: unknown }; workflowId?: string }) => {
+            mutationFn: async ({ workflowName, metadata, centerId, enterpriseId, screenshot, categoryInstructions, workflowId, isUr }: { workflowName: string; metadata: PreMappingMetadata[]; centerId?: string; enterpriseId?: string; isGlobal?: boolean; screenshot: string; categoryInstructions: { [key: string]: unknown }; workflowId?: string; isUr?: boolean }) => {
 
                 return api.mapWorkflow({
                     workflow_name: workflowName,
@@ -84,11 +92,24 @@ export const useWorkflowsQueries = () => {
                     screenshot: screenshot,
                     category_instructions: categoryInstructions,
                     workflow_id: workflowId,
-                    is_ur: false
+                    is_ur: isUr ?? false
                 });
             },
             onSuccess: (_, variables) => {
                 invalidateQueriesGlobally(['workflows', getWorkflowsScopeKey(variables)]);
+            }
+        }),
+        useCreateSunwaveWorkflow: () => useMutation({
+            mutationFn: async (body: SunwaveWorkflowRequest) => api.createSunwaveWorkflow(body),
+            onSuccess: (data, variables) => {
+                if (variables.center_id) {
+                    invalidateQueriesGlobally(['workflows', variables.center_id]);
+                } else {
+                    invalidateQueriesGlobally(['workflows']);
+                }
+                if (data.workflow_id) {
+                    invalidateQueriesGlobally(['workflow-summary', data.workflow_id]);
+                }
             }
         }),
         useSaveWorkflowPaths: () => useMutation({

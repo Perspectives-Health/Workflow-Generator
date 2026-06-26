@@ -42,6 +42,8 @@ export type WorkflowSummary = components["schemas"]["WorkflowResponse"];
 
 export type CategoryType = components["schemas"]["CategoryType"];
 
+export type WorkflowCategorySelection = CategoryType | "ur";
+
 export type ProgressNoteType = components["schemas"]["ProgressNoteType"];
 
 export type MappingMetadata = {
@@ -62,6 +64,12 @@ export type PreMappingMetadata = components["schemas"]["Metadata"];
 export type WorkflowMapping = components["schemas"]["Mapping"];
 
 export type WorkflowMappingRequest = components["schemas"]["WorkflowMappingRequest"];
+
+export type SunwaveWorkflowRequest = components["schemas"]["SunwaveWorkflowRequest"];
+
+export type SunwaveWorkflowResponse = components["schemas"]["SunwaveWorkflowResponse"];
+
+export type SunwaveAvailableFormsResponse = components["schemas"]["SunwaveAvailableFormsResponse"];
 
 export type UpdateCenterRequest = components["schemas"]["UpdateCenterRequest"];
 

@@ -1,7 +1,7 @@
 import { fastapi } from "@/modules/shared/infrastructure/api-client.background";
 import { authStorage } from "@/modules/auth/auth.storage";
 import { AuthSession } from "@/modules/auth/auth.types";
-import { UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMappingRequest } from "../types";
+import { SunwaveWorkflowRequest, UpdateCenterRequest, UpdateWorkflowRequest, WorkflowMappingRequest } from "../types";
 // import { CreateWorkflowRequest } from "../types";
 
 
@@ -164,6 +164,41 @@ export const mapWorkflow = async (body: WorkflowMappingRequest) => {
     return data.workflow_id;
 }
 
+export const createSunwaveWorkflow = async (body: SunwaveWorkflowRequest) => {
+    const { data, error } = await fastapi.POST("/workflows/sunwave", {
+        body: {
+            workflow_name: body.workflow_name,
+            center_id: body.center_id,
+            emr_patient_id: body.emr_patient_id,
+            emr_admission_id: body.emr_admission_id,
+            form_id: body.form_id,
+            form_instance_id: body.form_instance_id,
+            category_instructions: body.category_instructions,
+            is_ur: body.is_ur
+        }
+    });
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
+export const getEmrAvailableForms = async (centerId: string) => {
+    const { data, error } = await fastapi.GET("/workflows/emr-available-forms", {
+        params: {
+            query: {
+                center_id: centerId
+            }
+        }
+    });
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
+
 export const getWorkflowMapping = async (workflowId: string) => {
     const { data, error } = await fastapi.GET(`/workflows/{workflow_id}/form-data`, {
         params: {
@@ -209,7 +244,8 @@ export const updateWorkflow = async (body: UpdateWorkflowRequest) => {
             ...(body.ignore_flags && { ignore_flags: body.ignore_flags }),
             ...(body.processed_questions && { processed_questions: body.processed_questions }),
             ...(body.prompt_config && { prompt_config: body.prompt_config }),
-            ...(body.grouping && { grouping: body.grouping })
+            ...(body.grouping && { grouping: body.grouping }),
+            ...(body.is_ur !== undefined && body.is_ur !== null && { is_ur: body.is_ur })
         }
     });
     if (error) {

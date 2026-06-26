@@ -6790,11 +6790,6 @@ export interface components {
             patient_location?: string | null;
             /** Patient Level Of Care */
             patient_level_of_care?: string | null;
-            /**
-             * Findings
-             * @default []
-             */
-            findings: components["schemas"]["ReclaimURDimensionResponse"][];
             workflow_instance?: components["schemas"]["ReclaimURWorkflowInstanceResponse"] | null;
         };
         /** ReclaimURChartResponse */
@@ -6853,60 +6848,6 @@ export interface components {
             /** Location Ids */
             location_ids?: string[];
         };
-        /** ReclaimURDimensionResponse */
-        ReclaimURDimensionResponse: {
-            /** Id */
-            id?: string | null;
-            /** Title */
-            title?: string | null;
-            /**
-             * Items
-             * @default []
-             */
-            items: components["schemas"]["ReclaimURResultItem"][];
-        };
-        /** ReclaimURResultItem */
-        ReclaimURResultItem: {
-            /** Value */
-            value?: string | null;
-            /** Status */
-            status?: string | null;
-            /** Execution Status */
-            execution_status?: string | null;
-            /** Question Id */
-            question_id?: string | null;
-            /** Question Text */
-            question_text?: string | null;
-            /** Family */
-            family?: string | null;
-            /** Rationale */
-            rationale?: string | null;
-            /**
-             * Facts
-             * @default []
-             */
-            facts: unknown[];
-            /**
-             * Evidence
-             * @default []
-             */
-            evidence: unknown[];
-            /**
-             * Selected Sources
-             * @default []
-             */
-            selected_sources: unknown[];
-            /**
-             * Selected Source Ids
-             * @default []
-             */
-            selected_source_ids: string[];
-            /**
-             * Selected Source Titles
-             * @default []
-             */
-            selected_source_titles: string[];
-        };
         /** ReclaimURWorkflowInstanceResponse */
         ReclaimURWorkflowInstanceResponse: {
             /**
@@ -6939,6 +6880,10 @@ export interface components {
             recording_status?: string | null;
             /** Summary */
             summary?: string | null;
+            /** Data */
+            data?: {
+                [key: string]: unknown;
+            };
             /** Session Metadata */
             session_metadata?: {
                 [key: string]: unknown;
@@ -7259,6 +7204,8 @@ export interface components {
         SunwaveWorkflowRequest: {
             /** Workflow Name */
             workflow_name: string;
+            /** Center Id */
+            center_id?: string | null;
             /** Emr Patient Id */
             emr_patient_id?: string | null;
             /** Emr Admission Id */
@@ -7267,6 +7214,10 @@ export interface components {
             form_id: string;
             /** Form Instance Id */
             form_instance_id?: string | null;
+            /** Category Instructions */
+            category_instructions?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Is Ur
              * @default false
@@ -10332,7 +10283,9 @@ export interface operations {
     };
     get_emr_available_forms_workflows_emr_available_forms_get: {
         parameters: {
-            query?: never;
+            query?: {
+                center_id?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -10346,6 +10299,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SunwaveAvailableFormsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -13148,8 +13110,12 @@ export interface operations {
     get_ur_reclaim_ur_get: {
         parameters: {
             query?: {
-                /** @description Only include charts whose UR due date is within the next N days */
+                /** @description Only include charts whose UR due date is within the next N days. Ignored when start_date and end_date are provided. */
                 next_n_days?: number | null;
+                /** @description Inclusive UR due date range start, formatted as YYYY-MM-DD */
+                start_date?: string | null;
+                /** @description Inclusive UR due date range end, formatted as YYYY-MM-DD */
+                end_date?: string | null;
             };
             header?: never;
             path?: never;
